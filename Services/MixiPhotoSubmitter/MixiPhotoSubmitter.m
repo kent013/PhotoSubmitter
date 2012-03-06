@@ -7,7 +7,7 @@
 //
 
 #import "MixiPhotoSubmitter.h"
-#import "PhotoSubmitterAPIKey.h"
+#import "MixiAPIKey.h"
 #import "RegexKitLite.h"
 #import "PhotoSubmitterManager.h"
 #import "MixiSDK.h"

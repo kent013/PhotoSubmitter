@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 cocotomo. All rights reserved.
 //
 
-#import "PhotoSubmitterAPIKey.h"
+#import "PicasaAPIKey.h"
 #import "PicasaPhotoSubmitter.h"
 #import "PhotoSubmitterManager.h"
 #import "RegexKitLite.h"

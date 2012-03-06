@@ -7,7 +7,6 @@
 //
 
 #import "TwitterPhotoSubmitter.h"
-#import "PhotoSubmitterAPIKey.h"
 #import "TwitterPhotoSubmitterSettingTableViewController.h"
 
 #define PS_TWITTER_USERNAME @"PSTwitterUsername"

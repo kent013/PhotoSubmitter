@@ -6,7 +6,6 @@
 //  Copyright (c) 2012 cocotomo. All rights reserved.
 //
 
-#import "PhotoSubmitterAPIKey.h"
 #import "FotolifePhotoSubmitter.h"
 #import "PhotoSubmitterAlbumEntity.h"
 #import "PhotoSubmitterManager.h"

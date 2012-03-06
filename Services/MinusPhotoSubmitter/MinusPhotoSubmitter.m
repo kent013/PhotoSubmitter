@@ -7,7 +7,7 @@
 //
 
 #import "MinusPhotoSubmitter.h"
-#import "PhotoSubmitterAPIKey.h"
+#import "MinusAPIKey.h"
 #import "PhotoSubmitterAccountTableViewController.h"
 #import "PhotoSubmitterManager.h"
 

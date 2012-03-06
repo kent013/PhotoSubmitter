@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 cocotomo. All rights reserved.
 //
 
-#import "PhotoSubmitterAPIKey.h"
+#import "FlickrAPIKey.h"
 #import "FlickrPhotoSubmitter.h"
 #import "NSData+Digest.h"
 #import "RegexKitLite.h"
