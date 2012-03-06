@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 cocotomo. All rights reserved.
 //
 
-#import "PhotoSubmitterAPIKey.h"
+#import "EvernoteAPIKey.h"
 #import "EvernotePhotoSubmitter.h"
 #import "RegexKitLite.h"
 #import "PhotoSubmitterManager.h"

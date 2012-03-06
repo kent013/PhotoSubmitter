@@ -44,7 +44,6 @@ NSString* MixiUtilFirstBundleURLScheme() {
     if ([urlSchemes count] == 0) return nil;
     return [urlSchemes objectAtIndex:0];
 }
-#pragma clang pop
 
 NSDictionary* MixiUtilParseURLOptions(NSURL* url) {
     return MixiUtilParseURLOptionsByString(url, @"#");
@@ -100,6 +99,8 @@ void MixiUtilDissmissRequestViewIfNeeded() {
     Mixi *mixi = [Mixi sharedMixi];
     if (mixi.mixiViewController) [mixi.mixiViewController dismissModalViewControllerAnimated:YES];
 }
+
+#pragma clang diagnostic pop
 
 NSString* MixiUtilGetRequestIdFromURL(NSURL* url) {
     return [[url query] stringByReplacingOccurrencesOfString:@"mixi_request_id=" withString:@""];

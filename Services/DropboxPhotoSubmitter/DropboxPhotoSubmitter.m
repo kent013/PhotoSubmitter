@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 coctomo. All rights reserved.
 //
 
-#import "PhotoSubmitterAPIKey.h"
+#import "DropboxAPIKey.h"
 #import "DropboxPhotoSubmitter.h"
 #import "RegexKitLite.h"
 #import "PhotoSubmitterManager.h"
