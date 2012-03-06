@@ -1,3 +1,0 @@
-[submodule "Services/FacebookPhotoSubmitter"]
-	path = Services/FacebookPhotoSubmitter
-	url = git@github.com:kent013/FacebookPhotoSubmitter.git
