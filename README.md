@@ -188,7 +188,7 @@ PhotoSubmitter's common libraries are stored in `Libraries`. And libraries for s
 <tr>
 <td>Minus</td>
 <td><a href="https://github.com/kent013/MinusConnect">MinusConnect</a></td>
-<td><a href="https://github.com/nxtbgthng/OAuth2Client">OAuth2Client</a>, CoreData.framework, MobileCoreServices.framework, libz.dylib</td>
+<td><a href="https://github.com/nxtbgthng/OAuth2Client">OAuth2Client</a>, CoreData.framework, MobileCoreServices.framework, libz.dylib<sup>2</sup></td>
 </tr>
 <tr>
 <td>Mixi</td>
@@ -207,8 +207,8 @@ PhotoSubmitter's common libraries are stored in `Libraries`. And libraries for s
 </tr>
 </table>
 
-*1 EvernoteConnect needs "Header Search Path" to be configured as `[submodule path]/Services/EvernotePhotoSubmitter/Libraries/Evernote/thrift` and `recursive` checked.  
-*2 libxml2 needs "Header Search Path" to be configured as `/usr/include/libxml2`
+*1 EvernoteConnect needs "Header Search Path" to be configured as `[submodule path]/Services/EvernotePhotoSubmitter/Libraries/Evernote/thrift` and `recursive` checked.
+*2 libz.dylib is not provided by MinusPhotoSubmitter please add it manually.
 
 
 PhotoSubmitter SettingViewController
