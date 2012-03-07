@@ -1,5 +1,5 @@
 PhotoSubmitter
-===========================
+==========================================
 The purpose of the PhotoSubmitter iOS class library is to facilitate the development of photo upload application.
 
 There are a lot of Social Network Services and Cloud Storage Services. And each services have their own SDK to connect to their service. Unfortunately SDKs are not compatible each other.　Especially between Social Network Services and Cloud Storage Services are completely different. 
@@ -135,9 +135,19 @@ Before using OAuth services, you must submit to their developer program to obtai
 ```
 these constants with your key and secret pair.
 
+Probrem in mixture of ARC and Non-ARC libraries
+-------------------------------------------------
+**PhotoSubmitter is ARC project**, and some dependent libraries are **Non-ARC**. **Non-ARC Libraries cause build error**. You must set '-fno-objc-arc' flag to their source codes to disable ARC. Please check out [stackoverflow: How can I disable ARC for a single file in a project?](http://stackoverflow.com/questions/6646052/how-can-i-disable-arc-for-a-single-file-in-a-project). (Tip: You can set flag to multiple source codes at once with selecting multiple source code and pressing ENTER key)
+
+Library Dependencies for PhotoSubmitter library
+-------------------------------------------------
+AssetsLibrary, CFNetwork, CoreLocation, Foundation, ImageIO, Security and SystemConfiguration.framework are needed to be added in your project. Also libicucore.dylib is required by <a href="http://regexkit.sourceforge.net/RegexKitLite/">RegexKitLite</a> and libxml2.dylib is required by <a href="https://github.com/ddeville/KissXML">KissXML</a>.
+
+libxml2 needs "Header Search Path" to be configured as `/usr/include/libxml2`(or other path to libxml2's header files are placed.
+
 Library Dependencies of Service Implementation
---------------------------------------
-Libraries for Service Implementation are stored in `PhotoSubmitter/Services/[ServiceName]PhotoSubmitter/[ServiceName]APIKey.h`.
+-------------------------------------------------
+PhotoSubmitter's common libraries are stored in `Libraries`. And libraries for service implementation are stored in `Services/[ServiceName]PhotoSubmitter/Libraries`. PhotoSubmitter service implementations are designed to be work properly when they added to project independently. Because of this issue, libraries may be duplicated when you add multiple PhotoSubmitter service implementations to your project. If so, please delete all libraries duplicated, leaving only one library.
 
 <table>
 <tr>
@@ -167,28 +177,28 @@ Libraries for Service Implementation are stored in `PhotoSubmitter/Services/[Ser
 </tr>
 <tr>
 <td>Evernote</td>
-<td><a href="https://github.com/kent013/EVNConnect">EVNConnect</a></td>
-<td><a href="http://regexkit.sourceforge.net/RegexKitLite/">RegexKitLite</a>, Security.framework, libicucore, libxml2</td>
+<td><a href="https://github.com/kent013/EVNConnect">EVNConnect</a><sup>1</sup></td>
+<td>-</td>
 </tr>
 <tr>
 <td>Picasa</td>
 <td><a href="http://code.google.com/p/gdata-objectivec-client/">gdata-objectivec-client</a></td>
-<td>libxml2</td>
+<td>-</td>
 </tr>
 <tr>
 <td>Minus</td>
 <td><a href="https://github.com/kent013/MinusConnect">MinusConnect</a></td>
-<td><a href="https://github.com/nxtbgthng/OAuth2Client">OAuth2Client</a>, <a href="https://github.com/stig/json-framework/">json-framework</a>, CFNetwork.framework, CoreData.framework, MobileCoreServices.framework, Security.framework, SystemConfiguration.framework, libz.dylib</td>
+<td><a href="https://github.com/nxtbgthng/OAuth2Client">OAuth2Client</a>, CoreData.framework, MobileCoreServices.framework, libz.dylib</td>
 </tr>
 <tr>
 <td>Mixi</td>
 <td><a href="http://developer.mixi.co.jp/connect/mixi_graph_api/ios/">Mixi SDK</a></td>
-<td>CFNetwork.framework, Security.framework, SystemConfiguration.framework</td>
+<td>-</td>
 </tr>
 <tr>
 <td>Fotolife</td>
 <td><a href="https://github.com/kent013/objc-atompub">objc-atompub</a></td>
-<td><a href="http://boredzo.org/iso8601parser/">ISO8601DateFormatter</a>, <a href="https://github.com/ddeville/KissXML">KissXML</a>, libxml2</td>
+<td>-</td>
 </tr>
 <tr>
 <td>File</td>
@@ -196,6 +206,9 @@ Libraries for Service Implementation are stored in `PhotoSubmitter/Services/[Ser
 <td>AssetsLibrary.framework, ImageIO.framework</td>
 </tr>
 </table>
+
+*1 EvernoteConnect needs "Header Search Path" to be configured as `[submodule path]/Services/EvernotePhotoSubmitter/Libraries/Evernote/thrift` and `recursive` checked.  
+*2 libxml2 needs "Header Search Path" to be configured as `/usr/include/libxml2`
 
 
 PhotoSubmitter SettingViewController
@@ -210,6 +223,29 @@ Implementing New PhotoSubmitter
 Fast way to implement new PhotoSubmitter, you may copy existing PhotoSubmitter's source code.
 FacebookPhotoSubmitter is suitable for Safari or App authentication. If the service needed to present WebView, copy Mixi or Picasa. And If the service needed to present PasswordView, copy Minus or Fotolife.
 
+### Directory structure
+PhotoSubmitter service implementation must obey rule of file/directory structure as below.
+
+```
+Services
+ |-[ServiceName]PhotoSubmitter
+    |- Resources
+    |  |- Images                               (Service specific images)
+    |  |  |- [lowercase-servicename]_16.png    (16 x 16, icon for progress)
+    |  |  |- [lowercase-servicename]_16@2x.png (32 x 32, icon for progress, Retina)
+    |  |  |- [lowercase-servicename]_32.png    (32 x 32, icon for setting)
+    |  |  |- [lowercase-servicename]_32@2x.png (64 x 64, icon for setting, Retina)
+    |  |- Localizations
+    |     |- [lang].lproj                      (lang: en, ja etc)
+    |         |- [ServiceName].strings         (Localized string)
+    |- Libraries                               (Dependent libraries)
+    |- [ServiceName]PhotoSubmitter.h
+    |- [ServiceName]PhotoSubmitter.m
+
+```
+
+For example, When you going to implement PhotoSubmitter Facebook, [lowercase-servicename] is facebook, [ServiceName] is Facebook.
+
 -
 ### PhotoSubmitter Interface declaration
 * Class name must be [Hoge]PhotoSubmitter where Hoge is service name.
@@ -220,7 +256,8 @@ For example,
 
 ```
 @interface FacebookPhotoSubmitter : 
-    PhotoSubmitter<PhotoSubmitterInstanceProtocol, FBSessionDelegate, FBRequestWithUploadProgressDelegate>{
+    PhotoSubmitter<PhotoSubmitterInstanceProtocol, FBSessionDelegate, 
+                   FBRequestWithUploadProgressDelegate>{
     __strong Facebook *facebook_;
 }
 @end
@@ -274,7 +311,8 @@ This method will call when `[PhotoSubmitterProtocol login]` is called. For examp
 ```
 -(void)onLogin{
     NSArray *permissions = 
-    [NSArray arrayWithObjects:@"publish_stream", @"user_location", @"user_photos", @"offline_access", nil];
+    [NSArray arrayWithObjects:@"publish_stream", @"user_location", 
+                              @"user_photos", @"offline_access", nil];
     [facebook_ authorize:permissions];
 }
 ```
@@ -399,4 +437,3 @@ return your submitter's authentication is valid.
     return NO;
 }
 ```
-
