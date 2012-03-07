@@ -127,8 +127,7 @@ Custom URL schema setting is needed for Safari or App authentication. See [Imple
 
 UINavigationController is needed to present built-in WebView and PasswordView. To provide UINavigationController to the PhotoSubmitter, you may implement `PhotoSubmitterAuthControllerDelegate`'s method `(UINavigationController *) requestNavigationControllerToPresentAuthenticationView` in your client code.
 
-Before using OAuth services, you must submit to their developer program to obtain API-Key and API-Secret. After you've got key and secret pair, copy [PhotoSubmitterAPIKey-template.h](https://github.com/kent013/tottepost/blob/master/tottepost/PhotoSubmitter/PhotoSubmitterAPIKey-template.h)
- as PhotoSubmitterAPIKey.h in the same directory and modify appropriate constants with your key and secret. For instance, if you want to use flickr, you may modify
+Before using OAuth services, you must submit to their developer program to obtain API-Key and API-Secret. After you've got key and secret pair, copy `PhotoSubmitter/Services/[ServiceName]PhotoSubmitter/[ServiceName]APIKey-template.h` as `PhotoSubmitter/Services/[ServiceName]PhotoSubmitter/[ServiceName]APIKey.h` in the same directory and modify appropriate constants with your key and secret. For instance, if you want to use flickr, you may modify
 
 ```
 #define PHOTO_SUBMITTER_FLICKR_API_KEY @""
@@ -136,12 +135,9 @@ Before using OAuth services, you must submit to their developer program to obtai
 ```
 these constants with your key and secret pair.
 
-Library Dependencies
+Library Dependencies of Service Implementation
 --------------------------------------
-Libraries are stored in [tottepost/Libraries](https://github.com/kent013/tottepost/tree/master/tottepost/Libraries), and Utility classes are stored in [tottepost/Util](https://github.com/kent013/tottepost/tree/master/tottepost/Util).
-
-Common libraries are CoreLocation.framework, ImageIO.framework, [FBNetworkReachability](https://github.com/dev5tec/FBNetworkReachability), [ios-queue-object](https://github.com/esromneb/ios-queue-object/), [PDKeychainBindingsController](https://github.com/carlbrown/PDKeychainBindingsController), 
-[UIImage-categories](https://github.com/jchatard/UIImage-categories) and [RegexKitLite](http://regexkit.sourceforge.net/RegexKitLite/)(libicucore.dylib). These libraries are needed to use PhotoSubmitter with any type of service below.
+Libraries for Service Implementation are stored in `PhotoSubmitter/Services/[ServiceName]PhotoSubmitter/[ServiceName]APIKey.h`.
 
 <table>
 <tr>
@@ -202,11 +198,11 @@ Common libraries are CoreLocation.framework, ImageIO.framework, [FBNetworkReacha
 </table>
 
 
-PhotoSubmitterSettings
+PhotoSubmitter SettingViewController
 ---------------------------------------
 There are useful setting component for PhotoSubmitter. PhotoSubmitterSetting component provides comment/GPS toggle switch, PhotoSubmitter toggle switches, album listing and creating.
 
-Source codes are stored in [tottepost/PhotoSubmitter/Settings](https://github.com/kent013/tottepost/tree/master/tottepost/PhotoSubmitter/Settings).
+Source codes are stored in [Settings](https://github.com/kent013/PhotoSubmitter/Settings).
 
 
 Implementing New PhotoSubmitter
