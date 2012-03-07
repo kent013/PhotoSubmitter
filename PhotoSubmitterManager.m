@@ -159,7 +159,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         [submitters_ setObject:submitter forKey:type];
     }
     [submitter addPhotoDelegate:self];
-    [submitter addPhotoDelegate:photoDelegate_];
+    if(photoDelegate_ != nil){
+        [submitter addPhotoDelegate:photoDelegate_];
+    }
     return submitter;
 }
 
