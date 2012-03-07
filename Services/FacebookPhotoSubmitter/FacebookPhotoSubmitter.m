@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 cocotomo. All rights reserved.
 //
 
-#import "PhotoSubmitterAPIKey.h"
+#import "FacebookAPIKey.h"
 #import "FacebookPhotoSubmitter.h"
 #import "RegexKitLite.h"
 #import "PhotoSubmitterAlbumEntity.h"

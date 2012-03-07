@@ -6,7 +6,6 @@ There are a lot of Social Network Services and Cloud Storage Services. And each 
 
 So, I developed PhotoSubmitter library as an abstraction layer for this situation.
 
- 
 PhotoSubmitter Client Code
 ------------------------------------------
 PhotoSubmitter supports authentication with code like,

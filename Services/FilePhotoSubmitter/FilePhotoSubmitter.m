@@ -9,7 +9,6 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ImageIO/ImageIO.h>
 #import "FilePhotoSubmitter.h"
-#import "PhotoSubmitterAPIKey.h"
 #import "PhotoSubmitterManager.h"
 
 //-----------------------------------------------------------------------------
