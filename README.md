@@ -2,9 +2,47 @@ PhotoSubmitter
 ==========================================
 The purpose of the PhotoSubmitter iOS class library is to facilitate the development of photo upload application.
 
-There are a lot of Social Network Services and Cloud Storage Services. And each services have their own SDK to connect to their service. Unfortunately SDKs are not compatible each other.　Especially between Social Network Services and Cloud Storage Services are completely different. 
+There are a lot of Social Network Services and Cloud Storage Services. And each services have their own SDK to connect to their service. Unfortunately SDKs are not compatible each other. Especially between Social Network Services and Cloud Storage Services are completely different. 
 
 So, I developed PhotoSubmitter library as an abstraction layer for this situation.
+
+<img src="http://github.com/kent013/tottepost/raw/master/AppStore/screenshot3_en.png"
+ alt="ScreenShot3" title="ScreenShot3" height = 240 >
+<img src="http://github.com/kent013/tottepost/raw/master/AppStore/screenshot4_en.png"
+ alt="ScreenShot4" title="ScreenShot4" height = 240 />
+
+Upper left screenshot is tottepost, and the right one is service setting view of PhotoSubmitter.
+
+Functionality
+-------------------------------------------
+```
+* Submitting photo
+ - Submit photo to services
+   Twitter/Facebook/Dropbox/Evernote/Picasa/Fotolife/Minus/Flickr/Mixi.
+   Asynchronous upload
+ - Save photo to Camera roll
+ - Background uploading
+ - Upload resuming
+ - Cancel uploading
+
+* Settings
+ - Authentication UI
+   OAuth1/2 with UIWebView, Application and Safari
+   Username and Password
+ - GPS tag
+ - Comment 
+ - Dealing with album
+   Album listing
+   Album selection
+   Album creation
+
+```
+
+Sample Projects
+-------------------------------------------
+- [tottepost](https://github.com/kent013/tottepost), fully functional example of PhotoSubmitter.
+- [PhotoSubmitterExample](https://github.com/kent013/PhotoSubmitterExample), minimum implementation using PhotoSubmitter.
+
 
 PhotoSubmitter Client Code
 ------------------------------------------
@@ -32,7 +70,6 @@ PhotoSubmitterImageEntity *photo =
 ```
 
 This code is creating photo entity and submitting photo to the authenticated services asynchronously. You can receive messages from PhotoSubmitter while submitting photo with implementing `PhotoSubmitterPhotoDelegate`.
-
 
 Supported Services
 -------------------------------------------
@@ -216,6 +253,11 @@ PhotoSubmitter SettingViewController
 There are useful setting component for PhotoSubmitter. PhotoSubmitterSetting component provides comment/GPS toggle switch, PhotoSubmitter toggle switches, album listing and creating.
 
 Source codes are stored in [Settings](https://github.com/kent013/PhotoSubmitter/Settings).
+
+<img src="http://github.com/kent013/tottepost/raw/master/AppStore/screenshot4_en.png"
+ alt="ScreenShot4" title="ScreenShot4" height = 240 />
+<img src="http://github.com/kent013/tottepost/raw/master/AppStore/screenshot5_en.png"
+ alt="ScreenShot5" title="ScreenShot5" height = 240 />
 
 
 Implementing New PhotoSubmitter
