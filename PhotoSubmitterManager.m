@@ -134,6 +134,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 @synthesize isUploading;
 @synthesize isPausingOperation = isPausingOperation_;
 @synthesize authControllerDelegate;
+@dynamic authenticationDelegate;
+@synthesize photoDelegate = photoDelegate_;
 
 /*!
  * initializer
