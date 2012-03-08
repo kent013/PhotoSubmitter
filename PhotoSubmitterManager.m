@@ -271,7 +271,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     int i = 0;
     for(NSNumber *key in submitters_){
         id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
-        if(submitter.isEnabled){
+        if(submitter.isLogined){
             i++;
         }
     }
@@ -499,6 +499,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 
 #pragma mark -
 #pragma mark PhotoSubmitterSequencialOperationQueue delegate
+/*!
+ * did sequencial operation queue peeked next operation
+ */
 - (void)sequencialOperationQueue:(PhotoSubmitterSequencialOperationQueue *)sequencialOperationQueue didPeeked:(PhotoSubmitterOperation *)operation{    
     if(operation.isCancelled){
         return;

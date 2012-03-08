@@ -31,7 +31,7 @@ Functionality
    Username and Password
  - GPS tag
  - Comment 
- - Dealing with album
+ -	 Dealing with album
    Album listing
    Album selection
    Album creation
