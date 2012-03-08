@@ -30,16 +30,18 @@
     BOOL isPausingOperation_;
     BOOL isConnected_;
     
-    id<PhotoSubmitterPhotoDelegate> photoDelegate_;
+    __weak id<PhotoSubmitterPhotoDelegate> photoDelegate_;
 }
 
 @property (nonatomic, assign) id<PhotoSubmitterAuthControllerDelegate> authControllerDelegate;
+@property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authenticationDelegate;
+@property (nonatomic, weak) id<PhotoSubmitterPhotoDelegate> photoDelegate;
 @property (nonatomic, readonly) NSArray* loadedSubmitterTypes;
-@property (nonatomic, assign) BOOL submitPhotoWithOperations;
 @property (nonatomic, readonly) int enabledSubmitterCount;
 @property (nonatomic, readonly) int uploadOperationCount;
-@property (nonatomic, assign) BOOL enableGeoTagging;
 @property (nonatomic, readonly) CLLocation *location;
+@property (nonatomic, assign) BOOL submitPhotoWithOperations;
+@property (nonatomic, assign) BOOL enableGeoTagging;
 @property (nonatomic, readonly) BOOL requiresNetwork;
 @property (nonatomic, readonly) BOOL isUploading;
 @property (nonatomic, readonly) BOOL isPausingOperation;
@@ -52,8 +54,6 @@
 - (void) cancel;
 - (void) restart;
 - (void) refreshCredentials;
-- (void) setAuthenticationDelegate:(id<PhotoSubmitterAuthenticationDelegate>) delegate;
-- (void) setPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>) delegate;
 - (id<PhotoSubmitterProtocol>) submitterForType:(NSString *)type;
 - (BOOL) didOpenURL: (NSURL *)url;
 

@@ -50,7 +50,7 @@
         }
     }
     
-    [[PhotoSubmitterManager sharedInstance] setAuthenticationDelegate:self];
+    [PhotoSubmitterManager sharedInstance].authenticationDelegate = self;
     
     NSDictionary *submitterEnabledDates = [PhotoSubmitterSettings getInstance].submitterEnabledDates;
     NSArray *keys = [submitterEnabledDates allKeys];
