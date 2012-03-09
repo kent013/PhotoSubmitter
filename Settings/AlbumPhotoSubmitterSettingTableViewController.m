@@ -117,6 +117,7 @@
             }
             if([album.albumId isEqualToString: self.submitter.targetAlbum.albumId]){
                 cell.accessoryType = UITableViewCellAccessoryCheckmark;
+                selectedAlbumIndex_ = indexPath.row;
             }
         }
     }
@@ -135,12 +136,12 @@
         }else{
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
             if(selectedAlbumIndex_ != indexPath.row){
-            cell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:selectedAlbumIndex_ inSection:FSV_SECTION_ALBUMS]];
-            cell.accessoryType = UITableViewCellAccessoryNone;
+                cell = [tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:selectedAlbumIndex_ inSection:FSV_SECTION_ALBUMS]];
+                cell.accessoryType = UITableViewCellAccessoryNone;
             }
             self.submitter.targetAlbum = [self.submitter.albumList objectAtIndex:indexPath.row];
+            selectedAlbumIndex_ = indexPath.row;
         }
-        selectedAlbumIndex_ = indexPath.row;
     }
     [super tableView:tableView didSelectRowAtIndexPath:indexPath];
 }
