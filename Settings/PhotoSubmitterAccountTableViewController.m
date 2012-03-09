@@ -146,6 +146,14 @@
  * on row selected
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    switch (indexPath.section) {
+        case ASV_SECTION_USERNAME:
+            [usernameTextField_ becomeFirstResponder];
+            break;
+        case ASV_SECTION_PASSWORD:
+            [passwordTextField_ becomeFirstResponder];
+            break;
+    }
     [tableView deselectRowAtIndexPath:indexPath animated: YES];
 }
 

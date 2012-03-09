@@ -136,6 +136,9 @@
  * on row selected
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if(indexPath.row == CSV_ROW_FIELD){
+        [titleField_ becomeFirstResponder];
+    }
     [tableView deselectRowAtIndexPath:indexPath animated: YES];
 }
 
