@@ -36,12 +36,14 @@
                                          clientId:MIXI_SUBMITTER_API_KEY
                                       secret:MIXI_SUBMITTER_API_SECRET];
     MixiSDKAuthorizer *authorizer = [MixiSDKAuthorizer authorizerWithRedirectUrl:@"http://somewhere.else"];
-    authorizer.delegate = self;
     mixi_.authorizer = authorizer;
-    [mixi_ restore];
-    [mixi_ reportOncePerDay];
-    if([mixi_ isAccessTokenExpired]){
-        [mixi_ refreshAccessTokenWithDelegate:self];
+    authorizer.delegate = self;
+    if(self.isEnabled){
+        [mixi_ restore];
+        [mixi_ reportOncePerDay];
+        if([mixi_ isAccessTokenExpired]){
+            [mixi_ refreshAccessTokenWithDelegate:self];
+        }
     }
 }
 
