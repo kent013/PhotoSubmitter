@@ -9,6 +9,7 @@
 #import "PhotoSubmitterProtocol.h"
 #import "PhotoSubmitter.h"
 #import "AtompubClientDelegate.h"
+#import "PhotoSubmitterAccountTableViewController.h"
 
 /*!
  * photo submitter for hatena fotolife.
@@ -20,5 +21,6 @@
 @interface FotolifePhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, PhotoSubmitterPasswordAuthViewDelegate, AtompubClientDelegate>{
     __strong NSString *userId_;
     __strong NSString *password_;
+    __strong PhotoSubmitterAccountTableViewController *authController_;
 }
 @end

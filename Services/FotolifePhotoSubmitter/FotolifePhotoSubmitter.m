@@ -95,10 +95,10 @@
  * login to fotolife
  */
 -(void)onLogin{
-    PhotoSubmitterAccountTableViewController *controller =
-    [[PhotoSubmitterAccountTableViewController alloc] init];
-    controller.delegate = self;
-    [[[[PhotoSubmitterManager sharedInstance] authControllerDelegate] requestNavigationControllerToPresentAuthenticationView] pushViewController:controller animated:YES];
+    authController_= [[PhotoSubmitterAccountTableViewController alloc] init];
+    authController_.delegate = self;
+    [[[[PhotoSubmitterManager sharedInstance] authControllerDelegate] requestNavigationControllerToPresentAuthenticationView] 
+     pushViewController:authController_ animated:YES];
 }
 
 /*!
@@ -218,9 +218,11 @@
  * did receive feed
  */
 - (void)client:(AtompubClient *)client didReceiveFeed:(AtomFeed *)feed{
+    NSLog(@"%@", [feed stringValue]);
     if([client.tag isEqualToString:@"login"]){
         userId_ = [self secureSettingForKey:PS_FOTOLIFE_AUTH_USERID];
         password_ = [self secureSettingForKey:PS_FOTOLIFE_AUTH_PASSWORD];
+        [authController_ didLogin];
         [self completeLogin];
     }else if([client.tag isEqualToString:@"album"]){
         NSLog(@"%@", [feed stringValue]);
@@ -245,6 +247,7 @@
  */
 - (void)client:(AtompubClient *)client didFailWithError:(NSError *)error{
     if([client.tag isEqualToString:@"login"]){
+        [authController_ didLoginFailed];
         [self completeLoginFailed];
     }else if([client.tag isEqualToString:@"submitPhoto"]){
         [self completeSubmitPhotoWithRequest:client andError:error];
