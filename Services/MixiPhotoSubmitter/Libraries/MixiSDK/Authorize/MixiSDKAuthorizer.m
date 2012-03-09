@@ -69,11 +69,14 @@
 - (MixiWebViewController*)authorizerViewController:(NSArray*)permissions {
     [self checkPermissions:permissions];
     NSURL *url = [self tokenURL:permissions];
-    return [[[MixiWebViewController alloc] initWithURL:url delegate:self] autorelease];    
+     MixiWebViewController *vc = [[[MixiWebViewController alloc] initWithURL:url delegate:self] autorelease];    
+    vc.controllerDelegate = self;
+    return vc;
 }
 
 - (BOOL)authorizeForPermissions:(NSArray*)permissions {
     MixiWebViewController *vc = [self authorizerViewController:permissions];
+    vc.controllerDelegate = self;
     vc.toolbarTitle = @"利用同意";
     if (self.toolbarColor) vc.toolbarColor = self.toolbarColor;
     [self.parentViewController presentModalViewController:vc animated:YES];
@@ -117,6 +120,7 @@
 
 - (BOOL)revokeWithError:(NSError**)error {
     MixiWebViewController *vc = [self revokerViewControllerWithError:error];
+    vc.controllerDelegate = self;
     if (vc) {
         vc.toolbarTitle = @"認証取消";
         if (self.toolbarColor) vc.toolbarColor = self.toolbarColor;
@@ -181,6 +185,7 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     if (self.parentViewController) {
         MixiWebViewController *vc = (MixiWebViewController*)[self.parentViewController modalViewController];
+        vc.controllerDelegate = self;
         NSString *html = [webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"];
         if ([html rangeOfString:@"<form action=\"/login.pl\""].location != NSNotFound) {
             vc.toolbarTitle = @"ログイン";
@@ -335,4 +340,7 @@
     }
 }
 
+- (void) didDismissMixiWebView:(MixiWebViewController *)webViewController{
+    [self.delegate authorizer:self didCancelWithEndpoint:nil];
+}
 @end

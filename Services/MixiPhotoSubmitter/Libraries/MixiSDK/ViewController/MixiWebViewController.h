@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol MixiOrientationDelegate;
+@protocol MixiWebViewControllerDelegate;
 
 /**
  * \brief ウェブビューコントローラ
@@ -52,12 +53,15 @@
     
     /** \brief デバイスの向きに同反応するかを処理するデリゲート */
     id<MixiOrientationDelegate> orietationDelegate_;
+    
+    id<MixiWebViewControllerDelegate> controllerDelegate_;
 }
 
 @property (nonatomic, retain) NSURL *url;
 @property (nonatomic, assign) NSString *html;
 @property (nonatomic, assign) id<UIWebViewDelegate> delegate;
 @property (nonatomic, assign) id<MixiOrientationDelegate> orientationDelegate;
+@property (nonatomic, assign) id<MixiWebViewControllerDelegate> controllerDelegate;
 @property (nonatomic, copy) NSString *toolbarTitle;
 @property (nonatomic, retain) UIColor *toolbarColor;
 

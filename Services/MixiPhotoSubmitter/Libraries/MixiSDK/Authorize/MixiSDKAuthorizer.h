@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "MixiDelegate.h"
 #import "MixiAuthorizer.h"
+#import "MixiWebViewControllerDelegate.h"
 
 @protocol MixiSDKAuthorizerDelegate;
 @class MixiWebViewController;
@@ -19,7 +20,7 @@
  * <strong>注：本クラスはmixiアプリには利用できません。mixiアプリの場合は MixiAppAuthorizer を使用してmixi公式iPhoneアプリ経由で認可を実行してください。</strong>
  * 
  */
-@interface MixiSDKAuthorizer : MixiAuthorizer<UIWebViewDelegate,MixiDelegate> {
+@interface MixiSDKAuthorizer : MixiAuthorizer<UIWebViewDelegate,MixiDelegate,MixiWebViewControllerDelegate> {
     /** \brief 認可結果を受け取るデリゲート */
     id<MixiSDKAuthorizerDelegate> authorizerDelegate_;
 

@@ -7,11 +7,12 @@
 
 #import "MixiWebViewController.h"
 #import "MixiOrientationDelegate.h"
-
+#import "MixiWebViewControllerDelegate.h"
 
 @implementation MixiWebViewController
 
 @synthesize url=url_, html=html_, delegate=delegate_, orientationDelegate=orietationDelegate_, toolbarTitle=toolbarTitle_, toolbarColor=toolbarColor_;
+@synthesize controllerDelegate = controllerDelegate_;
 
 - (id)initWithURL:(NSURL*)url {
     return [self initWithURL:url delegate:nil];
@@ -107,6 +108,7 @@
 
 - (IBAction)close:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
+    [self.controllerDelegate didDismissMixiWebView:self];
 }
 
 @end
