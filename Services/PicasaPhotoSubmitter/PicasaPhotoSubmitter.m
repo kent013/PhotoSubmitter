@@ -86,8 +86,10 @@ ofTotalByteCount:(unsigned long long)dataLength;
         ticket = [service_ fetchFeedWithURL:feedURL
                                    delegate:self
                           didFinishSelector:@selector(photosTicket:finishedWithFeed:error:)];
-        [self setPhotoHash:album.identifier forRequest:ticket];
-        [self addRequest:ticket];
+        if(ticket != nil){
+            [self setPhotoHash:album.identifier forRequest:ticket];
+            [self addRequest:ticket];
+        }
     }
 }
 
