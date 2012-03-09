@@ -102,27 +102,29 @@
  */
 -(void)onLogin{
     ACAccountType *accountType = [accountStore_ accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-    [accountStore_ requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
-        if(granted) {
-            ACAccount *account = self.selectedAccount;
-            
-			if (account != nil){
-                [self enable];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [accountStore_ requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
+            if(granted) {
+                ACAccount *account = self.selectedAccount;
+                
+                if (account != nil){
+                    [self enable];
+                }else{
+                    UIAlertView* alert = 
+                    [[UIAlertView alloc] initWithTitle:@"Information"
+                                               message:@"Twitter account is not avaliable. do you want to configure it?"
+                                              delegate:self
+                                     cancelButtonTitle:@"Cancel"
+                                     otherButtonTitles:@"Configure", nil];
+                    [alert show];
+                    [self.authDelegate photoSubmitter:self didLogout:self.type];
+                }
             }else{
-                UIAlertView* alert = 
-                [[UIAlertView alloc] initWithTitle:@"Information"
-                                           message:@"Twitter account is not avaliable. do you want to configure it?"
-                                          delegate:self
-                                 cancelButtonTitle:@"Cancel"
-                                 otherButtonTitles:@"Configure", nil];
-                [alert show];
                 [self.authDelegate photoSubmitter:self didLogout:self.type];
             }
-        }else{
-            [self.authDelegate photoSubmitter:self didLogout:self.type];
-        }
-        [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
-    }];
+            [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
+        }];
+    });
 }
 
 /*!
