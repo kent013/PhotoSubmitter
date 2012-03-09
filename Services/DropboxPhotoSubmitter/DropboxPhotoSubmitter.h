@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 cocotomo. All rights reserved.
 //
 
-#import <DropboxSDK/DropboxSDK.h>
+#import "DropboxSDK.h"
 #import "PhotoSubmitterProtocol.h"
 #import "PhotoSubmitter.h"
 
