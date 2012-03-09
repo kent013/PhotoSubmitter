@@ -8,6 +8,7 @@
 
 #import "PhotoSubmitterAccountTableViewController.h"
 #import "PSLang.h"
+#import "SVProgressHUD.h"
 
 #define ASV_SECTION_USERNAME 0
 #define ASV_SECTION_PASSWORD 1
@@ -43,9 +44,14 @@
  * login
  */
 - (void)login{
+    if(usernameTextField_.text == nil || passwordTextField_.text == nil ||
+       [usernameTextField_.text isEqualToString:@""] ||
+       [passwordTextField_.text isEqualToString:@""]){
+        return;
+    }
     isDone_ = YES;
     [self.delegate passwordAuthView:self didPresentUserId:usernameTextField_.text password:passwordTextField_.text];
-    [self.navigationController popViewControllerAnimated:YES];
+    [SVProgressHUD showWithMaskType:SVProgressHUDMaskTypeBlack];
 }
 
 /*!
@@ -73,6 +79,21 @@
         [self setupInitialState];
     }
     return self;
+}
+
+/*!
+ * login finished
+ */
+- (void)didLogin{
+    [self.navigationController popViewControllerAnimated:YES];
+    [SVProgressHUD dismissWithSuccess:@"Login suceeded"];
+}
+
+/*!
+ * did not login
+ */
+- (void)didLoginFailed{
+    [SVProgressHUD dismissWithError:@"Login failed"];
 }
 
 #pragma mark - tableview methods

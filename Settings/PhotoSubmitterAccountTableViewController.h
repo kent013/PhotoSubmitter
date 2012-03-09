@@ -15,5 +15,8 @@
     BOOL isDone_;
 }
 
+- (void)didLogin;
+- (void)didLoginFailed;
+
 @property (nonatomic, assign) id<PhotoSubmitterPasswordAuthViewDelegate> delegate;
 @end

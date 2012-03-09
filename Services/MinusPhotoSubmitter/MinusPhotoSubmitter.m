@@ -97,10 +97,9 @@
  * login to Minus
  */
 -(void)onLogin{
-    PhotoSubmitterAccountTableViewController *controller =
-    [[PhotoSubmitterAccountTableViewController alloc] init];
-    controller.delegate = self;
-    [[[[PhotoSubmitterManager sharedInstance] authControllerDelegate] requestNavigationControllerToPresentAuthenticationView] pushViewController:controller animated:YES];
+    authController_ = [[PhotoSubmitterAccountTableViewController alloc] init];
+    authController_.delegate = self;
+    [[[[PhotoSubmitterManager sharedInstance] authControllerDelegate] requestNavigationControllerToPresentAuthenticationView] pushViewController:authController_ animated:YES];
 }
 
 /*!
@@ -185,6 +184,7 @@
 -(void)minusDidLogin{
     userId_ = [self secureSettingForKey:PS_MINUS_AUTH_USERID];
     password_ = [self secureSettingForKey:PS_MINUS_AUTH_PASSWORD];
+    [authController_ didLogin];
     [self getUserInfomation];
     [self completeLogin];
 }
@@ -193,6 +193,7 @@
  * did logout from minus
  */
 - (void)minusDidLogout{
+    [authController_ didLoginFailed];
     [self completeLogout];
 }
 
@@ -200,6 +201,7 @@
  * attempt to login, but not logined
  */
 - (void)minusDidNotLogin{
+    [authController_ didLoginFailed];
     [self completeLoginFailed];
     
 }
