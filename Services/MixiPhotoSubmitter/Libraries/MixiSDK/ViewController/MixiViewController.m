@@ -15,6 +15,13 @@
 #import "MixiUtils.h"
 #import "SBJson.h"
 
+/** \cond */
+@interface MixiViewController (Private)
+/* キャンセルをデリゲートに通知 */
+- (void)notifyCancel;
+@end
+/** \endcond */
+
 
 @implementation MixiViewController
 
@@ -69,7 +76,7 @@
                                                           host, @"type", nil]]];
         }
     }
-    [self close:nil];
+    [self dismissModalViewControllerAnimated:YES];
 }
 
 - (void)dealloc
@@ -134,6 +141,7 @@
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     if ([[[request URL] host] isEqualToString:@"cancel"]) {
+        [self notifyCancel];
         [self dismissModalViewControllerAnimated:YES];
         return NO;
     }
@@ -147,7 +155,18 @@
 #pragma mark - Event Handlers
 
 - (IBAction)close:(id)sender {
+    [self notifyCancel];
     [self dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark - Private
+
+- (void)notifyCancel {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(mixi:didFailWithError:)]) {
+        [self.delegate mixi:self.mixi didFailWithError:[NSError errorWithDomain:kMixiErrorDomain 
+                                                                           code:kMixiCancelled 
+                                                                       userInfo:[NSDictionary dictionaryWithObject:@"Your request was cancelled." forKey:@"message"]]];
+    }    
 }
 
 @end

@@ -10,7 +10,7 @@
 
 
 /** SDKのバージョン番号 */
-#define kMixiSDKVersion @"1.3"
+#define kMixiSDKVersion @"1.3.2"
 
 /** mixi公式アプリのID */
 #define kMixiApplicationId @"jp.co.mixi.iphone"
