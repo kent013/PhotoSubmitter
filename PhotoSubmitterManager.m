@@ -535,7 +535,16 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * add photo delegate
  */
 - (void)addPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>)photoDelegate{
+    if([photoDelegates_ containsObject:photoDelegate]){
+        return;
+    }
     [photoDelegates_ addObject:photoDelegate];
+    for(NSNumber *key in submitters_){
+        id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
+        for(id<PhotoSubmitterPhotoDelegate> d in photoDelegates_){
+            [submitter addPhotoDelegate:d];
+        }
+    }
 }
 
 /*!

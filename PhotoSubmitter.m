@@ -438,6 +438,9 @@
  * add request
  */
 - (void)addPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>)photoDelegate{
+    if([photoDelegates_ containsObject:photoDelegate]){
+        return;
+    }
     [photoDelegates_ addObject:photoDelegate];
 }
 
