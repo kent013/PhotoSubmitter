@@ -45,6 +45,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     submitters_ = [[NSMutableDictionary alloc] init];
     operations_ = [[NSMutableDictionary alloc] init];
     delegates_ = [[NSMutableArray alloc] init];
+    photoDelegates_ = [[NSMutableArray alloc] init];
     sequencialOperationQueues_ = [[NSMutableDictionary alloc] init];
 
     operationQueue_ = [[NSOperationQueue alloc] init];
@@ -135,7 +136,6 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 @synthesize isPausingOperation = isPausingOperation_;
 @synthesize authControllerDelegate;
 @dynamic authenticationDelegate;
-@synthesize photoDelegate = photoDelegate_;
 
 /*!
  * initializer
@@ -161,8 +161,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         [submitters_ setObject:submitter forKey:type];
     }
     [submitter addPhotoDelegate:self];
-    if(photoDelegate_ != nil){
-        [submitter addPhotoDelegate:photoDelegate_];
+    for(id<PhotoSubmitterPhotoDelegate> d in photoDelegates_){
+        [submitter addPhotoDelegate:d];
     }
     return submitter;
 }
@@ -196,13 +196,6 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
         submitter.authDelegate = delegate;
     }
-}
-
-/*!
- * set photo delegate to submitters
- */
-- (void)setPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>)delegate{
-    photoDelegate_ = delegate;
 }
 
 /*!
@@ -534,9 +527,31 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 /*!
  * clear delegate
  */
-- (void)clearDelegate:(id<PhotoSubmitterManagerDelegate>)delegate{
+- (void)clearDelegate{
     [delegates_ removeAllObjects];
 }
+
+/*!
+ * add photo delegate
+ */
+- (void)addPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>)photoDelegate{
+    [photoDelegates_ addObject:photoDelegate];
+}
+
+/*!
+ * remove photo delegate
+ */
+- (void)removePhotoDelegate: (id<PhotoSubmitterPhotoDelegate>)photoDelegate{
+    [photoDelegates_ removeObject:photoDelegate];
+}
+
+/*!
+ * clear photo delegate
+ */
+- (void)clearPhotoDelegate{
+    [photoDelegates_ removeAllObjects];
+}
+
 
 #pragma mark -
 #pragma mark static methods

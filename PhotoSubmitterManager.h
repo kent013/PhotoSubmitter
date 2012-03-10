@@ -30,12 +30,14 @@
     BOOL isPausingOperation_;
     BOOL isConnected_;
     
-    __weak id<PhotoSubmitterPhotoDelegate> photoDelegate_;
+    /*!
+     * an array of id<PhotoSubmitterPhotoDelegate>
+     */
+    __strong NSMutableArray *photoDelegates_;
 }
 
 @property (nonatomic, assign) id<PhotoSubmitterAuthControllerDelegate> authControllerDelegate;
 @property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authenticationDelegate;
-@property (nonatomic, weak) id<PhotoSubmitterPhotoDelegate> photoDelegate;
 @property (nonatomic, readonly) NSArray* loadedSubmitterTypes;
 @property (nonatomic, readonly) int enabledSubmitterCount;
 @property (nonatomic, readonly) int uploadOperationCount;
@@ -59,7 +61,11 @@
 
 - (void) addDelegate:(id<PhotoSubmitterManagerDelegate>)delegate;
 - (void) removeDelegate:(id<PhotoSubmitterManagerDelegate>)delegate;
-- (void) clearDelegate:(id<PhotoSubmitterManagerDelegate>)delegate;
+- (void) clearDelegate;
+
+- (void) addPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>)photoDelegate;
+- (void) removePhotoDelegate: (id<PhotoSubmitterPhotoDelegate>)photoDelegate;
+- (void) clearPhotoDelegate;
 
 + (PhotoSubmitterManager *)sharedInstance;
 + (id<PhotoSubmitterProtocol>) submitterForType:(NSString *)type;
