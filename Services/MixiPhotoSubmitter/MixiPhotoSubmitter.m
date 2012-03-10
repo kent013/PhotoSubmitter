@@ -12,6 +12,8 @@
 #import "PhotoSubmitterManager.h"
 #import "MixiSDK.h"
 
+static NSString *kDefaultAlbum = @"tottepost";
+
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
@@ -125,6 +127,10 @@
 - (void)authorizer:(MixiSDKAuthorizer *)authorizer didSuccessWithEndpoint:(NSString *)endpoint{
     [mixi_ store];
     [self completeLogin];
+    
+    if(self.targetAlbum == nil){
+        [self updateAlbumListWithDelegate:self];
+    }
 }
 
 /*!
@@ -192,6 +198,41 @@
  */
 - (BOOL)isSessionValid{
     return [mixi_ isAuthorized];
+}
+
+
+#pragma mark - PhotoSubmitterAlbumDelegate
+/*!
+ * did album created
+ */
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAlbumCreated:(PhotoSubmitterAlbumEntity *)album suceeded:(BOOL)suceeded withError:(NSError *)error{
+    if(suceeded){
+        self.targetAlbum = album;
+    }else{
+        NSLog(@"album creation error:%s, %@", __PRETTY_FUNCTION__, error.description);
+    }
+}
+
+#pragma mark - PhotoSubmitterDataDelegate
+/*!
+ * did album updated
+ */
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAlbumUpdated:(NSArray *)albums{
+    for(PhotoSubmitterAlbumEntity *album in albums){
+        if([album.name isEqualToString:kDefaultAlbum]){
+            self.targetAlbum = album;
+            break;
+        }
+    }
+    if(self.targetAlbum == nil){
+        [self createAlbum:kDefaultAlbum withDelegate:self];
+    }
+}
+
+/*!
+ * did username updated
+ */
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didUsernameUpdated:(NSString *)username{
 }
 
 #pragma mark - photo
