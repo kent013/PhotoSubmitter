@@ -105,6 +105,8 @@
 #pragma mark -
 #pragma mark Private helper methods
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
 // Returns a copy of the image that has been transformed using the given affine transform and scaled to the new size
 // The new image's orientation will be UIImageOrientationUp, regardless of the current image's orientation
 // If the new size is not integral, it will be rounded up
@@ -115,7 +117,7 @@
     CGRect newRect = CGRectIntegral(CGRectMake(0, 0, newSize.width, newSize.height));
     CGRect transposedRect = CGRectMake(0, 0, newRect.size.height, newRect.size.width);
     CGImageRef imageRef = self.CGImage;
-    
+#pragma clang diagnostic pop
     // Build a context that's the same dimensions as the new size
     CGContextRef bitmap = CGBitmapContextCreate(NULL,
                                                 newRect.size.width,
@@ -146,8 +148,11 @@
 }
 
 // Returns an affine transform that takes into account the image orientation when drawing a scaled image
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
 - (CGAffineTransform)transformForOrientation:(CGSize)newSize {
     CGAffineTransform transform = CGAffineTransformIdentity;
+#pragma clang diagnostic pop
     
     switch (self.imageOrientation) {
         case UIImageOrientationDown:           // EXIF = 3
