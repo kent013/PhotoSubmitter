@@ -13,7 +13,7 @@
 /*!
  * photo submitter for minus.
  */
-@interface MinusPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, PhotoSubmitterPasswordAuthViewDelegate, MinusRequestDelegate, MinusSessionDelegate>{
+@interface MinusPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, PhotoSubmitterPasswordAuthViewDelegate, MinusRequestDelegate, MinusSessionDelegate, PhotoSubmitterAlbumDelegate, PhotoSubmitterDataDelegate>{
     __strong PhotoSubmitterAccountTableViewController *authController_;
     __strong MinusConnect *minus_;
     __strong NSString *userId_;

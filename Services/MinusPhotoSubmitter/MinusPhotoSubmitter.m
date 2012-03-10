@@ -14,6 +14,8 @@
 #define PS_MINUS_AUTH_USERID @"PSMinusUserId"
 #define PS_MINUS_AUTH_PASSWORD @"PSMinusPassword"
 
+static NSString *kDefaultAlbum = @"tottepost";
+
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
@@ -187,6 +189,10 @@
     [authController_ didLogin];
     [self getUserInfomation];
     [self completeLogin];
+    
+    if(self.targetAlbum == nil){
+        [self updateAlbumListWithDelegate:self];
+    }
 }
 
 /*!
@@ -222,6 +228,40 @@
     [self setSecureSetting:password forKey:PS_MINUS_AUTH_PASSWORD];
     [minus_ loginWithUsername:userId password:password andPermission:[NSArray arrayWithObjects:@"read_all", @"upload_new", nil]];
 
+}
+
+#pragma mark - PhotoSubmitterAlbumDelegate
+/*!
+ * did album created
+ */
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAlbumCreated:(PhotoSubmitterAlbumEntity *)album suceeded:(BOOL)suceeded withError:(NSError *)error{
+    if(suceeded){
+        self.targetAlbum = album;
+    }else{
+        NSLog(@"album creation error:%s, %@", __PRETTY_FUNCTION__, error.description);
+    }
+}
+
+#pragma mark - PhotoSubmitterDataDelegate
+/*!
+ * did album updated
+ */
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAlbumUpdated:(NSArray *)albums{
+    for(PhotoSubmitterAlbumEntity *album in albums){
+        if([album.name isEqualToString:kDefaultAlbum]){
+            self.targetAlbum = album;
+            break;
+        }
+    }
+    if(self.targetAlbum == nil){
+        [self createAlbum:kDefaultAlbum withDelegate:self];
+    }
+}
+
+/*!
+ * did username updated
+ */
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didUsernameUpdated:(NSString *)username{
 }
 
 #pragma mark - PhotoSubmitterMinusRequestDelegate
