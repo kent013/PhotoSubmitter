@@ -71,6 +71,11 @@
 + (id<PhotoSubmitterProtocol>) submitterForType:(NSString *)type;
 + (int) registeredPhotoSubmitterCount;
 + (NSArray *) registeredPhotoSubmitters;
++ (void) unregisterAllPhotoSubmitters;
++ (void) unregisterPhotoSubmitterWithTypeName:(NSString *)type;
++ (void) registerPhotoSubmitterWithTypeName:(NSString *)type;
++ (void) registerPhotoSubmitterWithTypeNames:(NSArray *)types;
++ (NSString *) normalizeTypeName:(NSString *)type;
 @end
 
 

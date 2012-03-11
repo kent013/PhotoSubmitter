@@ -152,11 +152,16 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * get submitter
  */
 - (id<PhotoSubmitterProtocol>)submitterForType:(NSString *)type{
+    type = [PhotoSubmitterManager normalizeTypeName:type];
+
     id <PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:type];
     if(submitter){
         return submitter;
     }
     submitter = [PhotoSubmitterFactory createWithType:type];
+    if(submitter == nil){
+        @throw [[NSException alloc] initWithName:@"PhotoSubmitterNotFoundException" reason:[NSString stringWithFormat:@"type %@ not found.", type] userInfo:nil];
+    }
     if(submitter){
         [submitters_ setObject:submitter forKey:type];
     }
@@ -175,8 +180,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         photo.location = self.location;
     }
     [photo preprocess];
-    for(NSNumber *key in submitters_){
-        id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
         if([submitter isLogined]){
             if(self.submitPhotoWithOperations && submitter.useOperation){
                 PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter photo:photo];
@@ -192,8 +197,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * set authentication delegate to submitters
  */
 - (void)setAuthenticationDelegate:(id<PhotoSubmitterAuthenticationDelegate>)delegate{
-    for(NSNumber *key in submitters_){
-        id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
         submitter.authDelegate = delegate;
     }
 }
@@ -243,8 +248,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * on url loaded
  */
 - (BOOL)didOpenURL:(NSURL *)url{
-    for(NSNumber *key in submitters_){
-        id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
         if([submitter isProcessableURL:url]){
             return [submitter didOpenURL:url];
         }
@@ -264,8 +269,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  */
 - (int)enabledSubmitterCount{
     int i = 0;
-    for(NSNumber *key in submitters_){
-        id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
         if(submitter.isLogined){
             i++;
         }
@@ -337,8 +342,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * requires network
  */
 - (BOOL)requiresNetwork{
-    for(NSNumber *key in submitters_){
-        id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
         if(submitter.isEnabled && submitter.requiresNetwork){
             return YES;
         }
@@ -539,8 +544,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         return;
     }
     [photoDelegates_ addObject:photoDelegate];
-    for(NSNumber *key in submitters_){
-        id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
         for(id<PhotoSubmitterPhotoDelegate> d in photoDelegates_){
             [submitter addPhotoDelegate:d];
         }
@@ -585,6 +590,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * photo submitter count
  */
 + (int)registeredPhotoSubmitterCount{
+    [self sharedInstance];
     return registeredPhotoSubmitterTypes.count;
 }
 
@@ -592,7 +598,70 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * get photo submitters
  */
 + (NSArray *)registeredPhotoSubmitters{
+    [self sharedInstance];
     return registeredPhotoSubmitterTypes;
 }
 
+/*!
+ * unregister all submitters
+ */
++ (void) unregisterAllPhotoSubmitters{
+    [self sharedInstance];
+    [registeredPhotoSubmitterTypes removeAllObjects];
+}
+
+/*!
+ * unregister submitter with type
+ */
++ (void) unregisterPhotoSubmitterWithTypeName:(NSString *)type{
+    [self sharedInstance];
+    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    int i = 0;
+    int found = -1;
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        if([type isEqualToString:submitter.type]){
+            found = i;
+        }
+    }
+    if(found != -1){
+        [registeredPhotoSubmitterTypes removeObjectAtIndex:found];
+    }
+}
+
+/*!
+ * register photo submitter with type name
+ */
++ (void)registerPhotoSubmitterWithTypeName:(NSString *)type{
+    [self sharedInstance];
+    type = [PhotoSubmitterManager normalizeTypeName:type];
+    
+    for(NSString * t in registeredPhotoSubmitterTypes){
+        if([t isEqualToString:type]){
+            //already registered
+            return;
+        }
+    }
+        
+    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    [registeredPhotoSubmitterTypes addObject:submitter.type];
+}
+
+/*!
+ * register submitters with array of NSString type names
+ */
++ (void)registerPhotoSubmitterWithTypeNames:(NSArray *)types{
+    for(NSString *type in types){
+        [PhotoSubmitterManager registerPhotoSubmitterWithTypeName:type];
+    }
+}
+
+/*!
+ * return normalized typename
+ */
++ (NSString *)normalizeTypeName:(NSString *)type{
+    if([type isMatchedByRegex:@"^(.+?)PhotoSubmitter$"] == NO){
+        type = [NSString stringWithFormat:@"%@PhotoSubmitter", [type capitalizedString]];
+    }
+    return type;
+}
 @end
