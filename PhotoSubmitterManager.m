@@ -10,9 +10,9 @@
 #import <objc/message.h>
 #import "PhotoSubmitterManager.h"
 #import "PhotoSubmitterFactory.h"
-#import "UIImage+EXIF.h"
 #import "FBNetworkReachability.h"
 #import "RegexKitLite.h"
+#import "PhotoSubmitterSettings.h"
 
 #define PS_OPERATIONS @"PSOperations"
 
@@ -174,7 +174,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     if(self.enableGeoTagging){
         photo.location = self.location;
     }
-    [photo applyMetadata];
+    [photo preprocess];
     for(NSNumber *key in submitters_){
         id<PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:key];
         if([submitter isLogined]){

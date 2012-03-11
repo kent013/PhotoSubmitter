@@ -242,6 +242,9 @@
             settings.gpsEnabled = s.on;
             [PhotoSubmitterManager sharedInstance].enableGeoTagging = s.on;
             break;
+        case SV_GENERAL_IMAGE:
+            settings.autoEnhance = s.on;
+            break;
     }
 }
 
@@ -322,20 +325,29 @@
 - (UITableViewCell *)createGeneralSettingCell:(int)tag{
     PhotoSubmitterSettings *settings = [PhotoSubmitterSettings getInstance];
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-    UISwitch *s = nil;
     switch (tag) {
         case SV_GENERAL_COMMENT:
+        {
             cell.textLabel.text = [PSLang localized:@"Settings_Row_Comment"];
-            s = [self createSwitchWithTag:tag on:settings.commentPostEnabled];
+            UISwitch *s = [self createSwitchWithTag:tag on:settings.commentPostEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
             break;
-        case SV_GENERAL_GPS:
+        }    
+        case SV_GENERAL_GPS:{
             cell.textLabel.text = [PSLang localized:@"Settings_Row_GPSTagging"];
             UISwitch *s = [self createSwitchWithTag:tag on:settings.gpsEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
             break;
+        }
+        case SV_GENERAL_IMAGE:{
+            cell.textLabel.text = [PSLang localized:@"Settings_Row_Image"];
+            UISwitch *s = [self createSwitchWithTag:tag on:settings.autoEnhance];
+            [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
+            cell.accessoryView = s;
+            break;
+        }
     }
     return cell;
 }

@@ -12,6 +12,7 @@
 }
 @property (nonatomic, assign) BOOL commentPostEnabled;
 @property (nonatomic, assign) BOOL gpsEnabled;
+@property (nonatomic, assign) BOOL autoEnhance;
 @property (nonatomic, assign) NSDictionary *submitterEnabledDates;
 + (PhotoSubmitterSettings *)getInstance;
 @end

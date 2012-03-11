@@ -27,6 +27,10 @@
         tags = common
         en = GPS Tagging
         ja = 位置情報
+    [Settings_Row_Image]
+        tags = common
+        en = Auto Enhance
+        ja = 自動補正
     [Detail_Section_Account]
         tags = common
         en =  Account

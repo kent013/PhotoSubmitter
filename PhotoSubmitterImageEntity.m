@@ -12,18 +12,41 @@
 #import "UIImage+Resize.h"
 #import "UIImage+AutoRotation.h"
 #import "NSData+Base64.h"
+#import "PhotoSubmitterSettings.h"
+#import "UIImage+Enhancing.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
 @interface PhotoSubmitterImageEntity(PrivateImplementatio)
-- (void) applyMetadata:(NSData *)data;
+- (void) preserveMetadata;
+- (void) applyMetadata:(NSData *)data preservedMetadata:(NSMutableDictionary *)preservedMetadata;
+- (void) autoEnhance;
 @end
 
 @implementation PhotoSubmitterImageEntity(PrivateImplementation)
-- (void)applyMetadata:(NSData *)data{
+/*!
+ * preserve metadata
+ */
+- (void)preserveMetadata{
+    preservedMetadata_ = self.metadata;
+}
+
+/*!
+ * auto enhance
+ */
+- (void)autoEnhance{
+    UIImage *image = [UIImage imageWithData:data_];
+    [image autoEnhance];
+    data_ = UIImageJPEGRepresentation(image, 1.0);
+}
+
+/*!
+ * apply metadata
+ */
+- (void)applyMetadata:(NSData *)data preservedMetadata:(NSMutableDictionary *)preservedMetadata{
     CGImageSourceRef img = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
-	NSMutableDictionary* exifDict = [[NSMutableDictionary alloc] init];
+	NSMutableDictionary* exifDict = [[NSMutableDictionary alloc] initWithDictionary:[preservedMetadata objectForKey:(NSString *)kCGImagePropertyExifDictionary]]; 
 	NSMutableDictionary* locDict = [[NSMutableDictionary alloc] init];
 	NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setDateFormat:@"yyyy:MM:dd HH:mm:ss"];
@@ -50,11 +73,9 @@
     }
 	CGImageDestinationRef dest = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data_, CGImageSourceGetType(img), 1, NULL);
     
-    NSMutableDictionary *metadata = 
-    [NSDictionary dictionaryWithObjectsAndKeys:
-     locDict,  (NSString*)kCGImagePropertyGPSDictionary,
-     exifDict, (NSString*)kCGImagePropertyExifDictionary, nil];
-	CGImageDestinationAddImageFromSource(dest, img, 0, (__bridge CFDictionaryRef)metadata);
+    [preservedMetadata setObject:exifDict forKey:(NSString *)kCGImagePropertyExifDictionary];
+    [preservedMetadata setObject:locDict forKey:(NSString *)kCGImagePropertyGPSDictionary];
+	CGImageDestinationAddImageFromSource(dest, img, 0, (__bridge CFDictionaryRef)preservedMetadata);
 	CGImageDestinationFinalize(dest);
 	CFRelease(img);
 	CFRelease(dest);
@@ -102,8 +123,12 @@
 /*!
  * apply metadata
  */
-- (void)applyMetadata{
-    [self applyMetadata:data_];
+- (void)preprocess{
+    [self preserveMetadata];
+    if([PhotoSubmitterSettings getInstance].autoEnhance){
+        [self autoEnhance];
+    }
+    [self applyMetadata:data_ preservedMetadata:preservedMetadata_];
 }
 
 /*!
@@ -171,10 +196,11 @@
     if(autoRotatedData_){
         return autoRotatedData_;
     }
+    [self preserveMetadata];
     UIImage *rotatedImage = [[UIImage imageWithData:data_] fixOrientation];
     NSData *rotatedData = UIImageJPEGRepresentation(rotatedImage, 1.0);
     
-    [self applyMetadata: rotatedData];
+    [self applyMetadata: rotatedData preservedMetadata:preservedMetadata_];
     
     autoRotatedData_ = rotatedData;
     return rotatedData;

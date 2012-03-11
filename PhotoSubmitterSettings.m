@@ -16,6 +16,7 @@ static PhotoSubmitterSettings* PhotoSubmitterSettingsSingletonInstance;
 
 #define PS_KEY_COMMENT_POST_ENABLED @"commentPostEnabled"
 #define PS_KEY_GPS_ENABLED @"gpsEnabled"
+#define PS_KEY_AUTO_ENHANCE @"autoEnhance"
 #define PS_KEY_SUBMITTER_ENABLED_DATES @"submitterEnabledDates"
 
 //-----------------------------------------------------------------------------
@@ -84,8 +85,8 @@ static PhotoSubmitterSettings* PhotoSubmitterSettingsSingletonInstance;
 }
 
 /*!
-  * get gps enabled
-  */
+ * get gps enabled
+ */
 - (BOOL)gpsEnabled{
     NSNumber *value = (NSNumber *)[self readSetting:PS_KEY_GPS_ENABLED];
     if(value == nil){
@@ -99,6 +100,24 @@ static PhotoSubmitterSettings* PhotoSubmitterSettingsSingletonInstance;
  */
 - (void)setGpsEnabled:(BOOL)gpsEnabled{
     [self writeSetting:PS_KEY_GPS_ENABLED value:[NSNumber numberWithBool:gpsEnabled]];
+}
+
+/*!
+ * get auto enhance
+ */
+- (BOOL)autoEnhance{
+    NSNumber *value = (NSNumber *)[self readSetting:PS_KEY_AUTO_ENHANCE];
+    if(value == nil){
+        return NO;
+    }
+    return [value boolValue];
+}
+
+/*!
+ * set auto enhance
+ */
+- (void)setAutoEnhance:(BOOL)autoEnhance{
+    [self writeSetting:PS_KEY_AUTO_ENHANCE value:[NSNumber numberWithBool:autoEnhance]];
 }
 
 /*!

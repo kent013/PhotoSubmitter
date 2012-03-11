@@ -17,6 +17,7 @@
     __strong NSString *photoHash_;
     __strong UIImage *image_;
     __strong NSMutableDictionary *resizedImages_;
+    __strong NSMutableDictionary *preservedMetadata_;
 }
 @property (strong, nonatomic) NSString *comment;
 @property (strong, nonatomic) CLLocation *location;
@@ -31,7 +32,7 @@
 
 - (id) initWithData:(NSData *)data;
 - (id) initWithImage:(UIImage *)image;
-- (void) applyMetadata;
+- (void) preprocess;
 - (UIImage *) resizedImage: (CGSize) size;
 - (NSData *) autoRotatedData;
 @end
