@@ -109,8 +109,8 @@
         ja = パスワード
     [Account_Section_Username_Placeholder]
         tags = common
-        en = kentaro.ishitoya@gmail.com
-        ja = kentaro.ishitoya@gmail.com
+        en = kentaro
+        ja = kentaro
     [Account_Section_Password_Placeholder]
         tags = common
         en = password
