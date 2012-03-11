@@ -176,11 +176,13 @@ Probrem in mixture of ARC and Non-ARC libraries
 -------------------------------------------------
 **PhotoSubmitter is ARC project**, and some dependent libraries are **Non-ARC**. **Non-ARC Libraries cause build error**. You must set '-fno-objc-arc' flag to their source codes to disable ARC. Please check out [stackoverflow: How can I disable ARC for a single file in a project?](http://stackoverflow.com/questions/6646052/how-can-i-disable-arc-for-a-single-file-in-a-project). (Tip: You can set flag to multiple source codes at once with selecting multiple source code and pressing ENTER key)
 
-Library Dependencies for PhotoSubmitter library
+Library Dependencies of PhotoSubmitter library
 -------------------------------------------------
 AssetsLibrary, CFNetwork, CoreLocation, Foundation, ImageIO, Security and SystemConfiguration.framework are needed to be added in your project. Also libicucore.dylib is required by <a href="http://regexkit.sourceforge.net/RegexKitLite/">RegexKitLite</a> and libxml2.dylib is required by <a href="https://github.com/ddeville/KissXML">KissXML</a>.
 
 libxml2 needs "Header Search Path" to be configured as `/usr/include/libxml2`(or other path to libxml2's header files are placed.
+
+And other 3rd party libraries that PhotoSubmitter depends on, please see [3RDPARTY.txt](https://github.com/kent013/tottepost/blob/master/3RDPARTY.md) in tottepost repository.
 
 Library Dependencies of Service Implementation
 -------------------------------------------------
@@ -479,3 +481,11 @@ return your submitter's authentication is valid.
     return NO;
 }
 ```
+
+License
+------------------------------------
+Copyright (c) 2011, ISHITOYA Kentaro.  
+Copyright (c) 2011, WATANABE Ken.  
+
+New BSD License. See [LICENSE](https://github.com/kent013/PhotoSubmitter/blob/master/LICENSE) file. 
+
