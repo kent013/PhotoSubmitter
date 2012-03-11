@@ -146,6 +146,7 @@
     textField.delegate = self;
     textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     textField.autocorrectionType = UITextAutocorrectionTypeNo;
+    textField.keyboardType = UIKeyboardTypeAlphabet;
     
     switch (indexPath.section) {
         case ASV_SECTION_USERNAME : 
@@ -154,7 +155,6 @@
             break;
         case ASV_SECTION_PASSWORD : 
             textField.placeholder = [PSLang localized:@"Account_Section_Password_Placeholder"];
-            textField.keyboardType = UIKeyboardTypeAlphabet;
             textField.secureTextEntry = YES;
             passwordTextField_ = textField;
             break;
