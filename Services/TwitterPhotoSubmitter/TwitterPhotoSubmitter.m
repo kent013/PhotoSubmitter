@@ -82,9 +82,7 @@
 //-----------------------------------------------------------------------------
 #pragma mark - public PhotoSubmitter Protocol implementations
 @implementation TwitterPhotoSubmitter
-@synthesize authDelegate;
-@synthesize dataDelegate;
-@synthesize albumDelegate;
+
 /*!
  * initialize
  */
@@ -194,7 +192,7 @@
     
     NSURL *url = 
     [NSURL URLWithString:@"https://upload.twitter.com/1/statuses/update_with_media.json"];
-    TWRequest *request = [[TWRequest alloc] initWithURL:url parameters:nil 
+    TWRequest *request = [[TWRequest alloc] initWithURL:url parameters:nil
                                           requestMethod:TWRequestMethodPOST];
     
     [request setAccount:twitterAccount];
@@ -202,6 +200,14 @@
                      withName:@"media[]" type:@"multipart/form-data"];
     [request addMultiPartData:[photo.comment dataUsingEncoding:NSUTF8StringEncoding] 
                      withName:@"status" type:@"multipart/form-data"];
+    if(photo.location){
+        NSLog(@"%@", [NSString stringWithFormat:@"%g", photo.location.coordinate.longitude]);
+        [request addMultiPartData:[[NSString stringWithFormat:@"%g", photo.location.coordinate.latitude]  dataUsingEncoding:NSUTF8StringEncoding] 
+                         withName:@"lat" type:@"multipart/form-data"];
+        [request addMultiPartData:[[NSString stringWithFormat:@"%g", photo.location.coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] 
+                         withName:@"long" type:@"multipart/form-data"];
+        
+    }
     
     NSURLConnection *connection = 
     [[NSURLConnection alloc] initWithRequest:request.signedURLRequest delegate:self startImmediately:NO];

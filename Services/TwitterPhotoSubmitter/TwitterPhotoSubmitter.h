@@ -12,7 +12,7 @@
 #import "PhotoSubmitterProtocol.h"
 
 @interface TwitterPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, NSURLConnectionDataDelegate, NSURLConnectionDelegate, UIAlertViewDelegate>{
-    ACAccountStore *accountStore_;
+    __strong ACAccountStore *accountStore_;
 }
 
 @property (nonatomic, readonly) NSArray *accounts;
