@@ -115,3 +115,11 @@
         tags = common
         en = password
         ja = password
+    [Twitter_Default_Comment]
+        tags = common, twitter
+        en = tottepost Photo
+        ja = tottepost Photo       
+    [Alert_Comment_Too_Long]
+        tags = common
+        en = Comment is too long, please shoten it.
+        ja = コメントが長過ぎます。短くしてください。

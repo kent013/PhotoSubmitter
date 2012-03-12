@@ -351,6 +351,22 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     return NO;
 }
 
+/*!
+ * max comment length
+ */
+- (NSInteger)maxCommentLength{
+    int max = 0;
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+        if(submitter.isEnabled && submitter.requiresNetwork &&
+           submitter.maxCommentLength > max){
+            max = submitter.maxCommentLength;
+        }
+    }
+    return max;
+    
+}
+
 #pragma mark -
 #pragma mark PhotoSubmitterPhotoDelegate methods
 /*!

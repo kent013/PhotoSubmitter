@@ -13,8 +13,10 @@
 
 @interface TwitterPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, NSURLConnectionDataDelegate, NSURLConnectionDelegate, UIAlertViewDelegate>{
     __strong ACAccountStore *accountStore_;
+    __strong NSString *defaultComment_;
 }
 
 @property (nonatomic, readonly) NSArray *accounts;
 @property (nonatomic, assign) NSString *selectedAccountUsername;
+@property (nonatomic, strong) NSString *defaultComment;
 @end

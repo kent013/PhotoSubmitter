@@ -44,6 +44,7 @@
 @property (nonatomic, assign) NSString *username;
 @property (nonatomic, assign) NSArray *albumList;
 @property (nonatomic, readonly) PhotoSubmitterServiceSettingTableViewController *settingView;
+@property (nonatomic, readonly) NSInteger maxCommentLength;
 - (void) login;
 - (void) logout;
 - (void) enable;

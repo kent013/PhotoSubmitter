@@ -416,6 +416,13 @@
     return [[SimplePhotoSubmitterSettingTableViewController alloc] initWithType:self.type];
 }
 
+/*!
+ * max comment length
+ */
+- (NSInteger)maxCommentLength{
+    return 0;
+}
+
 #pragma mark - UTILITY METHODS
 #pragma mark - request methods
 /*!

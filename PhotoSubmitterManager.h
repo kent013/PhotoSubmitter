@@ -47,6 +47,7 @@
 @property (nonatomic, readonly) BOOL requiresNetwork;
 @property (nonatomic, readonly) BOOL isUploading;
 @property (nonatomic, readonly) BOOL isPausingOperation;
+@property (nonatomic, readonly) NSInteger maxCommentLength;
 
 - (void) submitPhoto:(PhotoSubmitterImageEntity *)photo;
 - (void) loadSubmitters;

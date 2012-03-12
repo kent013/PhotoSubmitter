@@ -8,6 +8,7 @@
 
 #import "TwitterPhotoSubmitter.h"
 #import "TwitterPhotoSubmitterSettingTableViewController.h"
+#import "PSLang.h"
 
 #define PS_TWITTER_USERNAME @"PSTwitterUsername"
 
@@ -32,6 +33,7 @@
                   isAlbumSupported:NO];
     
     accountStore_ = [[ACAccountStore alloc] init];
+    defaultComment_ = [PSLang localized:@"Twitter_Default_Comment"];
 }
 
 /*!
@@ -82,6 +84,7 @@
 //-----------------------------------------------------------------------------
 #pragma mark - public PhotoSubmitter Protocol implementations
 @implementation TwitterPhotoSubmitter
+@synthesize defaultComment = defaultComment_;
 
 /*!
  * initialize
@@ -182,7 +185,7 @@
  */
 - (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
     if(photo.comment == nil){
-        photo.comment = @"TottePost Photo";
+        photo.comment = defaultComment_;
     }
     
     ACAccount *twitterAccount = [self selectedAccount];
@@ -251,5 +254,12 @@
  */
 - (PhotoSubmitterServiceSettingTableViewController *)settingView{
     return [[TwitterPhotoSubmitterSettingTableViewController alloc] initWithType:self.type];
+}
+
+/*!
+ * max comment length
+ */
+- (NSInteger)maxCommentLength{
+    return 120;
 }
 @end
