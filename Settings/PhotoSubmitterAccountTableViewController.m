@@ -159,7 +159,7 @@
             passwordTextField_ = textField;
             break;
     }
-    [cell addSubview:textField];
+    [cell.contentView addSubview:textField];
     return cell;
 }
 

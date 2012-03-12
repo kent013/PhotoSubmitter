@@ -127,7 +127,7 @@
         titleField_.returnKeyType = UIReturnKeyDone;
         titleField_.textAlignment = UITextAlignmentLeft;
         titleField_.delegate = self;
-        [cell addSubview:titleField_];
+        [cell.contentView addSubview:titleField_];
     }
     return cell;
 }
