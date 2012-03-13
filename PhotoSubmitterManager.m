@@ -133,6 +133,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 @synthesize submitPhotoWithOperations;
 @synthesize location = location_;
 @synthesize isUploading;
+@synthesize isError = isError_;
+@synthesize errorOperationCount = errorOperationCount_;
 @synthesize isPausingOperation = isPausingOperation_;
 @synthesize authControllerDelegate;
 @dynamic authenticationDelegate;
@@ -380,6 +382,10 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * upload finished
  */
 - (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didSubmitted:(NSString *)imageHash suceeded:(BOOL)suceeded message:(NSString *)message{
+    if(suceeded == NO){
+        isError_ = YES;
+        errorOperationCount_ += 1;
+    }
     //NSLog(@"submitted");
 }
 
@@ -485,6 +491,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         PhotoSubmitterSequencialOperationQueue *queue = [sequencialOperationQueues_ objectForKey:key];
         [queue cancel];
     }
+    errorOperationCount_ = 0;
+    isError_ = NO;
     [sequencialOperationQueues_ removeAllObjects];
     [operationQueue_ cancelAllOperations];
     [operations_ removeAllObjects];
@@ -500,6 +508,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     if(isPausingOperation_){
         return;
     }
+    errorOperationCount_ = 0;
+    isError_ = NO;
     [operationQueue_ cancelAllOperations];
     operationQueue_ = [[NSOperationQueue alloc] init];
     operationQueue_.maxConcurrentOperationCount = 6;

@@ -29,6 +29,8 @@
     BOOL geoTaggingEnabled_;
     BOOL isPausingOperation_;
     BOOL isConnected_;
+    BOOL isError_;
+    int errorOperationCount_;
     
     /*!
      * an array of id<PhotoSubmitterPhotoDelegate>
@@ -41,11 +43,13 @@
 @property (nonatomic, readonly) NSArray* loadedSubmitterTypes;
 @property (nonatomic, readonly) int enabledSubmitterCount;
 @property (nonatomic, readonly) int uploadOperationCount;
+@property (nonatomic, readonly) int errorOperationCount;
 @property (nonatomic, readonly) CLLocation *location;
 @property (nonatomic, assign) BOOL submitPhotoWithOperations;
 @property (nonatomic, assign) BOOL enableGeoTagging;
 @property (nonatomic, readonly) BOOL requiresNetwork;
 @property (nonatomic, readonly) BOOL isUploading;
+@property (nonatomic, readonly) BOOL isError;
 @property (nonatomic, readonly) BOOL isPausingOperation;
 @property (nonatomic, readonly) NSInteger maxCommentLength;
 
