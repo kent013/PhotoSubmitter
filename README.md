@@ -29,9 +29,10 @@ Functionality
  - Authentication UI
    OAuth1/2 with UIWebView, Application and Safari
    Username and Password
- - GPS tag
- - Comment 
- -	 Dealing with album
+ - Option to toggle GPS tagging
+ - Option to toggle commenting
+ - Option to toggle auto enhance image quality
+ - Dealing with album
    Album listing
    Album selection
    Album creation
@@ -49,7 +50,7 @@ PhotoSubmitter Client Code
 PhotoSubmitter supports authentication with code like,
 
 ```
-[[PhotoSubmitterManager submitterForType:@"FacebookPhotoSubmitter"] login];
+[[PhotoSubmitterManager submitterForType:@"facebook"] login];
 ```
 
 This code will brings up Safari or Facebook app in your iPhone for authentication. You can receive messages from PhotoSubmitter while authenticating with implementing `PhotoSubmitterAuthenticationDelegate`. 
@@ -57,11 +58,11 @@ This code will brings up Safari or Facebook app in your iPhone for authenticatio
 There are a lot of supported services, Facebook, Twitter, Dropbox and so on. You can enable submitter with just calling login method.
 
 ```
-[[PhotoSubmitterManager submitterForType:@"DropboxPhotoSubmitter"] login];
-[[PhotoSubmitterManager submitterForType:@"EvernotePhotoSubmitter"] login];
+[[PhotoSubmitterManager submitterForType:@"dropbox"] login];
+[[PhotoSubmitterManager submitterForType:@"evernote"] login];
 ```
 
-Once PhotoSubmitter is enabled and authenticated, you can submit photo to the service like this,
+You can use type name like "dropbox" or "Dropbox" or "DropboxPhotoSubmitter". Once PhotoSubmitter is enabled and authenticated, you can submit photo to the service like this,
 
 ```
 PhotoSubmitterImageEntity *photo = 
@@ -261,6 +262,18 @@ Source codes are stored in [Settings](https://github.com/kent013/PhotoSubmitter/
 <img src="http://github.com/kent013/tottepost/raw/master/AppStore/screenshot5_en.png"
  alt="ScreenShot5" title="ScreenShot5" height = 240 />
 
+To add / remove services, add / remove service implementation from project.
+Or add all services to project and code like,
+
+```
+[PhotoSubmitterManager unregisterAllPhotoSubmitters];
+[PhotoSubmitterManager registerPhotoSubmitterWithTypeNames:
+    [NSArray arrayWithObjects: @"facebook", @"twitter", @"dropbox", 
+                               @"minus", @"file", nil]];
+[PhotoSubmitterManager registerPhotoSubmitterWithTypeName:@"mixi"];
+[PhotoSubmitterManager unregisterPhotoSubmitterWithTypeName:@"twitter"];
+```
+Initially, all PhotoSubmitters are loaded. So before register PhotoSubmitter, unregister all PhotoSubmitter.
 
 Implementing New PhotoSubmitter
 ---------------------------------------
