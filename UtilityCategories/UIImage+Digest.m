@@ -6,6 +6,10 @@
 //  Copyright 2010 cocotomo. All rights reserved.
 //
 
+#if ! __has_feature(objc_arc)
+#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 #import "UIImage+Digest.h"
 #import "NSData+Digest.h"
 #import "CommonCrypto/CommonDigest.h"

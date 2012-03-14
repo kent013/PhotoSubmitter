@@ -6,6 +6,10 @@
 //  Copyright 2011 Tumblr. All rights reserved.
 //
 
+#if __has_feature(objc_arc)
+#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
+#endif
+
 #import "OAAttachment.h"
 
 @implementation OAAttachment

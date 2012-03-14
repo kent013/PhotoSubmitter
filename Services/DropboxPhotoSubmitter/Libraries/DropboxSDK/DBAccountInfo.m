@@ -6,8 +6,11 @@
 //  Copyright 2010 Dropbox, Inc. All rights reserved.
 //
 
-#import "DBAccountInfo.h"
+#if __has_feature(objc_arc)
+#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
+#endif
 
+#import "DBAccountInfo.h"
 
 @implementation DBAccountInfo
 

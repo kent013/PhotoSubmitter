@@ -3,6 +3,10 @@
 // Free for personal or commercial use, with or without modification.
 // No warranty is expressed or implied.
 
+#if ! __has_feature(objc_arc)
+#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 #import "UIImage+Alpha.h"
 
 // Private helper methods

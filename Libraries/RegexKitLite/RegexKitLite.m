@@ -39,6 +39,10 @@
 #include <CoreFoundation/CFBase.h>
 #include <CoreFoundation/CFArray.h>
 #include <CoreFoundation/CFString.h>
+#if __has_feature(objc_arc)
+#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
+#endif
+
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSError.h>

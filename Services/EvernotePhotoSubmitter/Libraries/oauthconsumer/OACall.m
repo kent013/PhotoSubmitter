@@ -6,6 +6,10 @@
 //  Copyright 2008 Alberto García Hierro. All rights reserved.
 //	bynotes.com
 
+#if __has_feature(objc_arc)
+#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
+#endif
+
 #import "OAConsumer.h"
 #import "OAToken.h"
 #import "OAProblem.h"

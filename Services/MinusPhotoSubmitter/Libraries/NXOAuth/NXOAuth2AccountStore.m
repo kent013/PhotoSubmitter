@@ -12,6 +12,10 @@
 //
 
 #if TARGET_OS_IPHONE
+#if __has_feature(objc_arc)
+#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
+#endif
+
 #import <UIKit/UIKit.h>
 #else
 #import <Cocoa/Cocoa.h>
