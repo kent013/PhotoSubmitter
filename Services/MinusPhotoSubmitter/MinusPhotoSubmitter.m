@@ -28,6 +28,7 @@ static NSString *kDefaultAlbum = @"tottepost";
 - (void) clearCredentials;
 - (void) loadCredentials;
 - (void) getUserInfomation;
+- (id) submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
 @end
 
 #pragma mark - private implementations
@@ -76,6 +77,29 @@ static NSString *kDefaultAlbum = @"tottepost";
 - (void)getUserInfomation{
     MinusRequest *request = [minus_ activeUserWithDelegate:self];
     [self addRequest:request];
+}
+
+/*!
+ * submit content
+ */
+- (id)submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    NSString *folderId = @"";
+    if(self.targetAlbum){
+        folderId = self.targetAlbum.albumId;
+    }
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat  = @"yyyyMMddHHmmss";
+    NSString *filename = nil;
+    NSString *contentType = nil;
+    if(content.isPhoto){
+        filename = [NSString stringWithFormat:@"%@.jpg", [df stringFromDate:content.timestamp]];
+        contentType = @"image/jpeg";
+    }else{
+        filename = [NSString stringWithFormat:@"%@.mp4", [df stringFromDate:content.timestamp]];
+        contentType = @"video/quicktime";
+    }
+    MinusRequest *request = [minus_ createFileWithFolderId:folderId caption:content.comment filename:filename data:content.data dataContentType:contentType andDelegate:self];
+    return  request;
 }
 @end
 
@@ -135,22 +159,14 @@ static NSString *kDefaultAlbum = @"tottepost";
  * submit photo with data, comment and delegate
  */
 - (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
-    NSString *folderId = @"";
-    if(self.targetAlbum){
-        folderId = self.targetAlbum.albumId;
-    }
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    df.dateFormat  = @"yyyyMMddHHmmss";
-    NSString *filename = [NSString stringWithFormat:@"%@.jpg", [df stringFromDate:photo.timestamp]];
-    MinusRequest *request = [minus_ createFileWithFolderId:folderId caption:photo.comment filename:filename data:photo.data dataContentType:@"image/jpeg" andDelegate:self];
-    return  request;
+    return [self submitContent:photo andOperationDelegate:delegate];
 }    
 
 /*!
  * submit video
  */
 - (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
-    return nil;
+    return [self submitContent:video andOperationDelegate:delegate];
 }
 
 /*!
@@ -160,13 +176,6 @@ static NSString *kDefaultAlbum = @"tottepost";
     MinusRequest *request = (MinusRequest *)[self requestForPhoto:content.contentHash];
     [request cancel];
     return request;
-}
-
-/*!
- * is video supported
- */
-- (BOOL)isVideoSupported{
-    return NO;
 }
 
 #pragma mark - album
