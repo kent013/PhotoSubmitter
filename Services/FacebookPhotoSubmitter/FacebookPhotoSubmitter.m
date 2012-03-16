@@ -78,7 +78,8 @@
         }
         NSString *username = [[result objectForKey:@"name"] stringByReplacingOccurrencesOfRegex:@" +" withString:@" "];
         self.username = username;
-    }else if([request.url isMatchedByRegex:@"photos$"]){
+    }else if([request.url isMatchedByRegex:@"photos$"] ||
+             [request.url isMatchedByRegex:@"videos$"]){
         [self completeSubmitContentWithRequest:request];
     }else if([request.url isMatchedByRegex:@"albums$"] && 
              [request.httpMethod isEqualToString:@"POST"]){
@@ -110,7 +111,8 @@
     }else if([request.url isMatchedByRegex:@"albums$"] && 
              [request.httpMethod isEqualToString:@"POST"]){
         [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:NO withError:error];
-    }else if([request.url isMatchedByRegex:@"photos$"]){
+    }else if([request.url isMatchedByRegex:@"photos$"] ||
+             [request.url isMatchedByRegex:@"videos$"]){
         [self completeSubmitContentWithRequest:request andError:error];
     }
     [self clearRequest:request];
