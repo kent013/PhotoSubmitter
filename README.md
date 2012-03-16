@@ -1,6 +1,6 @@
 PhotoSubmitter
 ==========================================
-The purpose of the PhotoSubmitter iOS class library is to facilitate the development of photo upload application.
+The purpose of the PhotoSubmitter iOS class library is to facilitate the development of photo/video upload application.
 
 There are a lot of Social Network Services and Cloud Storage Services. And each services have their own SDK to connect to their service. Unfortunately SDKs are not compatible each other. Especially between Social Network Services and Cloud Storage Services are completely different. 
 
@@ -19,7 +19,9 @@ Functionality
 * Submitting photo
  - Submit photo to services
    Twitter/Facebook/Dropbox/Evernote/Picasa/Fotolife/Minus/Flickr/Mixi.
-   Asynchronous upload
+ - Submit video to services
+   Facebook/Dropbox/Minus/Flickr
+ - Asynchronous upload
  - Save photo to Camera roll
  - Background uploading
  - Upload resuming
@@ -70,7 +72,17 @@ PhotoSubmitterImageEntity *photo =
 [PhotoSubmitterManager submitPhoto:photo];
 ```
 
-This code is creating photo entity and submitting photo to the authenticated services asynchronously. You can receive messages from PhotoSubmitter while submitting photo with implementing `PhotoSubmitterPhotoDelegate`.
+This code is creating photo entity and submitting photo to the authenticated services asynchronously.
+Also you can upload video with code,
+
+```
+PhotoSubmitterVideoEntity *video = 
+    [[PhotoSubmitterVideoEntity alloc] initWithURL:fileurl];
+[PhotoSubmitterManager submitVideo:video];
+```
+
+This code will upload video to configured services.
+ You can receive messages from PhotoSubmitter while submitting photo with implementing `PhotoSubmitterPhotoDelegate`.
 
 Supported Services
 -------------------------------------------
@@ -83,12 +95,14 @@ Below is the list of supported Social Network and Cloud Storage services.
 <th>Requirement</th>
 <th>Upload Type</th>
 <th>Album Support</th>
+<th>Video Support</th>
 </tr>
 <tr>
 <td>Facebook</td>
 <td>OAuth (Safari/FacebookApp)</td>
 <td>URLScheme: fb[appId]</td>
 <td>Concurrent</td>
+<td>YES</td>
 <td>YES</td>
 </tr>
 <tr>
@@ -97,12 +111,14 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>-</td>
 <td>Sequencial<sup>*1</sup></td>
 <td>NO</td>
+<td>NO</td>
 </tr>
 <tr>
 <td>Dropbox</td>
 <td>OAuth (Safari/DropboxApp)</td>
 <td>URLScheme: db-[appId]</td>
 <td>Concurrent</td>
+<td>YES</td>
 <td>YES</td>
 </tr>
 <tr>
@@ -111,6 +127,7 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>URLScheme: photosubmitter</td>
 <td>Concurrent</td>
 <td>YES</td>
+<td>YES</td>
 </tr>
 <tr>
 <td>Evernote</td>
@@ -118,6 +135,7 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>URLScheme: photosubmitter</td>
 <td>Concurrent</td>
 <td>YES</td>
+<td>NO</td>
 </tr>
 <tr>
 <td>Picasa<sup>*2</sup></td>
@@ -125,12 +143,14 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>PhotoSubmitterAuthControllerDelegate</td>
 <td>Concurrent</td>
 <td>YES</td>
+<td>NO</td>
 </tr>
 <tr>
 <td>Minus</td>
 <td>OAuth (In App PasswordView)</td>
 <td>PhotoSubmitterAuthControllerDelegate</td>
 <td>Concurrent</td>
+<td>YES</td>
 <td>YES</td>
 </tr>
 <tr>
@@ -139,12 +159,14 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>PhotoSubmitterAuthControllerDelegate</td>
 <td>Concurrent</td>
 <td>YES</td>
+<td>NO</td>
 </tr>
 <tr>
 <td>Fotolife<sup>*3</sup></td>
 <td>BASIC (In App PasswordView)</td>
 <td>PhotoSubmitterAuthControllerDelegate</td>
 <td>Concurrent</td>
+<td>NO</td>
 <td>NO</td>
 </tr>
 <tr>
@@ -153,6 +175,7 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>-</td>
 <td>-</td>
 <td>NO</td>
+<td>YES</td>
 </tr>
 </table>
 
