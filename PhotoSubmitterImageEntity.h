@@ -8,29 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import "PhotoSubmitterContentEntity.h"
 
-@interface PhotoSubmitterImageEntity : NSObject<NSCoding>{
-    __strong NSData *data_;
+@interface PhotoSubmitterImageEntity : PhotoSubmitterContentEntity {
     __strong NSData *autoRotatedData_;
-    __strong NSDate *timestamp_;
-    __strong NSString *path_;
-    __strong NSString *photoHash_;
     __strong UIImage *image_;
     __strong NSMutableDictionary *resizedImages_;
     __strong NSMutableDictionary *preservedMetadata_;
 }
-@property (strong, nonatomic) NSString *comment;
-@property (strong, nonatomic) CLLocation *location;
-@property (strong, nonatomic) NSString *path;
-@property (strong, nonatomic) NSString *photoHash;
-@property (readonly, nonatomic) NSData *data;
-@property (readonly, nonatomic) NSString *base64String;
 @property (readonly, nonatomic) NSMutableDictionary *metadata;
 @property (readonly, nonatomic) UIImage *image;
-@property (readonly, nonatomic) NSString *md5;
-@property (readonly, nonatomic) NSDate *timestamp;
 
-- (id) initWithData:(NSData *)data;
 - (id) initWithImage:(UIImage *)image;
 - (void) preprocess;
 - (UIImage *) resizedImage: (CGSize) size;

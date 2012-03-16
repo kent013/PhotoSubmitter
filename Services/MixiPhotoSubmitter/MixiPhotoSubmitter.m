@@ -86,7 +86,7 @@ static NSString *kDefaultAlbum = @"tottepost";
         self.albumList = albums;
     }else if([url isMatchedByRegex:@"photo/mediaItems/@me/@self"] &&
              [method isEqualToString:@"POST"]){
-        [self completeSubmitPhotoWithRequest:connection];
+        [self completeSubmitContentWithRequest:connection];
     }else if([url isMatchedByRegex:@"people/@me/@self"]){
         NSString *username = [[data objectForKey:@"entry"] objectForKey:@"displayName"];
         self.username = username;
@@ -108,7 +108,7 @@ static NSString *kDefaultAlbum = @"tottepost";
              [method isEqualToString:@"GET"]){
     }else if([url isMatchedByRegex:@"photo/mediaItems/@me/@self"] &&
        [method isEqualToString:@"POST"]){
-        [self completeSubmitPhotoWithRequest:connection andError:error];
+        [self completeSubmitContentWithRequest:connection andError:error];
     }else{
         NSLog(@"%s", __PRETTY_FUNCTION__);
     }
@@ -239,7 +239,7 @@ static NSString *kDefaultAlbum = @"tottepost";
 - (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didUsernameUpdated:(NSString *)username{
 }
 
-#pragma mark - photo
+#pragma mark - contents
 /*!
  * submit photo with data, comment and delegate
  */
@@ -264,12 +264,26 @@ static NSString *kDefaultAlbum = @"tottepost";
 }
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{    
-    NSURLConnection *connection = (NSURLConnection *)[self requestForPhoto:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    NSURLConnection *connection = (NSURLConnection *)[self requestForPhoto:content.contentHash];
     [connection cancel];
     return connection;
+}
+
+/*!
+ * is video supported
+ */
+- (BOOL)isVideoSupported{
+    return NO;
 }
 
 #pragma mark - albums

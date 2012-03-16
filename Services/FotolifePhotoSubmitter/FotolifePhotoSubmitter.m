@@ -120,7 +120,7 @@
 }
 
 
-#pragma mark - photo
+#pragma mark - contents
 /*!
  * submit photo with data, comment and delegate
  */
@@ -156,12 +156,26 @@
 }
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
-    AtompubClient *client = (AtompubClient *)[self requestForPhoto:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    AtompubClient *client = (AtompubClient *)[self requestForPhoto:content.contentHash];
     [client cancel];
     return client;
+}
+
+/*!
+ * is video supported
+ */
+- (BOOL)isVideoSupported{
+    return NO;
 }
 
 #pragma mark - albums
@@ -239,7 +253,7 @@
  */
 - (void)client:(AtompubClient *)client didCreateEntry:(AtomEntry *)entry withLocation:(NSURL *)location{
     if([client.tag isEqualToString:@"submitPhoto"]){
-        [self completeSubmitPhotoWithRequest:client];
+        [self completeSubmitContentWithRequest:client];
     }else{
         NSLog(@"%s", __PRETTY_FUNCTION__);
     }
@@ -254,7 +268,7 @@
         [authController_ didLoginFailed];
         [self completeLoginFailed];
     }else if([client.tag isEqualToString:@"submitPhoto"]){
-        [self completeSubmitPhotoWithRequest:client andError:error];
+        [self completeSubmitContentWithRequest:client andError:error];
     }
     NSLog(@"%@", error.description);
     [self clearRequest:client];

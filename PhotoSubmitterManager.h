@@ -54,6 +54,7 @@
 @property (nonatomic, readonly) NSInteger maxCommentLength;
 
 - (void) submitPhoto:(PhotoSubmitterImageEntity *)photo;
+- (void) submitVideo:(PhotoSubmitterVideoEntity *)video;
 - (void) loadSubmitters;
 - (void) suspend;
 - (void) wakeup;

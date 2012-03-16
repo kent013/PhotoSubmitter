@@ -188,12 +188,32 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     [photo preprocess];
     for(NSString *type in registeredPhotoSubmitterTypes){
         id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
-        if([submitter isLogined]){
+        if(submitter.isPhotoSupported && [submitter isLogined]){
             if(self.submitPhotoWithOperations && submitter.useOperation){
-                PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter photo:photo];
+                PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:photo];
                 [self addOperation:operation];
             }else{
                 [submitter submitPhoto:photo andOperationDelegate:nil];
+            }
+        }
+    }
+}
+
+/*!
+ * submit photo to social app
+ */
+- (void)submitVideo:(PhotoSubmitterVideoEntity *)video{
+    if(self.enableGeoTagging){
+        video.location = self.location;
+    }
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+        if(submitter.isVideoSupported && [submitter isLogined]){
+            if(self.submitPhotoWithOperations && submitter.useOperation){
+                PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:video];
+                [self addOperation:operation];
+            }else{
+                [submitter submitVideo:video andOperationDelegate:nil];
             }
         }
     }
@@ -365,8 +385,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     for(NSString *type in registeredPhotoSubmitterTypes){
         id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
         if(submitter.isEnabled && submitter.requiresNetwork &&
-           submitter.maxCommentLength > max){
-            max = submitter.maxCommentLength;
+           submitter.maximumLengthOfComment > max){
+            max = submitter.maximumLengthOfComment;
         }
     }
     return max;

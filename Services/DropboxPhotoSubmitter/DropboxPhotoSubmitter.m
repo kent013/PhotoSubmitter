@@ -28,6 +28,7 @@
 @interface DropboxPhotoSubmitter(PrivateImplementation)
 - (void) setupInitialState;
 - (void) cleanupCache;
+- (id) submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
 @end
 
 #pragma mark - private implementations
@@ -65,6 +66,36 @@
     }
 }
 
+/*!
+ * submit content
+ */
+- (id)submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    DBRestClient *restClient = 
+    [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
+    restClient.delegate = self;
+    
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat  = @"yyyyMMddHHmmssSSSS";
+    NSString *dir = [NSString stringWithFormat:@"%@/tmp/", NSHomeDirectory()];
+    NSString *filename = nil;
+    if(content.isVideo){
+        filename = [NSString stringWithFormat:@"%@.mp4", [df stringFromDate:content.timestamp]];
+    }else{
+        filename = [NSString stringWithFormat:@"%@.jpg", [df stringFromDate:content.timestamp]];
+    }
+    NSString *path = [dir stringByAppendingString:filename];
+    content.path = path;
+    
+    NSString *toPath = @"/";
+    if(self.targetAlbum){
+        toPath = self.targetAlbum.name;
+    }
+    content.contentHash = path;
+    [content.data writeToFile:path atomically:NO];
+    [restClient uploadFile:filename toPath:toPath withParentRev:nil fromPath:path];
+    return restClient;
+}
+
 #pragma mark - DBRestClientDelegate methods
 #pragma mark - upload file
 /*!
@@ -73,14 +104,14 @@
 - (void)restClient:(DBRestClient*)client uploadedFile:(NSString*)destPath from:(NSString*)srcPath metadata:(DBMetadata*)metadata{
     NSFileManager *fm = [NSFileManager defaultManager];
     [fm removeItemAtPath:srcPath error:nil];
-    [self completeSubmitPhotoWithRequest:client];
+    [self completeSubmitContentWithRequest:client];
 }
 
 /*!
  * Dropbox delegate, upload failed
  */
 - (void)restClient:(DBRestClient*)client uploadFileFailedWithError:(NSError *)error{
-    [self completeSubmitPhotoWithRequest:client andError:error];
+    [self completeSubmitContentWithRequest:client andError:error];
 }
 
 /*!
@@ -234,38 +265,27 @@
     return [[DBSession sharedSession] isLinked];
 }
 
-#pragma mark - photo
+#pragma mark - contents
 /*!
  * submit photo
  */
 - (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
-    DBRestClient *restClient = 
-    [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
-    restClient.delegate = self;
-    
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    df.dateFormat  = @"yyyyMMddHHmmssSSSS";
-    NSString *dir = [NSString stringWithFormat:@"%@/tmp/", NSHomeDirectory()];
-    NSString *filename = [NSString stringWithFormat:@"%@.jpg", [df stringFromDate:photo.timestamp]];
-    NSString *path = [dir stringByAppendingString:filename];
-    photo.path = path;
-    
-    NSString *toPath = @"/";
-    if(self.targetAlbum){
-        toPath = self.targetAlbum.name;
-    }
-    photo.photoHash = path;
-    [photo.data writeToFile:path atomically:NO];
-    [restClient uploadFile:filename toPath:toPath withParentRev:nil fromPath:path];
-    return restClient;
-}    
+    return [self submitContent:photo andOperationDelegate:delegate];
+}
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
-    DBRestClient *request = (DBRestClient *)[self requestForPhoto:photo.photoHash];
-    [request cancelFileUpload:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return [self submitContent:video andOperationDelegate:delegate];
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    DBRestClient *request = (DBRestClient *)[self requestForPhoto:content.contentHash];
+    [request cancelFileUpload:content.contentHash];
     return request;
 }
 

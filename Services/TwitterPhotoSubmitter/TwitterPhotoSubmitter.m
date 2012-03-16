@@ -63,14 +63,14 @@
  * did fail
  */
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error{
-    [self completeSubmitPhotoWithRequest:connection andError:error];
+    [self completeSubmitContentWithRequest:connection andError:error];
 }
 
 /*!
  * did finished
  */
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection{
-    [self completeSubmitPhotoWithRequest:connection];    
+    [self completeSubmitContentWithRequest:connection];    
 }
 
 /*!
@@ -226,13 +226,27 @@
 }
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
     NSURLConnection *connection = 
-    (NSURLConnection *)[self requestForPhoto:photo.photoHash];
+    (NSURLConnection *)[self requestForPhoto:content.contentHash];
     [connection cancel];
     return connection;
+}
+
+/*!
+ * is video supported
+ */
+- (BOOL)isVideoSupported{
+    return NO;
 }
 
 #pragma mark - albums
@@ -261,9 +275,9 @@
 }
 
 /*!
- * max comment length
+ * maximum comment length
  */
-- (NSInteger)maxCommentLength{
+- (NSInteger)maximumLengthOfComment{
     return 120;
 }
 @end

@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "PhotoSubmitterAlbumEntity.h"
+#import "PhotoSubmitterContentEntity.h"
 #import "PhotoSubmitterImageEntity.h"
+#import "PhotoSubmitterVideoEntity.h"
 
 @protocol PhotoSubmitterAuthenticationDelegate;
 @protocol PhotoSubmitterPhotoDelegate;
@@ -35,6 +37,8 @@
 @property (nonatomic, readonly) BOOL useOperation;
 @property (nonatomic, readonly) BOOL isSequencial;
 @property (nonatomic, readonly) BOOL isAlbumSupported;
+@property (nonatomic, readonly) BOOL isVideoSupported;
+@property (nonatomic, readonly) BOOL isPhotoSupported;
 @property (nonatomic, readonly) BOOL isSessionValid;
 @property (nonatomic, readonly) BOOL requiresNetwork;
 @property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authDelegate;
@@ -44,7 +48,8 @@
 @property (nonatomic, assign) NSString *username;
 @property (nonatomic, assign) NSArray *albumList;
 @property (nonatomic, readonly) PhotoSubmitterServiceSettingTableViewController *settingView;
-@property (nonatomic, readonly) NSInteger maxCommentLength;
+@property (nonatomic, readonly) NSInteger maximumLengthOfComment;
+@property (nonatomic, readonly) NSInteger maximumLengthOfVideo;
 - (void) login;
 - (void) logout;
 - (void) enable;
@@ -52,7 +57,8 @@
 - (void) refreshCredential;
 - (void) clearCredentials;
 - (void) submitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
-- (void) cancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo;
+- (void) submitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
+- (void) cancelContentSubmit:(PhotoSubmitterContentEntity *)content;
 - (BOOL) isProcessableURL:(NSURL *)url;
 - (BOOL) didOpenURL:(NSURL *)url;
 - (void) addPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>)photoDelegate;
@@ -70,7 +76,8 @@
 - (void) onLogin;
 - (void) onLogout;
 - (id) onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
-- (id) onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo;
+- (id) onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
+- (id) onCancelContentSubmit:(PhotoSubmitterContentEntity *)content;
 @end
 
 /*!

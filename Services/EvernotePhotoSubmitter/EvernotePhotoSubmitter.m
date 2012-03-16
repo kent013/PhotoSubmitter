@@ -131,7 +131,7 @@
     return [evernote_ isSessionValid];
 }
 
-#pragma mark - photo
+#pragma mark - contents
 /*!
  * submit photo
  */
@@ -165,12 +165,26 @@
 }    
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
-    EvernoteRequest *request = (EvernoteRequest *)[self requestForPhoto:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    EvernoteRequest *request = (EvernoteRequest *)[self requestForPhoto:content.contentHash];
     [request abort];
     return request;
+}
+
+/*!
+ * is video supported
+ */
+- (BOOL)isVideoSupported{
+    return NO;
 }
 
 #pragma mark - album
@@ -247,7 +261,7 @@
     if([request.method isEqualToString:@"createNote"] == NO){
         return;
     }
-    [self completeSubmitPhotoWithRequest:request];
+    [self completeSubmitContentWithRequest:request];
 }
 
 /*!
@@ -258,7 +272,7 @@
         return;
     }
     NSLog(@"%s, %@", __PRETTY_FUNCTION__, exception.description);
-    [self completeSubmitPhotoWithRequest:request andError:nil];
+    [self completeSubmitContentWithRequest:request andError:nil];
 }
 
 /*!

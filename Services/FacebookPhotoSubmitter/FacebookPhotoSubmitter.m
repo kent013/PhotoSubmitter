@@ -79,7 +79,7 @@
         NSString *username = [[result objectForKey:@"name"] stringByReplacingOccurrencesOfRegex:@" +" withString:@" "];
         self.username = username;
     }else if([request.url isMatchedByRegex:@"photos$"]){
-        [self completeSubmitPhotoWithRequest:request];
+        [self completeSubmitContentWithRequest:request];
     }else if([request.url isMatchedByRegex:@"albums$"] && 
              [request.httpMethod isEqualToString:@"POST"]){
         [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:YES withError:nil];
@@ -111,7 +111,7 @@
              [request.httpMethod isEqualToString:@"POST"]){
         [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:NO withError:error];
     }else if([request.url isMatchedByRegex:@"photos$"]){
-        [self completeSubmitPhotoWithRequest:request andError:error];
+        [self completeSubmitContentWithRequest:request andError:error];
     }
     [self clearRequest:request];
 };
@@ -148,7 +148,7 @@
  */
 -(void)onLogin{
     NSArray *permissions = 
-    [NSArray arrayWithObjects:@"publish_stream", @"user_location", @"user_photos", @"offline_access", nil];
+    [NSArray arrayWithObjects:@"publish_stream", @"user_location", @"user_photos", @"offline_access", @"user_videos", nil];
     [facebook_ authorize:permissions];
 }
 
@@ -193,7 +193,7 @@
     return NO;
 }
 
-#pragma mark - photo
+#pragma mark - contents
 /*!
  * submit photo with data, comment and delegate
  */
@@ -217,12 +217,33 @@
 }
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
-    FBRequest *request = (FBRequest *)[self requestForPhoto:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{    
+    NSMutableDictionary *params = 
+    [NSMutableDictionary dictionaryWithObjectsAndKeys: 
+     video.data, @"source", 
+     video.comment, @"title",
+     nil];
+    NSString *path = @"me/videos";
+    FBRequest *request = [facebook_ requestWithGraphPath:path andParams:params andHttpMethod:@"POST" andDelegate:self];
+    return request;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    FBRequest *request = (FBRequest *)[self requestForPhoto:content.contentHash];
     [request.connection cancel];
     return request;
+}
+
+/*!
+ * maximum video length
+ */
+- (NSInteger)maximumLengthOfVideo{
+    return 180 * 60;
 }
 
 #pragma mark - albums

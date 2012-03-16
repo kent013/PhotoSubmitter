@@ -22,7 +22,7 @@
     NSMutableArray *delegates_;
 }
 @property (strong, nonatomic) id<PhotoSubmitterProtocol> submitter;
-@property (strong, nonatomic) PhotoSubmitterImageEntity *photo;
+@property (strong, nonatomic) PhotoSubmitterContentEntity *content;
 @property (assign, nonatomic) BOOL isFailed;
 @property (readonly, nonatomic) NSMutableArray *delegates;
 
@@ -32,7 +32,7 @@
 - (void) clearDelegate:(id<PhotoSubmitterOperationDelegate>)delegate;
 - (void) pause;
 
-- (id)initWithSubmitter:(id<PhotoSubmitterProtocol>)submitter photo:(PhotoSubmitterImageEntity *)photo;
+- (id)initWithSubmitter:(id<PhotoSubmitterProtocol>)submitter andContent:(PhotoSubmitterContentEntity *)content;
 + (id)operationWithOperation:(PhotoSubmitterOperation *)operation;
 @end
 

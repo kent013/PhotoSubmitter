@@ -187,7 +187,7 @@
         [self removeSettingForKey:[self photosetDummyPhotoKey:self.targetAlbum.albumId]];
         
 	}else if([inRequest.sessionInfo isEqualToString: PS_FLICKR_API_UPLOAD_IMAGE]){
-        [self completeSubmitPhotoWithRequest:inRequest];          
+        [self completeSubmitContentWithRequest:inRequest];          
         NSString *photoId = [[inResponseDictionary objectForKey:@"photoid"] objectForKey:@"_text"];
         
         if([self settingForKey:PS_FLICKR_SETTING_DUMMY_PHOTO_ID] == nil){
@@ -204,7 +204,7 @@
  */
 - (void)flickrAPIRequest:(OFFlickrAPIRequest *)inRequest didFailWithError:(NSError *)inError{
     if([inRequest.sessionInfo isEqualToString: PS_FLICKR_API_UPLOAD_IMAGE]){
-        [self completeSubmitPhotoWithRequest:inRequest andError:inError];  
+        [self completeSubmitContentWithRequest:inRequest andError:inError];  
     }else if([inRequest.sessionInfo isEqualToString:PS_FLICKR_API_ADD_PHOTOSET_PHOTO]){
         [self clearRequest:inRequest];
     }else if([inRequest.sessionInfo isEqualToString:PS_FLICKR_API_CREATE_PHOTOSET]){
@@ -338,7 +338,7 @@
     return NO;
 }
 
-#pragma mark - photo
+#pragma mark - contents
 /*!
  * submit photo
  */
@@ -351,12 +351,26 @@
 }
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
-    OFFlickrAPIRequest *request = (OFFlickrAPIRequest *)[self requestForPhoto:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
+}
+
+/*!
+  * cancel content upload
+  */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    OFFlickrAPIRequest *request = (OFFlickrAPIRequest *)[self requestForPhoto:content.contentHash];
     [request cancel];
     return request;
+}
+
+/*!
+ * is video supported
+ */
+- (BOOL)isVideoSupported{
+    return NO;
 }
 
 #pragma mark - albums

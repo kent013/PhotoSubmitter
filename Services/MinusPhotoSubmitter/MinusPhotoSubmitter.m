@@ -130,7 +130,7 @@ static NSString *kDefaultAlbum = @"tottepost";
     return [minus_ isSessionValid];
 }
 
-#pragma mark - photo
+#pragma mark - content
 /*!
  * submit photo with data, comment and delegate
  */
@@ -147,12 +147,26 @@ static NSString *kDefaultAlbum = @"tottepost";
 }    
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
-    MinusRequest *request = (MinusRequest *)[self requestForPhoto:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    MinusRequest *request = (MinusRequest *)[self requestForPhoto:content.contentHash];
     [request cancel];
     return request;
+}
+
+/*!
+ * is video supported
+ */
+- (BOOL)isVideoSupported{
+    return NO;
 }
 
 #pragma mark - album
@@ -279,7 +293,7 @@ static NSString *kDefaultAlbum = @"tottepost";
         }
         self.username = [result objectForKey:@"display_name"];
     }else if([request.tag isEqualToString:kMinusRequestCreateFile]){
-        [self completeSubmitPhotoWithRequest:request];
+        [self completeSubmitContentWithRequest:request];
     }else if([request.tag isEqualToString:kMinusRequestCreateFolder]){
         [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:YES withError:nil];
         [self clearRequest:request];
@@ -308,7 +322,7 @@ static NSString *kDefaultAlbum = @"tottepost";
     NSLog(@"%@", error);
     if([request.tag isEqualToString:kMinusRequestActiveUser]){
     }else if([request.tag isEqualToString:kMinusRequestCreateFile]){
-        [self completeSubmitPhotoWithRequest:request andError:error];
+        [self completeSubmitContentWithRequest:request andError:error];
     }else if([request.tag isEqualToString:kMinusRequestCreateFolder]){
     }else if([request.tag isEqualToString:kMinusRequestFoldersWithUsername]){
         [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:NO withError:error];

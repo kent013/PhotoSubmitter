@@ -90,21 +90,13 @@
 //Public Implementations
 //----------------------------------------------------------------------------
 @implementation PhotoSubmitterImageEntity
-@synthesize data = data_;
-@synthesize timestamp = timestamp_;
-@synthesize path = path_;
-@synthesize photoHash = photoHash_;
-@synthesize comment;
-@synthesize location;
 
 /*!
  * init with data
  */
 - (id)initWithData:(NSData *)inData{
-    self = [super init];
+    self = [super initWithData:inData];
     if(self){
-        data_ = inData;
-        timestamp_ = [NSDate date];
         resizedImages_ = [[NSMutableDictionary alloc] init];
     }
     return self;
@@ -136,13 +128,6 @@
 }
 
 /*!
- * md5 hash
- */
-- (NSString *)md5{
-    return self.data.MD5DigestString;
-}
-
-/*!
  * populate image
  */
 - (UIImage *)image{
@@ -150,14 +135,6 @@
         image_ = [[UIImage imageWithData:self.data] fixOrientation];
     }
     return image_;
-}
-
-/*!
- * populate base64 data
- */
-- (NSString *)base64String{
-    NSString *base64 = [self.data base64EncodedString];
-    return [base64 stringByReplacingOccurrencesOfString:@"\r" withString:@""];
 }
 
 /*!
@@ -228,35 +205,20 @@
 }
 
 /*!
- * get photo hash
- */
-- (NSString *)photoHash{
-    if(photoHash_ == nil){
-        photoHash_ = self.md5;
-    }
-    return photoHash_;
-}
-
-/*!
- * encode
- */
-- (void)encodeWithCoder:(NSCoder*)coder {
-    [coder encodeObject:data_ forKey:@"data"];
-    [coder encodeObject:timestamp_ forKey:@"timestamp"];
-    [coder encodeObject:path_ forKey:@"path"];
-}
-
-/*!
  * init with coder
  */
 - (id)initWithCoder:(NSCoder*)coder {
-    self = [super init];
+    self = [super initWithCoder:coder];
     if (self) {
-        data_ = [coder decodeObjectForKey:@"data"]; 
-        timestamp_ = [coder decodeObjectForKey:@"timestamp"];
-        path_ = [coder decodeObjectForKey:@"path"];
         resizedImages_ = [[NSMutableDictionary alloc] init];
     }
     return self;
+}
+
+/*!
+ * type
+ */
+- (PhotoSubmitterContentType)type{
+    return PhotoSubmitterContentTypePhoto;
 }
 @end

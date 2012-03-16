@@ -78,7 +78,7 @@
  */
 - (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSString *hash = photo.photoHash;
+        NSString *hash = photo.contentHash;
         ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
         [lib writeImageDataToSavedPhotosAlbum:photo.data
                                      metadata:photo.metadata
@@ -102,9 +102,36 @@
 }
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *hash = video.contentHash;
+        ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
+        [lib writeVideoAtPathToSavedPhotosAlbum:video.url 
+                                completionBlock:^(NSURL* url, NSError* error)
+         {
+             [self photoSubmitter:self didProgressChanged:hash progress:0.75];
+             if(error == nil){
+                 [self photoSubmitter:self didSubmitted:hash suceeded:YES message:@"Photo upload succeeded"];
+             }else{
+                 [self photoSubmitter:self didSubmitted:hash suceeded:NO message:[error localizedDescription]];
+             }
+             id<PhotoSubmitterPhotoOperationDelegate> operationDelegate = [self operationDelegateForRequest:hash];
+             [operationDelegate photoSubmitterDidOperationFinished:YES];
+             [self clearRequest:hash];
+         }];
+        [self photoSubmitter:self willStartUpload:hash];
+        [self photoSubmitter:self didProgressChanged:hash progress:0.25];
+        [self setOperationDelegate:delegate forRequest:hash];
+    });    
+    return nil;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
     return nil;
 }
 

@@ -67,11 +67,21 @@
     }
 
     [self setValue:[NSNumber numberWithBool:YES] forKey:@"isExecuting"];
-    [self.submitter submitPhoto:self.photo andOperationDelegate:self];
+    
+    if(self.content.isPhoto){
+        [self.submitter submitPhoto:(PhotoSubmitterImageEntity *)self.content andOperationDelegate:self];
+    }else if(self.content.isVideo){
+        [self.submitter submitVideo:(PhotoSubmitterVideoEntity *)self.content andOperationDelegate:self];
+    }else{
+        NSLog(@"type is unknown, %s", __PRETTY_FUNCTION__);
+        [self setValue:[NSNumber numberWithBool:YES] forKey:@"isFinished"];       
+        return;
+    }
+    
     do {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
         if(isCancelled){
-            [self.submitter cancelPhotoSubmit: self.photo];
+            [self.submitter cancelContentSubmit: self.content];
             break;
         }
     } while (isExecuting);
@@ -93,7 +103,7 @@
 //----------------------------------------------------------------------------
 @implementation PhotoSubmitterOperation
 @synthesize submitter;
-@synthesize photo;
+@synthesize content;
 @synthesize delegates = delegates_;
 @synthesize isFailed = isFailed_;
 
@@ -101,11 +111,11 @@
  * initialize with data
  */
 - (id)initWithSubmitter:(id<PhotoSubmitterProtocol>)inSubmitter 
-                  photo:(PhotoSubmitterImageEntity *)inPhoto{
+             andContent:(PhotoSubmitterContentEntity *)inContent{
     self = [super init];
     if(self){
         self.submitter = inSubmitter;
-        self.photo = inPhoto;
+        self.content = inContent;
         delegates_ = [[NSMutableArray alloc] init];
     }
     return self;
@@ -116,7 +126,7 @@
  */
 - (void)encodeWithCoder:(NSCoder*)coder {
     [coder encodeObject:self.submitter.type forKey:@"submitter_type"];
-    [coder encodeObject:self.photo forKey:@"photo"];
+    [coder encodeObject:self.content forKey:@"content"];
 }
 
 /*!
@@ -128,7 +138,7 @@
     if (self) {
         self.submitter = 
             [PhotoSubmitterManager submitterForType:[coder decodeObjectForKey:@"submitter_type"]];
-        self.photo = [coder decodeObjectForKey:@"photo"];
+        self.content = [coder decodeObjectForKey:@"content"];
     }
     return self;
 }
@@ -160,7 +170,7 @@
  * create new instance from operation
  */
 + (id)operationWithOperation:(PhotoSubmitterOperation *)operation{
-    PhotoSubmitterOperation *ret = [[PhotoSubmitterOperation alloc] initWithSubmitter:operation.submitter photo:operation.photo];
+    PhotoSubmitterOperation *ret = [[PhotoSubmitterOperation alloc] initWithSubmitter:operation.submitter andContent:operation.content];
     for(id<PhotoSubmitterOperationDelegate> delegate in operation.delegates){
         [ret addDelegate:delegate];
     }

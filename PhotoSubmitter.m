@@ -237,42 +237,25 @@
     [self.authDelegate photoSubmitter:self didLogout:self.type];
 }
 
-#pragma mark - photos
-/*!
- * submit photo with data, comment and delegate
- */
-- (void) submitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
-    id<PhotoSubmitterInstanceProtocol> instance = [self subclassInstance];
-    
-    if(delegate.isCancelled){
-        return;
-    }
-    id request = [instance onSubmitPhoto:photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate];
-    if(request == nil){
-        return;
-    }
-    [self setPhotoHash:photo.photoHash forRequest:request];
-    [self addRequest:request];
-    [self setOperationDelegate:delegate forRequest:request];
-    [self photoSubmitter:self willStartUpload:photo.photoHash];    
-}
+#pragma mark - contents
+
 
 /*!
  * cancel photo upload
  */
-- (void) cancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
+- (void) cancelContentSubmit:(PhotoSubmitterContentEntity *)photo{
     id<PhotoSubmitterInstanceProtocol> instance = [self subclassInstance];
-    id request = [instance onCancelPhotoSubmit:photo];
+    id request = [instance onCancelContentSubmit:photo];
     id<PhotoSubmitterPhotoOperationDelegate> operationDelegate = [self operationDelegateForRequest:request];
     [operationDelegate photoSubmitterDidOperationCanceled];
-    [self photoSubmitter:self didCanceled:photo.photoHash];
+    [self photoSubmitter:self didCanceled:photo.contentHash];
     [self clearRequest:request];    
 }
 
 /*!
  * complete submit photo operation and send message to delegates.
  */
-- (void)completeSubmitPhotoWithRequest:(id)request{
+- (void)completeSubmitContentWithRequest:(id)request{
     NSString *hash = [self photoForRequest:request];
     
     id<PhotoSubmitterPhotoOperationDelegate> operationDelegate = [self operationDelegateForRequest:request];
@@ -286,7 +269,7 @@
 /*!
  * complete submit photo operation and send error message to delegates.
  */
-- (void)completeSubmitPhotoWithRequest:(id)request andError:(NSError *)error{
+- (void)completeSubmitContentWithRequest:(id)request andError:(NSError *)error{
     NSString *hash = [self photoForRequest:request];
     [self photoSubmitter:self didSubmitted:hash suceeded:NO message:[error localizedDescription]];
     id<PhotoSubmitterPhotoOperationDelegate> operationDelegate = [self operationDelegateForRequest:request];
@@ -294,6 +277,67 @@
     
     //delay for Dropbox
     [self performSelector:@selector(clearRequest:) withObject:request afterDelay:2.0];
+}
+
+#pragma mark - photos
+/*!
+ * submit photo with data, comment and delegate
+ */
+- (void)submitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    id<PhotoSubmitterInstanceProtocol> instance = [self subclassInstance];
+    
+    if(delegate.isCancelled){
+        return;
+    }
+    id request = [instance onSubmitPhoto:photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate];
+    if(request == nil){
+        return;
+    }
+    [self setPhotoHash:photo.contentHash forRequest:request];
+    [self addRequest:request];
+    [self setOperationDelegate:delegate forRequest:request];
+    [self photoSubmitter:self willStartUpload:photo.contentHash];    
+}
+
+/*!
+ * is photo supported
+ */
+- (BOOL)isPhotoSupported{
+    return YES;
+}
+
+#pragma mark - videos
+/*!
+ * submit video
+ */
+- (void) submitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    id<PhotoSubmitterInstanceProtocol> instance = [self subclassInstance];
+    
+    if(delegate.isCancelled){
+        return;
+    }
+    id request = [instance onSubmitVideo:video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate];
+    if(request == nil){
+        return;
+    }
+    [self setPhotoHash:video.contentHash forRequest:request];
+    [self addRequest:request];
+    [self setOperationDelegate:delegate forRequest:request];
+    [self photoSubmitter:self willStartUpload:video.contentHash];    
+}
+
+/*!
+ * is photo supported
+ */
+- (BOOL)isVideoSupported{
+    return YES;
+}
+
+/*!
+ * maximum length of video
+ */
+- (NSInteger)maximumLengthOfVideo{
+    return 0;
 }
 
 #pragma mark - albums
@@ -421,9 +465,9 @@
 }
 
 /*!
- * max comment length
+ * maximum comment length
  */
-- (NSInteger)maxCommentLength{
+- (NSInteger)maximumLengthOfComment{
     return 0;
 }
 

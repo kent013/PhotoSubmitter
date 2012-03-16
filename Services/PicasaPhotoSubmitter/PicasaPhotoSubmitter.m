@@ -139,12 +139,12 @@ ofTotalByteCount:(unsigned long long)dataLength {
      finishedWithEntry:(GDataEntryPhoto *)photoEntry
                  error:(NSError *)error {    
     if (error == nil) {
-        [self completeSubmitPhotoWithRequest:ticket];
+        [self completeSubmitContentWithRequest:ticket];
     } else {
         if(self.targetAlbum != nil){
             [self removeSettingForKey:self.targetAlbum.albumId];
         }
-        [self completeSubmitPhotoWithRequest:ticket andError:error];
+        [self completeSubmitContentWithRequest:ticket andError:error];
     }
 }
 
@@ -286,7 +286,7 @@ ofTotalByteCount:(unsigned long long)dataLength {
     [newEntry setTimestamp:[GDataPhotoTimestamp timestampWithDate:photo.timestamp]];
     
     [newEntry setPhotoData:photo.data];
-    [newEntry setUploadSlug:photo.photoHash];
+    [newEntry setUploadSlug:photo.contentHash];
     
     NSString *mimeType = @"image/jpeg";
     [newEntry setPhotoMIMEType:mimeType];
@@ -315,15 +315,29 @@ ofTotalByteCount:(unsigned long long)dataLength {
         [service_ setServiceUploadProgressSelector:nil];    
     };
     return ticket;
-}    
+}
 
 /*!
- * cancel photo upload
+ * submit video
  */
-- (id)onCancelPhotoSubmit:(PhotoSubmitterImageEntity *)photo{
-    GDataServiceTicket *ticket = (GDataServiceTicket *)[self requestForPhoto:photo.photoHash];
+- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
+}
+
+/*!
+ * cancel content upload
+ */
+- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+    GDataServiceTicket *ticket = (GDataServiceTicket *)[self requestForPhoto:content.contentHash];
     [ticket cancelTicket];
     return ticket;
+}
+
+/*!
+ * is video supported
+ */
+- (BOOL)isVideoSupported{
+    return NO;
 }
 
 #pragma mark - album

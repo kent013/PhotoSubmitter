@@ -50,8 +50,8 @@
 /*!
  * send signal to delegates
  */
-- (void) completeSubmitPhotoWithRequest:(id)request;
-- (void) completeSubmitPhotoWithRequest:(id)request andError:(NSError *)error;
+- (void) completeSubmitContentWithRequest:(id)request;
+- (void) completeSubmitContentWithRequest:(id)request andError:(NSError *)error;
 - (void) completeLogin;
 - (void) completeLoginFailed;
 - (void) completeLogout;
@@ -67,7 +67,7 @@
 
 //photo delegate methods
 - (void) addPhotoDelegate:(id<PhotoSubmitterPhotoDelegate>)photoDelegate;
-- (void)removePhotoDelegate: (id<PhotoSubmitterPhotoDelegate>)photoDelegate;
+- (void) removePhotoDelegate: (id<PhotoSubmitterPhotoDelegate>)photoDelegate;
 - (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willStartUpload:(NSString *)imageHash;
 - (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didSubmitted:(NSString *)imageHash suceeded:(BOOL)suceeded message:(NSString *)message;
 - (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didProgressChanged:(NSString *)imageHash progress:(CGFloat)progress;
