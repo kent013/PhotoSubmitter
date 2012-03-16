@@ -43,6 +43,7 @@
 - (void) fetchDummyPrimaryPhoto;
 - (void) removeDummyPrimaryPhoto:(NSString*)photoId albumId:(NSString *)albumId;
 - (NSString *) photosetDummyPhotoKey:(NSString*)photosetId;
+- (id) submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
 @end
 
 @implementation FlickrPhotoSubmitter(PrivateImplementation)
@@ -259,6 +260,17 @@
         [self fetchDummyPrimaryPhoto];
     }
 }
+
+/*!
+ * submit content
+ */
+- (id)submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    OFFlickrAPIRequest *request = [[OFFlickrAPIRequest alloc] initWithAPIContext:flickr_];
+    request.delegate = self;
+    request.sessionInfo = PS_FLICKR_API_UPLOAD_IMAGE;
+    [request uploadImageStream:[NSInputStream inputStreamWithData:content.data] suggestedFilename:@"TottePost uploads" MIMEType:@"image/jpeg" arguments:[NSDictionary dictionaryWithObjectsAndKeys:@"0", @"is_public", content.comment, @"title", nil]];
+    return request;
+}
 @end
 
 //-----------------------------------------------------------------------------
@@ -343,18 +355,14 @@
  * submit photo
  */
 - (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
-    OFFlickrAPIRequest *request = [[OFFlickrAPIRequest alloc] initWithAPIContext:flickr_];
-    request.delegate = self;
-    request.sessionInfo = PS_FLICKR_API_UPLOAD_IMAGE;
-    [request uploadImageStream:[NSInputStream inputStreamWithData:photo.data] suggestedFilename:@"TottePost uploads" MIMEType:@"image/jpeg" arguments:[NSDictionary dictionaryWithObjectsAndKeys:@"0", @"is_public", photo.comment, @"title", nil]];
-    return request;
+    return [self submitContent:photo andOperationDelegate:delegate];
 }
 
 /*!
  * submit video
  */
 - (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
-    return nil;
+    return [self submitContent:video andOperationDelegate:delegate];
 }
 
 /*!
@@ -364,13 +372,6 @@
     OFFlickrAPIRequest *request = (OFFlickrAPIRequest *)[self requestForPhoto:content.contentHash];
     [request cancel];
     return request;
-}
-
-/*!
- * is video supported
- */
-- (BOOL)isVideoSupported{
-    return NO;
 }
 
 #pragma mark - albums

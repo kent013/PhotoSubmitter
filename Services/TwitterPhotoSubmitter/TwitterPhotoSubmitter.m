@@ -22,6 +22,7 @@
 @interface TwitterPhotoSubmitter(PrivateImplementation)
 - (void) setupInitialState;
 - (ACAccount *)selectedAccount;
+- (id) submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
 @end
 
 #pragma mark - private implementations
@@ -80,6 +81,47 @@
     CGFloat progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
     NSString *hash = [self photoForRequest:connection];
     [self photoSubmitter:self didProgressChanged:hash progress:progress];
+}
+
+/*!
+ * submit content
+ */
+- (id)submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    if(content.comment == nil){
+        content.comment = defaultComment_;
+    }
+    
+    ACAccount *twitterAccount = [self selectedAccount];
+    if (twitterAccount == nil) {
+        return nil;
+    }
+    
+    NSURL *url = 
+    [NSURL URLWithString:@"https://upload.twitter.com/1/statuses/update_with_media.json"];
+    TWRequest *request = [[TWRequest alloc] initWithURL:url parameters:nil
+                                          requestMethod:TWRequestMethodPOST];
+    
+    [request setAccount:twitterAccount];
+    [request addMultiPartData:content.data 
+                     withName:@"media[]" type:@"multipart/form-data"];
+    [request addMultiPartData:[content.comment dataUsingEncoding:NSUTF8StringEncoding] 
+                     withName:@"status" type:@"multipart/form-data"];
+    if(content.location){
+        NSLog(@"%@", [NSString stringWithFormat:@"%g", content.location.coordinate.longitude]);
+        [request addMultiPartData:[[NSString stringWithFormat:@"%g", content.location.coordinate.latitude]  dataUsingEncoding:NSUTF8StringEncoding] 
+                         withName:@"lat" type:@"multipart/form-data"];
+        [request addMultiPartData:[[NSString stringWithFormat:@"%g", content.location.coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] 
+                         withName:@"long" type:@"multipart/form-data"];
+        
+    }
+    
+    NSURLConnection *connection = 
+    [[NSURLConnection alloc] initWithRequest:request.signedURLRequest delegate:self startImmediately:NO];
+    
+    if(connection != nil){
+        [connection start];
+    }    
+    return connection;
 }
 @end
 
@@ -188,47 +230,14 @@
  * submit photo
  */
 - (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
-    if(photo.comment == nil){
-        photo.comment = defaultComment_;
-    }
-    
-    ACAccount *twitterAccount = [self selectedAccount];
-    if (twitterAccount == nil) {
-        return nil;
-    }
-    
-    NSURL *url = 
-    [NSURL URLWithString:@"https://upload.twitter.com/1/statuses/update_with_media.json"];
-    TWRequest *request = [[TWRequest alloc] initWithURL:url parameters:nil
-                                          requestMethod:TWRequestMethodPOST];
-    
-    [request setAccount:twitterAccount];
-    [request addMultiPartData:photo.data 
-                     withName:@"media[]" type:@"multipart/form-data"];
-    [request addMultiPartData:[photo.comment dataUsingEncoding:NSUTF8StringEncoding] 
-                     withName:@"status" type:@"multipart/form-data"];
-    if(photo.location){
-        NSLog(@"%@", [NSString stringWithFormat:@"%g", photo.location.coordinate.longitude]);
-        [request addMultiPartData:[[NSString stringWithFormat:@"%g", photo.location.coordinate.latitude]  dataUsingEncoding:NSUTF8StringEncoding] 
-                         withName:@"lat" type:@"multipart/form-data"];
-        [request addMultiPartData:[[NSString stringWithFormat:@"%g", photo.location.coordinate.longitude] dataUsingEncoding:NSUTF8StringEncoding] 
-                         withName:@"long" type:@"multipart/form-data"];
-        
-    }
-    
-    NSURLConnection *connection = 
-    [[NSURLConnection alloc] initWithRequest:request.signedURLRequest delegate:self startImmediately:NO];
-    
-    if(connection != nil){
-        [connection start];
-    }    
-    return connection;
+    return [self submitContent:photo andOperationDelegate:delegate];
 }
 
 /*!
  * submit video
  */
 - (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    //return [self submitContent:video andOperationDelegate:delegate];
     return nil;
 }
 
