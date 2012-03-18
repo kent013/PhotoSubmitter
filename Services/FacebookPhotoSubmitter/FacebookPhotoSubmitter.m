@@ -40,8 +40,7 @@
                      usesOperation:YES 
                    requiresNetwork:YES 
                   isAlbumSupported:YES];
-    
-    facebook_ = [[Facebook alloc] initWithAppId:PHOTO_SUBMITTER_FACEBOOK_API_ID andDelegate:self];
+    facebook_ = [[Facebook alloc] initWithAppId:PHOTO_SUBMITTER_FACEBOOK_API_ID urlSchemeSuffix:[PhotoSubmitterManager photoSubmitterCustomSchemaSuffix] andDelegate:self];
     if ([self settingExistsForKey:PS_FACEBOOK_AUTH_TOKEN] 
         && [self settingExistsForKey:PS_FACEBOOK_AUTH_EXPIRATION_DATE]) {
         facebook_.accessToken = [self settingForKey:PS_FACEBOOK_AUTH_TOKEN];

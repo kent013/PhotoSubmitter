@@ -45,8 +45,7 @@
                 Class cls = classes[i];
                 NSString *className = [NSString stringWithUTF8String:class_getName(cls)];
                 if([className isMatchedByRegex:@"PhotoSubmitter$"]){
-                    id<PhotoSubmitterProtocol> submitter = [[NSClassFromString(className) alloc] init];
-                    [loadedClasses setObject:submitter.type forKey:className];
+                    [loadedClasses setObject:className forKey:className];
                 }
             }
             free(classes);

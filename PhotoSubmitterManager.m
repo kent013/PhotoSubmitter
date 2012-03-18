@@ -23,7 +23,11 @@
 /*!
  * singleton instance
  */
-static PhotoSubmitterManager* TottePostPhotoSubmitterSingletonInstance = nil;
+static PhotoSubmitterManager* PhotoSubmitterSingletonInstance_ = nil;
+/*!
+ * custom schema suffix value
+ */
+static NSString *PhotoSubmitterCustomSchemaSuffix_ = @"";
 
 /*!
  * photo submitter supported types
@@ -68,8 +72,6 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         isConnected_ = YES;
     }
     [[FBNetworkReachability sharedInstance] startNotifier];
-    
-    [self loadSubmitters];
 }
 
 /*!
@@ -249,9 +251,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
             Class cls = classes[i];
             NSString *className = [NSString stringWithUTF8String:class_getName(cls)];
             if([className isMatchedByRegex:@"^(.+?)PhotoSubmitter$"]){
-                id<PhotoSubmitterProtocol> submitter = [[NSClassFromString(className) alloc] init];
-                [registeredPhotoSubmitterTypes addObject:submitter.type];
-                submitter = nil;
+                [registeredPhotoSubmitterTypes addObject:className];
             }
         }
         free(classes);
@@ -623,10 +623,25 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * singleton method
  */
 + (PhotoSubmitterManager *)sharedInstance{
-    if(TottePostPhotoSubmitterSingletonInstance == nil){
-        TottePostPhotoSubmitterSingletonInstance = [[PhotoSubmitterManager alloc]init];
+    if(PhotoSubmitterSingletonInstance_ == nil){
+        PhotoSubmitterSingletonInstance_ = [[PhotoSubmitterManager alloc] init];
+        [PhotoSubmitterSingletonInstance_ loadSubmitters];
     }
-    return TottePostPhotoSubmitterSingletonInstance;
+    return PhotoSubmitterSingletonInstance_;
+}
+
+/*!
+ * get PhotoSubmitter's custom schema suffix
+ */
++ (NSString *)photoSubmitterCustomSchemaSuffix{
+    return PhotoSubmitterCustomSchemaSuffix_;
+}
+
+/*!
+ * set PhotoSubmitter's custom schema suffix
+ */
++ (void)setPhotoSubmitterCustomSchemaSuffix:(NSString *)suffix{
+    PhotoSubmitterCustomSchemaSuffix_ = suffix;
 }
 
 /*!

@@ -15,7 +15,7 @@
 #import "RegexKitLite.h"
 #import "PhotoSubmitterManager.h"
 
-#define PS_EVERNOTE_AUTH_URL @"photosubmitter://auth/evernote"
+#define PS_EVERNOTE_AUTH_URL @"photosubmitter%@://auth/evernote"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -36,11 +36,12 @@
                      usesOperation:YES 
                    requiresNetwork:YES 
                   isAlbumSupported:YES];
+    NSString *scheme = [NSString stringWithFormat:PS_EVERNOTE_AUTH_URL, [PhotoSubmitterManager photoSubmitterCustomSchemaSuffix]];
     evernote_ = 
     [[Evernote alloc] initWithAuthType:EvernoteAuthTypeOAuthConsumer
                            consumerKey:EVERNOTE_SUBMITTER_API_KEY
                         consumerSecret:EVERNOTE_SUBMITTER_API_SECRET
-                        callbackScheme:PS_EVERNOTE_AUTH_URL
+                        callbackScheme:scheme
                             useSandBox:EVERNOTE_SUBMITTER_API_SANDBOX 
                            andDelegate:self];
     [evernote_ loadCredential];
@@ -102,7 +103,8 @@
   * check url is processable
   */
 - (BOOL)isProcessableURL:(NSURL *)url{
-    if([url.absoluteString isMatchedByRegex:PS_EVERNOTE_AUTH_URL]){
+    NSString *scheme = [NSString stringWithFormat:PS_EVERNOTE_AUTH_URL, [PhotoSubmitterManager photoSubmitterCustomSchemaSuffix]];
+    if([url.absoluteString isMatchedByRegex:scheme]){
         return YES;    
     }
     return NO;

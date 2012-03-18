@@ -16,7 +16,7 @@
 #import "RegexKitLite.h"
 #import "PhotoSubmitterManager.h"
 
-#define PS_FLICKR_AUTH_URL @"photosubmitter://auth/flickr"
+#define PS_FLICKR_AUTH_URL @"photosubmitter%@://auth/flickr"
 #define PS_FLICKR_AUTH_TOKEN @"PSFlickrOAuthToken"
 #define PS_FLICKR_AUTH_TOKEN_SECRET @"PSFlickrOAuthTokenSecret"
 
@@ -300,7 +300,8 @@
     authRequest_ = [[OFFlickrAPIRequest alloc] initWithAPIContext:flickr_];
     authRequest_.delegate = self;
     authRequest_.sessionInfo = PS_FLICKR_API_REQUEST_TOKEN;
-    [authRequest_ fetchOAuthRequestTokenWithCallbackURL:[NSURL URLWithString:PS_FLICKR_AUTH_URL]];
+    NSString *scheme = [NSString stringWithFormat:PS_FLICKR_AUTH_URL, [PhotoSubmitterManager photoSubmitterCustomSchemaSuffix]];
+    [authRequest_ fetchOAuthRequestTokenWithCallbackURL:[NSURL URLWithString:scheme]];
 }
 
 /*!
@@ -314,7 +315,8 @@
  * check url is processable
  */
 - (BOOL)isProcessableURL:(NSURL *)url{
-    if([url.absoluteString isMatchedByRegex:PS_FLICKR_AUTH_URL]){
+    NSString *scheme = [NSString stringWithFormat:PS_FLICKR_AUTH_URL, [PhotoSubmitterManager photoSubmitterCustomSchemaSuffix]];
+    if([url.absoluteString isMatchedByRegex:scheme]){
         return YES;    
     }
     return NO;
@@ -326,7 +328,8 @@
 - (BOOL)didOpenURL:(NSURL *)url{
     NSString *token = nil;
     NSString *verifier = nil;
-    BOOL result = OFExtractOAuthCallback(url, [NSURL URLWithString:PS_FLICKR_AUTH_URL], &token, &verifier);
+    NSString *scheme = [NSString stringWithFormat:PS_FLICKR_AUTH_URL, [PhotoSubmitterManager photoSubmitterCustomSchemaSuffix]];
+    BOOL result = OFExtractOAuthCallback(url, [NSURL URLWithString:scheme], &token, &verifier);
     
     if (!result) {
         NSLog(@"Cannot obtain token/secret from URL: %@", [url absoluteString]);

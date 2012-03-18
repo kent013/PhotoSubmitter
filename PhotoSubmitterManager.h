@@ -82,6 +82,8 @@
 + (void) registerPhotoSubmitterWithTypeName:(NSString *)type;
 + (void) registerPhotoSubmitterWithTypeNames:(NSArray *)types;
 + (NSString *) normalizeTypeName:(NSString *)type;
++ (NSString *) photoSubmitterCustomSchemaSuffix;
++ (void) setPhotoSubmitterCustomSchemaSuffix:(NSString *)suffix;
 @end
 
 
