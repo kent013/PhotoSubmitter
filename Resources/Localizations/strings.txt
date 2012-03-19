@@ -13,7 +13,7 @@
         ja = 一般
     [Settings_Section_Accounts]
         tags = common
-        en = Accounts
+        en = \ Accounts
         ja = アカウント
     [Settings_Section_Accounts_Footer]
         tags = common
@@ -119,6 +119,10 @@
         tags = common, twitter
         en = tottepost Photo
         ja = tottepost Photo       
+    [Detail_Section_Twitter_Accounts]
+        tags = common, twitter
+        en = \ Account Select
+        ja = アカウント選択
     [Alert_Comment_Too_Long]
         tags = common
         en = Comment is too long, please shoten it.

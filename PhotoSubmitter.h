@@ -59,6 +59,7 @@
 //request methods
 - (void) addRequest:(NSObject *)request;
 - (void) removeRequest:(NSObject *)request;
+- (PhotoSubmitterServiceSettingTableViewController *)settingViewInternal;
 
 //operation delegate methods
 - (void) setOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)operation forRequest:(NSObject *)request;

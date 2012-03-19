@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 #import "PhotoSubmitterImageEntity.h"
 #import "PhotoSubmitterSequencialOperationQueue.h"
+#import "PhotoSubmitterServiceSettingViewFactory.h"
 
 @protocol PhotoSubmitterManagerDelegate;
 
@@ -52,6 +53,7 @@
 @property (nonatomic, readonly) BOOL isError;
 @property (nonatomic, readonly) BOOL isPausingOperation;
 @property (nonatomic, readonly) NSInteger maxCommentLength;
+@property (nonatomic, assign) id<PhotoSubmitterSettingViewFactoryProtocol> settingViewFactory;
 
 - (void) submitPhoto:(PhotoSubmitterImageEntity *)photo;
 - (void) submitVideo:(PhotoSubmitterVideoEntity *)video;

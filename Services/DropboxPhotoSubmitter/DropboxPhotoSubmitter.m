@@ -22,6 +22,8 @@
 #define PS_DROPBOX_API_GET_TOKEN @"get_token"
 #define PS_DROPBOX_API_UPLOAD_IMAGE @"upload_image"
 
+static NSString *kDefaultAlbum = @"/";
+
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------

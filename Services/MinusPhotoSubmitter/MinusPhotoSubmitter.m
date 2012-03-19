@@ -274,10 +274,12 @@ static NSString *kDefaultAlbum = @"tottepost";
  * did album updated
  */
 - (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAlbumUpdated:(NSArray *)albums{
-    for(PhotoSubmitterAlbumEntity *album in albums){
-        if([album.name isEqualToString:kDefaultAlbum]){
-            self.targetAlbum = album;
-            break;
+    if(self.targetAlbum == nil){
+        for(PhotoSubmitterAlbumEntity *album in albums){
+            if([album.name isEqualToString:kDefaultAlbum]){
+                self.targetAlbum = album;
+                break;
+            }
         }
     }
     if(self.targetAlbum == nil){

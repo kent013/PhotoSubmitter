@@ -458,6 +458,18 @@
  * setting view
  */
 - (PhotoSubmitterServiceSettingTableViewController *)settingView{
+    PhotoSubmitterServiceSettingTableViewController *sv = [[PhotoSubmitterManager sharedInstance].settingViewFactory createSettingViewWithSubmitter:self];
+
+    if(sv){
+        return sv;
+    }
+    return self.subclassInstance.settingViewInternal;
+}
+
+/*!
+ * setting view internal
+ */
+- (PhotoSubmitterServiceSettingTableViewController *)settingViewInternal{
     if(self.isAlbumSupported){
         return [[AlbumPhotoSubmitterSettingTableViewController alloc] initWithType:self.type];
     }

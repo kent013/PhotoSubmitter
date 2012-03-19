@@ -78,6 +78,7 @@
 - (id) onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
 - (id) onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
 - (id) onCancelContentSubmit:(PhotoSubmitterContentEntity *)content;
+- (PhotoSubmitterServiceSettingTableViewController *)settingViewInternal;
 @end
 
 /*!
@@ -140,4 +141,11 @@
 @protocol PhotoSubmitterPasswordAuthViewDelegate <NSObject>
 - (void) didCancelPasswordAuthView: (UIViewController *)passwordAuthViewController;
 - (void) passwordAuthView: (UIViewController *)passwordAuthViewController didPresentUserId:(NSString *)userId password:(NSString *)password;
+@end
+
+/*!
+ * setting view factory delegate
+ */
+@protocol PhotoSubmitterSettingViewFactoryProtocol
+- (id)createSettingViewWithSubmitter:(id<PhotoSubmitterProtocol>)submitter;
 @end
