@@ -123,6 +123,34 @@
         tags = common, twitter
         en = \ Account Select
         ja = アカウント選択
+    [Twitter_Ask_For_Configure]
+        tags = common, twitter
+        en = Twitter account is not avaliable. Do you want to configure it?
+        ja = Twitterアカウントが設定されていません。設定画面へ移動しますか？
+    [Twitter_Ask_For_Configure_Title]
+        tags = common, twitter
+        en = No Account
+        ja = アカウントエラー
+    [Twitter_Ask_For_Configure_OK]
+        tags = common, twitter
+        en = Configure
+        ja = 移動する
+    [Twitter_Ask_For_Configure_Cancel]
+        tags = common, twitter
+        en = Cancel
+        ja = キャンセル
+    [Twitter_Account_Error]
+        tags = common, twitter
+        en = Twitter account is not avaliable. Please setup in setting.
+        ja = Twitterアカウントが設定されていません。設定画面で設定してください。
+    [Twitter_Account_Error_Title]
+        tags = common, twitter
+        en = No Account
+        ja = アカウントエラー
+    [Twitter_Account_Error_OK]
+        tags = common, twitter
+        en = OK
+        ja = OK
     [Alert_Comment_Too_Long]
         tags = common
         en = Comment is too long, please shoten it.

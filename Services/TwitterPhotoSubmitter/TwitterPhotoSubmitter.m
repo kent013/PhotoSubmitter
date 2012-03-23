@@ -153,19 +153,29 @@
         [accountStore_ requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
             if(granted) {
                 ACAccount *account = self.selectedAccount;
-                
-                if (account != nil){
-                    [self enable];
-                }else{
-                    UIAlertView* alert = 
-                    [[UIAlertView alloc] initWithTitle:@"Information"
-                                               message:@"Twitter account is not avaliable. do you want to configure it?"
-                                              delegate:self
-                                     cancelButtonTitle:@"Cancel"
-                                     otherButtonTitles:@"Configure", nil];
-                    [alert show];
-                    [self.authDelegate photoSubmitter:self didLogout:self.type];
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (account != nil){
+                        [self enable];
+                    }else if([[[UIDevice currentDevice] systemVersion] floatValue] < 5.09){
+                        UIAlertView* alert = 
+                        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"Twitter_Ask_For_Configure_Title"]
+                                                   message:[PSLang localized:@"Twitter_Ask_For_Configure"]
+                                                  delegate:self
+                                         cancelButtonTitle:[PSLang localized:@"Twitter_Ask_For_Configure_Cancel"]
+                                         otherButtonTitles:[PSLang localized:@"Twitter_Ask_For_Configure_OK"], nil];
+                        [alert show];
+                        [self.authDelegate photoSubmitter:self didLogout:self.type];
+                    }else{
+                        UIAlertView* alert = 
+                        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"Twitter_Account_Error_Title"]
+                                                   message:[PSLang localized:@"Twitter_Account_Error"]
+                                                  delegate:self
+                                         cancelButtonTitle:[PSLang localized:@"Twitter_Account_Error_OK"]
+                                         otherButtonTitles:nil, nil];
+                        [alert show];
+                        [self.authDelegate photoSubmitter:self didLogout:self.type];
+                    }
+                });
             }else{
                 [self.authDelegate photoSubmitter:self didLogout:self.type];
             }
