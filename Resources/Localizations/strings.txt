@@ -49,8 +49,12 @@
         ja = ログアウト
     [Detail_Row_LogoutButtonTitle]
         tags = common
-        en = logout
+        en = Logout
         ja = ログアウト
+    [Detail_Row_LogoutButtonConfirm]
+        tags = common
+        en = Are you sure?
+        ja = 本当にログアウトしますか？
     [Album_Detail_Section_Album_Footer]
         tags = common
         en = Selected album will be used for tottepost\n If you want to delete/edit album, please do so at %@.

@@ -12,6 +12,7 @@
 
 #import "SimplePhotoSubmitterSettingTableViewController.h"
 #import "PhotoSubmitterServiceSettingTableViewController.h"
+#import "MAConfirmButton.h"
 #import "PSLang.h"
 
 //-----------------------------------------------------------------------------
@@ -98,8 +99,8 @@
             cell.accessoryView = label;
         }else if(indexPath.row == SV_ROW_ACCOUNT_LOGOUT){
             cell.textLabel.text = [PSLang localized:@"Detail_Row_Logout"];
-            UIButton *button = [UIButton buttonWithType:SV_BUTTON_TYPE];
-            [button setTitle:[PSLang localized:@"Detail_Row_LogoutButtonTitle"] forState:UIControlStateNormal];
+            MAConfirmButton *button = [MAConfirmButton buttonWithTitle:[PSLang localized:@"Detail_Row_LogoutButtonTitle"] confirm:[PSLang localized:@"Detail_Row_LogoutButtonConfirm"]];
+            [button setTintColor:[UIColor colorWithRed:0.694 green:0.184 blue:0.196 alpha:1]];
             [button addTarget:self action:@selector(didLogoutButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
             cell.accessoryView = button;
         }
