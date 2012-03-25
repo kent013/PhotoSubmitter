@@ -87,16 +87,15 @@
  * fix orientation
  * http://stackoverflow.com/questions/5427656/ios-uiimagepickercontroller-result-image-orientation-after-upload
  */
-- (UIImage *)fixOrientation {
-    
+- (UIImage *)fixOrientationWithOrientation:(UIImageOrientation)orientation {
     // No-op if the orientation is already correct
-    if (self.imageOrientation == UIImageOrientationUp) return self;
+    if (orientation == UIImageOrientationUp) return self;
     
     // We need to calculate the proper transformation to make the image upright.
     // We do it in 2 steps: Rotate if Left/Right/Down, and then flip if Mirrored.
     CGAffineTransform transform = CGAffineTransformIdentity;
     
-    switch (self.imageOrientation) {
+    switch (orientation) {
         case UIImageOrientationDown:
         case UIImageOrientationDownMirrored:
             transform = CGAffineTransformTranslate(transform, self.size.width, self.size.height);
@@ -118,7 +117,7 @@
             break;
     }
     
-    switch (self.imageOrientation) {
+    switch (orientation) {
         case UIImageOrientationUpMirrored:
         case UIImageOrientationDownMirrored:
             transform = CGAffineTransformTranslate(transform, self.size.width, 0);
@@ -141,7 +140,7 @@
                                              CGImageGetColorSpace(self.CGImage),
                                              CGImageGetBitmapInfo(self.CGImage));
     CGContextConcatCTM(ctx, transform);
-    switch (self.imageOrientation) {
+    switch (orientation) {
         case UIImageOrientationLeft:
         case UIImageOrientationLeftMirrored:
         case UIImageOrientationRight:
@@ -161,5 +160,13 @@
     CGContextRelease(ctx);
     CGImageRelease(cgimg);
     return img;
+
+}
+
+/*!
+ * fix orientation
+ */
+- (UIImage *)fixOrientation {
+    return [self fixOrientationWithOrientation:self.imageOrientation];
 }
 @end

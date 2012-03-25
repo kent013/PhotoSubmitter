@@ -13,5 +13,6 @@
 - (CGImageRef)CGImageAutoRotated;
 - (UIImage*) UIImageAutoRotated;
 - (UIImage*) UIImageRotateByAngle :(int)angle;
+- (UIImage *)fixOrientationWithOrientation:(UIImageOrientation)orientation;
 - (UIImage*) fixOrientation;
 @end
