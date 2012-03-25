@@ -330,7 +330,6 @@ static NSString *kDefaultAlbum = @"tottepost";
  * request failed
  */
 - (void)request:(MinusRequest *)request didFailWithError:(NSError *)error{
-    NSLog(@"%@", error);
     if([request.tag isEqualToString:kMinusRequestActiveUser]){
     }else if([request.tag isEqualToString:kMinusRequestCreateFile]){
         [self completeSubmitContentWithRequest:request andError:error];
@@ -339,6 +338,9 @@ static NSString *kDefaultAlbum = @"tottepost";
         [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:NO withError:error];
     }else{
         NSLog(@"%s", __PRETTY_FUNCTION__);
+        if(error.code == 401){
+            [self logout];
+        }
     }
     [self clearRequest:request];
 }
