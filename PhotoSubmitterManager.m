@@ -185,20 +185,24 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * submit photo to social app
  */
 - (void)submitPhoto:(PhotoSubmitterImageEntity *)photo{
-    if(self.enableGeoTagging){
-        photo.location = self.location;
-    }
-    [photo preprocess];
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
-        if(submitter.isPhotoSupported && [submitter isLogined]){
-            if(self.submitPhotoWithOperations && submitter.useOperation){
-                PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:photo];
-                [self addOperation:operation];
-            }else{
-                [submitter submitPhoto:photo andOperationDelegate:nil];
+    @try{
+        if(self.enableGeoTagging){
+            photo.location = self.location;
+        }
+        [photo preprocess];
+        for(NSString *type in registeredPhotoSubmitterTypes){
+            id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+            if(submitter.isPhotoSupported && [submitter isLogined]){
+                if(self.submitPhotoWithOperations && submitter.useOperation){
+                    PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:photo];
+                    [self addOperation:operation];
+                }else{
+                    [submitter submitPhoto:photo andOperationDelegate:nil];
+                }
             }
         }
+    }@catch(NSException *e){
+        NSLog(@"%@", e);
     }
 }
 
@@ -206,19 +210,23 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * submit photo to social app
  */
 - (void)submitVideo:(PhotoSubmitterVideoEntity *)video{
-    if(self.enableGeoTagging){
-        video.location = self.location;
-    }
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
-        if(submitter.isVideoSupported && [submitter isLogined]){
-            if(self.submitPhotoWithOperations && submitter.useOperation){
-                PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:video];
-                [self addOperation:operation];
-            }else{
-                [submitter submitVideo:video andOperationDelegate:nil];
+    @try{
+        if(self.enableGeoTagging){
+            video.location = self.location;
+        }
+        for(NSString *type in registeredPhotoSubmitterTypes){
+            id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+            if(submitter.isVideoSupported && [submitter isLogined]){
+                if(self.submitPhotoWithOperations && submitter.useOperation){
+                    PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:video];
+                    [self addOperation:operation];
+                }else{
+                    [submitter submitVideo:video andOperationDelegate:nil];
+                }
             }
         }
+    }@catch(NSException *e){
+        NSLog(@"%@", e);
     }
 }
 
@@ -263,12 +271,17 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * refresh credentials
  */
 - (void)refreshCredentials{
-    for (NSString *type in [PhotoSubmitterManager registeredPhotoSubmitters]){
-        id<PhotoSubmitterProtocol> submitter = [self submitterForType:type];
-        if([submitter isEnabled]){
-            [submitter refreshCredential];
+    @try{
+        for (NSString *type in [PhotoSubmitterManager registeredPhotoSubmitters]){
+            id<PhotoSubmitterProtocol> submitter = [self submitterForType:type];
+            if([submitter isEnabled]){
+                [submitter refreshCredential];
+            }
         }
+    }@catch(NSException *e){
+        NSLog(@"%@", e);
     }
+
 }
 
 /*!
