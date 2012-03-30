@@ -336,6 +336,7 @@
             UISwitch *s = [self createSwitchWithTag:tag on:settings.commentPostEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
+            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingComment.png"];
             break;
         }    
         case SV_GENERAL_GPS:{
@@ -343,6 +344,7 @@
             UISwitch *s = [self createSwitchWithTag:tag on:settings.gpsEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
+            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingLocation.png"];
             break;
         }
         case SV_GENERAL_IMAGE:{
@@ -350,6 +352,7 @@
             UISwitch *s = [self createSwitchWithTag:tag on:settings.autoEnhance];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
+            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingAutoEnhance.png"];
             break;
         }
     }
