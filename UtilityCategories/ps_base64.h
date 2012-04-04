@@ -33,10 +33,10 @@
 
 /* $Id: base64.h 2494 2007-07-14 12:19:51Z mschwerin $ */
 
-#ifndef _BASE64_H_
-#define _BASE64_H_
+#ifndef _PS_BASE64_H_
+#define _PS_BASE64_H_
 
-int base64_encode (const void *data, int size, char **str);
-int base64_decode (const char *str, void *data);
+int ps_base64_encode (const void *data, int size, char **str);
+int ps_base64_decode (const char *str, void *data);
 
 #endif
