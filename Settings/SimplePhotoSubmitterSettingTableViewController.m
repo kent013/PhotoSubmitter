@@ -36,6 +36,8 @@
 - (void)didLogoutButtonTapped:(id)sender{
     [self.submitter logout];
     [self.navigationController popViewControllerAnimated:YES];
+    MAConfirmButton *button = (MAConfirmButton *)sender;
+    [button cancel];
 }
 @end
 

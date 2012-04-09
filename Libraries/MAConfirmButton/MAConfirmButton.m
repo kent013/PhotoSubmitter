@@ -24,7 +24,6 @@
 
 - (void)toggle;
 - (void)setupLayers;
-- (void)cancel;
 - (void)lighten;
 - (void)darken;
 
