@@ -15,6 +15,7 @@
 @implementation SFOAuthViewController
 
 @synthesize webView;
+@synthesize delegate;
 
 - (id)init {	
 	// Load up UI.
@@ -30,6 +31,10 @@
 
 - (void)viewDidUnload {
     [super viewDidUnload];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [self.delegate authViewControllerDismissed:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

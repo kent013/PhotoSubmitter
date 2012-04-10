@@ -11,6 +11,7 @@
 }
 
 +(NSString*)consumerKey;
++(NSString*)consumerSecret;
 +(NSString*)callbackUrl;
 +(NSURL*)loginServer;
 +(NSString*)tokenUrl;

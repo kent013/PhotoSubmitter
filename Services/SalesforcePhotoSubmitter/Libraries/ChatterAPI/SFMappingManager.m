@@ -18,6 +18,8 @@
 #import "SFUserFeedPage.h"
 #import "SFMessageSegment.h"
 
+#define RESTKIT_DEBUG 1
+
 @implementation SFMappingManager
 
 + (void)initMappings {	
@@ -37,10 +39,12 @@
 	[SFUserFeedPage setupMapping:manager];
 
 	// RestKit logging.
-	//RKLogConfigureByName("RestKit", RKLogLevelDebug);
-	//RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
-	//RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
-	//RKLogConfigureByName("RestKit/Network/Queue", RKLogLevelDebug);
+    if(RESTKIT_DEBUG){
+        RKLogConfigureByName("RestKit", RKLogLevelDebug);
+        RKLogConfigureByName("RestKit/Network", RKLogLevelDebug);
+        RKLogConfigureByName("RestKit/ObjectMapping", RKLogLevelDebug);
+        RKLogConfigureByName("RestKit/Network/Queue", RKLogLevelDebug);
+    }
 }
 
 + (void)initialize

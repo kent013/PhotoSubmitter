@@ -10,8 +10,6 @@
 #error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
 #endif
 
-#define RKLogLevelDefault RKLogLevelError
-
 #import "SalesforceAPIKey.h"
 #import "SalesforcePhotoSubmitter.h"
 #import "PhotoSubmitterManager.h"
@@ -45,12 +43,6 @@
                      usesOperation:YES 
                    requiresNetwork:YES 
                   isAlbumSupported:YES];
-    
-	// Re-initialize RestKit with the current instance URL.
-	[SFMappingManager initialize];
-    //RKObjectManager* objectManager = [RKObjectManager sharedManager];
-    //objectManager.client.baseURL = [RKURL URLWithString: SALESFORCE_SUBMITTER_API_LOGIN_SERVER];
-    //objectManager.client.authenticationType = RKRequestAuthenticationTypeOAuth2;
 }
 
 /*!
@@ -64,7 +56,6 @@
  * initialize restkit
  */
 - (void)initRestKitAndUser {
-	// Re-initialize RestKit with the current instance URL.
 	[SFMappingManager initialize];
     self.username = [SFAuthContext context].identity.display_name;
 }
@@ -73,7 +64,7 @@
  * add text param to request
  */
 - (NSString*)addTextParam:(NSString*)param value:(NSString*)value body:(NSString*)body boundary:(NSString*)boundary {
-	NSString* start = [NSString stringWithFormat:@"%@Content-Disposition: form-data; name=\"%@\"\r\n\r\n", body, param];
+	NSString* start = [NSString stringWithFormat:@"%@Content-Disposition: form-data; name=\"%@\"\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n", body, param];
 	return [NSString stringWithFormat:@"%@%@%@", start, value, boundary];
 }
 
@@ -83,15 +74,11 @@
 - (id)onSubmitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
     
     NSString *url = [SFConfig addVersionPrefix:@"/chatter/feeds/news/me/feed-items"];
-    
-	// Post the photo to the group, using a regular HTTP POST because
-	// RestKit doesn't support multipart binary posts yet.
 	NSString* targetUrl = [NSString stringWithFormat:@"%@%@", [[SFAuthContext context] instanceUrl], url];
-	
-	// Make the request.
-	NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:targetUrl]
-														   cachePolicy:NSURLRequestReloadIgnoringLocalCacheData // Don't use the cache.
-													   timeoutInterval:60];
+	NSMutableURLRequest* request = 
+        [NSMutableURLRequest requestWithURL:[NSURL URLWithString:targetUrl]
+                                cachePolicy:NSURLRequestReloadIgnoringLocalCacheData 
+                            timeoutInterval:60];
 	
 	[[SFAuthContext context] addOAuthHeaderToNSRequest:request];
 	[request setHTTPMethod:@"POST"];
@@ -137,6 +124,32 @@
 	
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
     return connection;
+    
+    /*
+    // implementation with RKParams, currently this code does not work.
+    RKParams *params = [RKParams params];
+    if(content.comment != nil){
+        [params setValue:content.comment forParam:@"text"];
+    }
+    //RKParamsAttachment *attachment = [params setData:content.data forParam:@"feedItemFileUpload"];
+    
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat  = @"yyyyMMddHHmmssSSSS";
+    if(content.isPhoto){
+        attachment.MIMEType = @"image/jpeg";
+        attachment.fileName = [NSString stringWithFormat:@"%@.jpg", [df stringFromDate:content.timestamp]];
+    }else{
+        attachment.MIMEType = @"video/mp4";
+        attachment.fileName = [NSString stringWithFormat:@"%@.mp4", [df stringFromDate:content.timestamp]];
+    }    
+    NSLog(@"RKParams HTTPHeaderValueForContentType = %@", [params HTTPHeaderValueForContentType]);
+    NSLog(@"RKParams HTTPHeaderValueForContentLength = %d", [params HTTPHeaderValueForContentLength]);
+    
+    RKClient *client = [RKClient clientWithBaseURL:[SFAuthContext context].instanceUrl];
+    client.defaultHTTPEncoding = NSUTF8StringEncoding;
+    RKRequest *request = [client post:url params:params delegate:self];
+    return request;
+     */
 }
 
 #pragma mark - NSURLConnection delegates
@@ -163,6 +176,49 @@
     [self photoSubmitter:self didProgressChanged:hash progress:progress];
 }
 
+//#pragma mark - RKClient delegates
+///*!
+// * did load response
+// */
+//- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response{
+//    NSLog(@"%@", request);
+//    if(response.isSuccessful){
+//        [self completeSubmitContentWithRequest:request];
+//    }else{
+//        [self completeSubmitContentWithRequest:request andError:nil];
+//    }
+//}
+//
+///*!
+// * did send body data, progress
+// */
+//- (void)request:(RKRequest *)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
+//    CGFloat progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+//    NSString *hash = [self photoForRequest:request];
+//    [self photoSubmitter:self didProgressChanged:hash progress:progress];    
+//}
+//
+///*! 
+// * did fail
+// */
+//- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error{
+//    [self completeSubmitContentWithRequest:request andError:error];
+//}
+//
+///*!
+// * did timeout
+// */
+//- (void)requestDidTimeout:(RKRequest *)request{
+//    [self completeSubmitContentWithRequest:request andError:nil];
+//}
+//
+///*!
+// * request will prepare for send
+// */
+//- (void)requestWillPrepareForSend:(RKRequest *)request{
+//    request.defaultHTTPEncoding = NSUTF8StringEncoding;
+//    [[SFAuthContext context] addOAuthHeader:request];
+//}
 @end
 
 //-----------------------------------------------------------------------------
@@ -189,6 +245,7 @@
  * login to Salesforce
  */
 -(void)onLogin{
+	[SFMappingManager initialize];
 	SFOAuthViewController* oauthViewController = [[SFOAuthViewController alloc] init]; 
 	[[[PhotoSubmitterManager sharedInstance].authControllerDelegate requestNavigationControllerToPresentAuthenticationView] pushViewController:oauthViewController animated:YES];
     [SFAuthContext context].delegate = self;
@@ -239,9 +296,9 @@
  * cancel content upload
  */
 - (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
-    NSURLConnection *connection = (NSURLConnection *)[self requestForPhoto:content.contentHash];
-    [connection cancel];
-    return connection;
+    RKRequest *request = (RKRequest *)[self requestForPhoto:content.contentHash];
+    [request cancel];
+    return request;
 }
 
 /*!
@@ -259,24 +316,6 @@
     return NO;
 }
 
-#pragma mark - RKObjectLoaderDelegate implementation.
-/*!
- * objects loaded
- */
-- (void)objectLoader:(RKObjectLoader *)objectLoader didLoadObjects:(NSArray *)objects {
-}
-
-/*!
- * unexpected response
- */
-- (void)objectLoaderDidLoadUnexpectedResponse:(RKObjectLoader *)objectLoader {
-}
-
-/*!
- * object fetch failed
- */
-- (void)objectLoader:(RKObjectLoader *)objectLoader didFailWithError:(NSError *)error {
-}
 
 #pragma mark - AccessTokenRefreshDelegate
 /*!
@@ -299,6 +338,14 @@
  */
 - (void)loginCompletedWithError:(NSError *)error{
     NSLog(@"%s, %@", __PRETTY_FUNCTION__, error.description);
+    [self completeLoginFailed];
+}
+
+#pragma mark - SFOAuthViewControllerDelegate
+/*!
+ * auth view dismissed
+ */
+- (void)authViewControllerDismissed:(SFOAuthViewController *)controller{
     [self completeLoginFailed];
 }
 @end

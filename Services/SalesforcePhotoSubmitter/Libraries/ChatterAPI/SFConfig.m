@@ -26,6 +26,12 @@
     //return [Config getConfigString:@"PPConsumerKey"];
 }
 
++(NSString*)consumerSecret {
+    return SALESFORCE_SUBMITTER_API_SECRET;
+    //return [Config getConfigString:@"PPConsumerKey"];
+}
+
+
 +(NSString*)callbackUrl {
     return SALESFORCE_SUBMITTER_API_CALLBACK;
     //return [Config getConfigString:@"PPCallbackUrl"];
