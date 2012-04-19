@@ -168,7 +168,15 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     }
     submitter = [PhotoSubmitterFactory createWithAccount:account];
     if(submitter == nil){
-        @throw [[NSException alloc] initWithName:@"PhotoSubmitterNotFoundException" reason:[NSString stringWithFormat:@"type %@ not found.", account.type] userInfo:nil];
+        for(NSString *type in registeredPhotoSubmitterTypes){
+            if([type isEqualToString:account.type]){
+                @throw [[NSException alloc] initWithName:@"PhotoSubmitterNotFoundException" reason:[NSString stringWithFormat:@"type %@ not found.", account.type] userInfo:nil];       
+            }else{
+                //if PhotoSubmitter not found because unregistered, remove the account from manage.
+                [[PhotoSubmitterAccountManager sharedManager] removeAccount:account];
+                return nil;
+            }
+        }
     }
     if(submitter){
         [submitters_ setObject:submitter forKey:account.accountHash];
@@ -651,6 +659,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
     for(PhotoSubmitterAccount *account in accounts){
         id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
+        if(submitter == nil){
+            continue;
+        }
         for(id<PhotoSubmitterPhotoDelegate> d in photoDelegates_){
             [submitter addPhotoDelegate:d];
         }

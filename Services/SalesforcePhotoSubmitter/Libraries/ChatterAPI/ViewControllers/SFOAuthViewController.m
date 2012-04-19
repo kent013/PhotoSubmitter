@@ -19,7 +19,7 @@
 
 - (id)init {	
 	// Load up UI.
-	self = [self initWithNibName:@"OAuthViewController" bundle:nil];
+	self = [self initWithNibName:@"SFOAuthViewController" bundle:nil];
 	if (self != nil) {
 	}
 	return self;

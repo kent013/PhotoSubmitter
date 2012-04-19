@@ -47,7 +47,6 @@
 - (NSString *)accountHash{
     if(accountHash_ == nil){
         accountHash_ = [[[NSString stringWithFormat:@"%@%f", type_, [[NSDate date] timeIntervalSince1970]] dataUsingEncoding:NSUTF8StringEncoding] MD5DigestString];
-        NSLog(@"%@", accountHash_);
     }
     return accountHash_;
 }
