@@ -90,7 +90,7 @@ static const NSString *kMinusBaseURL = @"https://minus.com/api/v2/";
         }
         
         NSString* escaped_value = 
-        (__bridge NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, 
+        (__bridge_transfer NSString *)CFURLCreateStringByAddingPercentEscapes(NULL, 
                                                             (__bridge CFStringRef)[params objectForKey:key],
                                                             NULL,
                                                             (__bridge CFStringRef)@"!*'();:@&=+$,/?%#[]",

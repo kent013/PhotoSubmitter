@@ -14,7 +14,7 @@
 #import "SalesforcePhotoSubmitter.h"
 #import "PhotoSubmitterManager.h"
 #import "RegexKitLite.h"
-#import "RestKit.h"
+#import "RestKit/RestKit.h"
 #import "SFMappingManager.h"
 #import "SFUser.h"
 #import "SFAuthContext.h"

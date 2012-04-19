@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 cocotomo. All rights reserved.
 //
 
-#import "RestKit.h"
+#import "RestKit/RestKit.h"
 #import "PhotoSubmitterProtocol.h"
 #import "PhotoSubmitter.h"
 #import "SFAuthContext.h"

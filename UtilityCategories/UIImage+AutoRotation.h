@@ -9,8 +9,8 @@
 #import <UIKit/UIKit.h>
 
 @interface UIImage (AutoRotation)
-- (CGImageRef)CGImageRotatedByAngle :(CGFloat)angle;
-- (CGImageRef)CGImageAutoRotated;
+- (CGImageRef)newCGImageRefRotatedByAngle :(CGFloat)angle;
+- (CGImageRef)newCGImageRefAutoRotated;
 - (UIImage*) UIImageAutoRotated;
 - (UIImage*) UIImageRotateByAngle :(int)angle;
 - (UIImage *)fixOrientationWithOrientation:(UIImageOrientation)orientation;

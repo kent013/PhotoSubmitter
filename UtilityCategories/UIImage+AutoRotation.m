@@ -17,7 +17,7 @@
 /*!
  * return cgimage rotated specified angle
  */
-- (CGImageRef)CGImageRotatedByAngle:(CGFloat)angle
+- (CGImageRef)newCGImageRefRotatedByAngle:(CGFloat)angle
 {
     CGFloat angleInRadians = angle * (M_PI / 180);
     CGImageRef imgRef = self.CGImage;
@@ -46,23 +46,22 @@
     
     CGImageRef rotatedImage = CGBitmapContextCreateImage(bmContext);
     CFRelease(bmContext);
-    
     return rotatedImage;
 }
 
 /*!
  * return rotated image
  */
--(CGImageRef)CGImageAutoRotated{
+-(CGImageRef)newCGImageRefAutoRotated{
     switch (self.imageOrientation) {
         case UIImageOrientationDown:
-            return [self CGImageRotatedByAngle:180.0];
+            return [self newCGImageRefRotatedByAngle:180.0];
         case UIImageOrientationLeft:
-            return [self CGImageRotatedByAngle:90.0];
+            return [self newCGImageRefRotatedByAngle:90.0];
         case UIImageOrientationRight:
-            return [self CGImageRotatedByAngle:270.0];
+            return [self newCGImageRefRotatedByAngle:270.0];
         default:
-            return self.CGImage;
+            return [self newCGImageRefRotatedByAngle:0];
     }
 }
 
@@ -70,7 +69,9 @@
  * return rotated image
  */
 -(UIImage *)UIImageAutoRotated{
-    UIImage* image = [UIImage imageWithCGImage: self.CGImageAutoRotated];
+    CGImageRef ir = [self newCGImageRefAutoRotated];
+    UIImage* image = [UIImage imageWithCGImage: ir];
+    CGImageRelease(ir);
     return image;
 }
 
@@ -79,7 +80,9 @@
  */
 - (UIImage*) UIImageRotateByAngle :(int)angle
 {
-    UIImage* image = [UIImage imageWithCGImage: [self CGImageRotatedByAngle:angle]];
+    CGImageRef ir = [self newCGImageRefRotatedByAngle:angle];
+    UIImage* image = [UIImage imageWithCGImage: ir];
+    CGImageRelease(ir);
     return image;    
 }
 

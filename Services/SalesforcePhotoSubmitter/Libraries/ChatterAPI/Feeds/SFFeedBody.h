@@ -18,7 +18,7 @@
 //  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 //  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#import "RestKit.h"
+#import "RestKit/RestKit.h"
 
 @interface SFFeedBody : NSObject {
 	NSString* text;

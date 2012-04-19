@@ -158,13 +158,16 @@
     CGImageSourceRef resizedCFImage = CGImageSourceCreateWithData((__bridge CFDataRef)resizedData, NULL);
     
     NSMutableDictionary *metadata = self.metadata;
-    NSMutableDictionary *resizedMetadata = [NSMutableDictionary dictionaryWithDictionary:(__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(resizedCFImage, 0, nil)];
+    NSMutableDictionary *resizedMetadata = [NSMutableDictionary dictionaryWithDictionary:(__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(resizedCFImage, 0, nil)];
     NSMutableDictionary *exifMetadata = [metadata objectForKey:(NSString *)kCGImagePropertyExifDictionary];
     [resizedMetadata setValue:exifMetadata forKey:(NSString *)kCGImagePropertyExifDictionary];
-    CGImageDestinationRef dest = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)resizedData, CGImageSourceGetType(resizedCFImage), 1, NULL);
+    CFMutableDataRef resizedCFData = (__bridge_retained CFMutableDataRef)resizedData;
+    CGImageDestinationRef dest = CGImageDestinationCreateWithData(resizedCFData, CGImageSourceGetType(resizedCFImage), 1, NULL);
     CGImageDestinationAddImageFromSource(dest, resizedCFImage, 0, (__bridge CFDictionaryRef)resizedMetadata);
     CGImageDestinationFinalize(dest);
     CFRelease(resizedCFImage);
+    CFRelease(resizedCFData);
+    CFRelease(dest);
     
     [resizedImages_ setObject:resized forKey:key];
     return resized;
@@ -192,7 +195,7 @@
  */
 - (NSMutableDictionary *)metadata{
     CGImageSourceRef cfImage = CGImageSourceCreateWithData((__bridge CFDataRef)data_, NULL);
-    NSDictionary *metadata = (__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(cfImage, 0, nil);
+    NSDictionary *metadata = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(cfImage, 0, nil);
     CFRelease(cfImage);
     return [NSMutableDictionary dictionaryWithDictionary:metadata];
 }

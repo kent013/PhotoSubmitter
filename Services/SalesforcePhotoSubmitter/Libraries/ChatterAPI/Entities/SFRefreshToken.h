@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 cocotomo. All rights reserved.
 //
 
-#import "RestKit.h"
+#import "RestKit/RestKit.h"
 
 @interface SFRefreshToken : NSObject
 +(RKObjectMapping*)getMapping;

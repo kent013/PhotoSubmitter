@@ -6,7 +6,7 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#import "RestKit.h"
+#import "RestKit/RestKit.h"
 #import "SFIdentity.h"
 #import "SFLoginSuccess.h"
 #import "SFObjectFetcher.h"
