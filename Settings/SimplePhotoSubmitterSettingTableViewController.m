@@ -14,6 +14,7 @@
 #import "PhotoSubmitterServiceSettingTableViewController.h"
 #import "MAConfirmButton.h"
 #import "PSLang.h"
+#import "PhotoSubmitterAccountManager.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -21,6 +22,8 @@
 @interface SimplePhotoSubmitterSettingTableViewController(PrivateImplementation)
 - (void) setupInitialState;
 - (void) didLogoutButtonTapped:(id)sender;
+- (void) requestForAddAccount:(PhotoSubmitterAccount *)account;
+- (void) requestForDeleteAccount:(PhotoSubmitterAccount *)account;
 @end
 
 @implementation SimplePhotoSubmitterSettingTableViewController(PrivateImplementation)
@@ -38,6 +41,19 @@
     [self.navigationController popViewControllerAnimated:YES];
     MAConfirmButton *button = (MAConfirmButton *)sender;
     [button cancel];
+}
+
+/*!
+ * call delegate after delay
+ */
+- (void)requestForAddAccount:(PhotoSubmitterAccount *)account{
+    [self.settingDelegate didRequestForAddAccount:account];
+}
+/*!
+ * call delegate after delay
+ */
+- (void)requestForDeleteAccount:(PhotoSubmitterAccount *)account{
+    [self.settingDelegate didRequestForDeleteAccount:account];
 }
 @end
 
@@ -62,7 +78,16 @@
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
 {
     switch (section) {
-        case SV_SECTION_ACCOUNT: return 2;
+        case SV_SECTION_ACCOUNT: 
+            if(self.submitter.isMultipleAccountSupported){
+                int count = [[PhotoSubmitterAccountManager sharedManager] countAccountForType:self.submitter.type];
+                if(count > 1){
+                    return 4;
+                }else{
+                    return 3;
+                }
+            }
+            return 2;
     }
     return 0;
 }
@@ -105,6 +130,12 @@
             [button setTintColor:[UIColor colorWithRed:0.694 green:0.184 blue:0.196 alpha:1]];
             [button addTarget:self action:@selector(didLogoutButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
             cell.accessoryView = button;
+        }else if(indexPath.row == SV_ROW_ACCOUNT_ADD){
+            cell.textLabel.text = [PSLang localized:@"Detail_Row_AddAccount"];
+            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+        }else if(indexPath.row == SV_ROW_ACCOUNT_DELETE){
+            cell.textLabel.text = [PSLang localized:@"Detail_Row_DeleteAccount"];
+            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         }
         
     }
@@ -117,6 +148,21 @@
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated: YES];
+    if(self.submitter.isMultipleAccountSupported){
+        switch(indexPath.row){
+            case SV_ROW_ACCOUNT_ADD:{
+                PhotoSubmitterAccount *account = [[PhotoSubmitterAccountManager sharedManager] createAccountForType:self.submitter.type];
+                [self.navigationController popViewControllerAnimated:YES];
+                [self performSelector:@selector(requestForAddAccount:) withObject:account afterDelay:1];
+                break;
+            }
+            case SV_ROW_ACCOUNT_DELETE:{
+                [self.navigationController popViewControllerAnimated:YES];
+                [self performSelector:@selector(requestForDeleteAccount:) withObject:self.account afterDelay:1];
+                break;                
+            }
+        }
+    }
 }
 
 #pragma mark -

@@ -240,8 +240,6 @@
 }
 
 #pragma mark - contents
-
-
 /*!
  * cancel photo upload
  */
@@ -483,6 +481,13 @@
  */
 - (NSInteger)maximumLengthOfComment{
     return 0;
+}
+
+/*!
+ * is multiple account supported
+ */
+- (BOOL)isMultipleAccountSupported{
+    return NO;
 }
 
 #pragma mark - UTILITY METHODS

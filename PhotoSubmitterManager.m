@@ -185,7 +185,20 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     for(id<PhotoSubmitterPhotoDelegate> d in photoDelegates_){
         [submitter addPhotoDelegate:d];
     }
+    if(authDelegate_){
+        submitter.authDelegate = authDelegate_;
+    }
     return submitter;
+}
+
+/*!
+ * remove submitter
+ */
+- (void)removeSubmitterForAccount:(PhotoSubmitterAccount *)account{
+    if([submitters_ objectForKey:account.accountHash]){
+        [submitters_ removeObjectForKey:account.accountHash];
+        [[PhotoSubmitterAccountManager sharedManager] removeAccount:account];
+    }
 }
 
 /*!
@@ -258,6 +271,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  */
 - (void)setAuthenticationDelegate:(id<PhotoSubmitterAuthenticationDelegate>)delegate{
     NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    authDelegate_ = delegate;
     for(PhotoSubmitterAccount *account in accounts){
         id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         submitter.authDelegate = delegate;
@@ -715,6 +729,10 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  */
 + (id<PhotoSubmitterProtocol>)submitterForAccount:(PhotoSubmitterAccount *)account{
     return [[PhotoSubmitterManager sharedInstance] submitterForAccount:account];
+}
+
++ (void) removeSubmitterForAccount:(PhotoSubmitterAccount *)account{
+    [[PhotoSubmitterManager sharedInstance] removeSubmitterForAccount:account];
 }
 
 /*!

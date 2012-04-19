@@ -70,10 +70,9 @@
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
 {
     switch (section) {
-        case SV_SECTION_ACCOUNT: return 2;
         case TSV_SECTION_ACCOUNTS: return self.twitterSubmitter.accounts.count;
     }
-    return 0;
+    return [super tableView:table numberOfRowsInSection:section];
 }
 
 /*!
@@ -101,21 +100,7 @@
 {    
     UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     if(indexPath.section == SV_SECTION_ACCOUNT){
-        if(indexPath.row == SV_ROW_ACCOUNT_NAME){
-            cell.textLabel.text = [PSLang localized:@"Detail_Row_AccountName"];
-            UILabel *label = [[UILabel alloc] init];
-            label.text = self.submitter.username;
-            label.font = [UIFont systemFontOfSize:15.0];
-            [label sizeToFit];
-            label.backgroundColor = [UIColor clearColor];
-            cell.accessoryView = label;
-        }else if(indexPath.row == SV_ROW_ACCOUNT_LOGOUT){
-            cell.textLabel.text = [PSLang localized:@"Detail_Row_Logout"];
-            UIButton *button = [UIButton buttonWithType:SV_BUTTON_TYPE];
-            [button setTitle:[PSLang localized:@"Detail_Row_LogoutButtonTitle"] forState:UIControlStateNormal];
-            [button addTarget:self action:@selector(didLogoutButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-            cell.accessoryView = button;
-        }
+        cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     }else if(indexPath.section == TSV_SECTION_ACCOUNTS){
         ACAccount *account = 
           [self.twitterSubmitter.accounts objectAtIndex:indexPath.row];
@@ -157,8 +142,10 @@
             [self.tableView reloadData];
             [self.twitterSubmitter login];
         }
+        [tableView deselectRowAtIndexPath:indexPath animated: YES];
+    }else{
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     }
-    [tableView deselectRowAtIndexPath:indexPath animated: YES];
 }
 
 #pragma mark -

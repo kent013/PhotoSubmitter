@@ -40,6 +40,7 @@
 @property (nonatomic, readonly) BOOL isAlbumSupported;
 @property (nonatomic, readonly) BOOL isVideoSupported;
 @property (nonatomic, readonly) BOOL isPhotoSupported;
+@property (nonatomic, readonly) BOOL isMultipleAccountSupported;
 @property (nonatomic, readonly) BOOL isSessionValid;
 @property (nonatomic, readonly) BOOL requiresNetwork;
 @property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authDelegate;

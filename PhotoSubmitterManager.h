@@ -37,6 +37,7 @@
      * an array of id<PhotoSubmitterPhotoDelegate>
      */
     __strong NSMutableArray *photoDelegates_;
+    id<PhotoSubmitterAuthenticationDelegate> authDelegate_;
 }
 
 @property (nonatomic, assign) id<PhotoSubmitterAuthControllerDelegate> authControllerDelegate;
@@ -65,6 +66,7 @@
 - (void) restart;
 - (void) refreshCredentials;
 - (id<PhotoSubmitterProtocol>) submitterForAccount:(PhotoSubmitterAccount *)account;
+- (void) removeSubmitterForAccount:(PhotoSubmitterAccount *)account;
 - (NSArray *) submittersForType:(NSString *)type;
 - (BOOL) didOpenURL: (NSURL *)url;
 
@@ -78,6 +80,7 @@
 
 + (PhotoSubmitterManager *)sharedInstance;
 + (id<PhotoSubmitterProtocol>) submitterForAccount:(PhotoSubmitterAccount *)account;
++ (void) removeSubmitterForAccount:(PhotoSubmitterAccount *)account;
 + (int) registeredPhotoSubmitterCount;
 + (NSArray *) registeredPhotoSubmitters;
 + (void) unregisterAllPhotoSubmitters;

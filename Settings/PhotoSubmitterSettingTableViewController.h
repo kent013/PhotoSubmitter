@@ -8,13 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "PhotoSubmitterManager.h"
+#import "PhotoSubmitterServiceSettingTableViewController.h"
 
 @protocol PhotoSubmitterSettingTableViewControllerDelegate;
 
 /*!
  * setting view controller
  */
-@interface PhotoSubmitterSettingTableViewController : UITableViewController<PhotoSubmitterAuthenticationDelegate>{
+@interface PhotoSubmitterSettingTableViewController : UITableViewController<PhotoSubmitterAuthenticationDelegate, PhotoSubmitterServiceSettingDelegate>{
 @protected
     __strong NSMutableDictionary *settingControllers_;
     __strong NSMutableArray *switches_;

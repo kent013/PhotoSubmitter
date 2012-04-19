@@ -10,6 +10,7 @@
 #import "PhotoSubmitterManager.h"
 #import "PhotoSubmitterSettingTableViewProtocol.h"
 
+@protocol PhotoSubmitterServiceSettingDelegate;
 
 @interface PhotoSubmitterServiceSettingTableViewController : UITableViewController<PhotoSubmitterServiceSettingTableViewProtocol>{
     PhotoSubmitterAccount *account_;
@@ -17,4 +18,11 @@
 
 - (id)initWithAccount:(PhotoSubmitterAccount *)account;
 @property (nonatomic, readonly) PhotoSubmitterAccount *account;
+@property (nonatomic, assign) id<PhotoSubmitterServiceSettingDelegate> settingDelegate;
+@end
+
+
+@protocol PhotoSubmitterServiceSettingDelegate <NSObject>
+- (void) didRequestForAddAccount:(PhotoSubmitterAccount *)account;
+- (void) didRequestForDeleteAccount:(PhotoSubmitterAccount *)account;
 @end

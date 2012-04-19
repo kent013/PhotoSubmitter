@@ -14,7 +14,7 @@
 #import "TwitterPhotoSubmitterSettingTableViewController.h"
 #import "PSLang.h"
 
-#define PS_TWITTER_USERNAME @"PSTwitterUsername"
+#define PS_TWITTER_USERNAME @"PSTwitter%@Username"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -23,6 +23,7 @@
 - (void) setupInitialState;
 - (ACAccount *)selectedAccount;
 - (id) submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
+- (NSString *) usernameKey;
 @end
 
 #pragma mark - private implementations
@@ -57,6 +58,13 @@
         return account;
     }
     return nil;
+}
+
+/*!
+ * get username key
+ */
+- (NSString *)usernameKey{
+    return [NSString stringWithFormat:PS_TWITTER_USERNAME, self.account.accountHash];
 }
 
 #pragma mark - NSURLConnection delegates
@@ -211,14 +219,14 @@
  * set selected username
  */
 - (NSString *)selectedAccountUsername{
-    return [self settingForKey:PS_TWITTER_USERNAME];
+    return [self settingForKey:self.usernameKey];
 }
 
 /*!
  * set selected username
  */
 - (void)setSelectedAccountUsername:(NSString *)selectedAccountUsername{
-    return [self setSetting:selectedAccountUsername forKey:PS_TWITTER_USERNAME];
+    return [self setSetting:selectedAccountUsername forKey:self.usernameKey];
 }
 
 /*!
@@ -266,6 +274,13 @@
  */
 - (BOOL)isVideoSupported{
     return NO;
+}
+
+/*!
+ * is multiple account supported
+ */
+- (BOOL)isMultipleAccountSupported{
+    return YES;
 }
 
 #pragma mark - albums

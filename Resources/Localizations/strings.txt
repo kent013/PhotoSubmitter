@@ -47,6 +47,14 @@
         tags = common
         en = Logout
         ja = ログアウト
+    [Detail_Row_AddAccount]
+        tags = common
+        en = Add new account
+        ja = アカウントを追加
+    [Detail_Row_DeleteAccount]
+        tags = common
+        en = Delete this account
+        ja = このアカウントを削除
     [Detail_Row_LogoutButtonTitle]
         tags = common
         en = Logout
