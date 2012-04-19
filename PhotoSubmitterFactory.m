@@ -14,12 +14,13 @@
 #import <objc/message.h>
 #import "PhotoSubmitterFactory.h"
 #import "RegexKitLite.h"
+#import "PhotoSubmitterAccount.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
 @interface PhotoSubmitterFactory(PrivateImplementation)
-+ (id<PhotoSubmitterProtocol>)getSubmitterInstance:(NSString *)type;
++ (id<PhotoSubmitterProtocol>)getSubmitterInstance:(PhotoSubmitterAccount *)account;
 @end
 
 #pragma mark - private implementations
@@ -27,7 +28,7 @@
 /*!
  * load classes
  */
-+ (id<PhotoSubmitterProtocol>)getSubmitterInstance:(NSString *)type{
++ (id<PhotoSubmitterProtocol>)getSubmitterInstance:(PhotoSubmitterAccount *)account{
     static NSMutableDictionary *loadedClasses;
     if(loadedClasses == nil){
         loadedClasses = [[NSMutableDictionary alloc] init];
@@ -52,11 +53,11 @@
         }
     }
     
-    NSString *className = [loadedClasses objectForKey:type];
+    NSString *className = [loadedClasses objectForKey:account.type];
     if(className == nil){
         return nil;
     }
-    return [[NSClassFromString(className) alloc] init];
+    return [[NSClassFromString(className) alloc] initWithAccount:account];
 }
 @end
 
@@ -67,9 +68,8 @@
 @implementation PhotoSubmitterFactory
 /*!
  * create submitter
- * you may add case clause when you created new submitter
  */
-+ (id<PhotoSubmitterProtocol>)createWithType:(NSString *)type{
-    return [self getSubmitterInstance:type];
++ (id<PhotoSubmitterProtocol>)createWithAccount:(PhotoSubmitterAccount *)account{
+    return [self getSubmitterInstance:account];
 }
 @end

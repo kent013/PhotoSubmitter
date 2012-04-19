@@ -34,7 +34,7 @@
  * initialize
  */
 -(void)setupInitialState{
-    createAlbumViewController_ = [[CreateAlbumPhotoSubmitterSettingViewController alloc] initWithType:self.type];
+    createAlbumViewController_ = [[CreateAlbumPhotoSubmitterSettingViewController alloc] initWithAccount:self.account];
 }
 @end
 

@@ -31,13 +31,15 @@
 //Public Implementations
 //-----------------------------------------------------------------------------
 @implementation PhotoSubmitterServiceSettingTableViewController
+@synthesize account = account_;
+
 /*!
  * initialize
  */
-- (id)initWithType:(NSString *)inType{
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
     self = [super initWithStyle:UITableViewStyleGrouped];
     if(self){
-        type_ = inType;
+        account_ = account;
         [self setupInitialState];
     }
     return self;
@@ -50,14 +52,7 @@
  * submitter
  */
 - (id<PhotoSubmitterProtocol>)submitter{
-    return [PhotoSubmitterManager submitterForType:self.type];
-}
-
-/*!
- * type
- */
-- (NSString *)type{
-    return type_;
+    return [PhotoSubmitterManager submitterForAccount:account_];
 }
 
 #pragma mark -

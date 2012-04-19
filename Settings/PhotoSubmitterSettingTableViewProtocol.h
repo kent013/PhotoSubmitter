@@ -27,5 +27,5 @@
 
 @protocol PhotoSubmitterServiceSettingTableViewProtocol <NSObject>
 - (id<PhotoSubmitterProtocol>) submitter;
-- (NSString *) type;
+- (PhotoSubmitterAccount *) account;
 @end

@@ -17,6 +17,7 @@
 #import "FBNetworkReachability.h"
 #import "RegexKitLite.h"
 #import "PhotoSubmitterSettings.h"
+#import "PhotoSubmitterAccountManager.h"
 
 #define PS_OPERATIONS @"PSOperations"
 
@@ -135,7 +136,6 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 //-----------------------------------------------------------------------------
 
 @implementation PhotoSubmitterManager
-@synthesize loadedSubmitterTypes = loadedSubmitterTypes_;
 @synthesize submitPhotoWithOperations;
 @synthesize location = location_;
 @synthesize isUploading;
@@ -144,6 +144,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 @synthesize isPausingOperation = isPausingOperation_;
 @synthesize authControllerDelegate;
 @synthesize settingViewFactory;
+@synthesize submitters;
 @dynamic authenticationDelegate;
 
 /*!
@@ -160,25 +161,37 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 /*!
  * get submitter
  */
-- (id<PhotoSubmitterProtocol>)submitterForType:(NSString *)type{
-    type = [PhotoSubmitterManager normalizeTypeName:type];
-
-    id <PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:type];
+- (id<PhotoSubmitterProtocol>)submitterForAccount:(PhotoSubmitterAccount *)account{
+    id <PhotoSubmitterProtocol> submitter = [submitters_ objectForKey:account.accountHash];
     if(submitter){
         return submitter;
     }
-    submitter = [PhotoSubmitterFactory createWithType:type];
+    submitter = [PhotoSubmitterFactory createWithAccount:account];
     if(submitter == nil){
-        @throw [[NSException alloc] initWithName:@"PhotoSubmitterNotFoundException" reason:[NSString stringWithFormat:@"type %@ not found.", type] userInfo:nil];
+        @throw [[NSException alloc] initWithName:@"PhotoSubmitterNotFoundException" reason:[NSString stringWithFormat:@"type %@ not found.", account.type] userInfo:nil];
     }
     if(submitter){
-        [submitters_ setObject:submitter forKey:type];
+        [submitters_ setObject:submitter forKey:account.accountHash];
     }
     [submitter addPhotoDelegate:self];
     for(id<PhotoSubmitterPhotoDelegate> d in photoDelegates_){
         [submitter addPhotoDelegate:d];
     }
     return submitter;
+}
+
+/*!
+ * submitter for type
+ */
+- (NSArray *)submittersForType:(NSString *)type{
+    NSArray *accounts = [[PhotoSubmitterAccountManager sharedManager] accountsForType:type];
+    NSMutableArray *typedAccounts = [[NSMutableArray alloc] init];
+    for(PhotoSubmitterAccount *account in accounts){
+        if([submitters_ objectForKey:account.accountHash]){
+            [typedAccounts addObject:[submitters_ objectForKey:account.accountHash]];
+        }
+    }
+    return typedAccounts;
 }
 
 /*!
@@ -190,8 +203,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
             photo.location = self.location;
         }
         [photo preprocess];
-        for(NSString *type in registeredPhotoSubmitterTypes){
-            id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+        NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+        for(PhotoSubmitterAccount *account in accounts){
+            id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
             if(submitter.isPhotoSupported && [submitter isLogined]){
                 if(self.submitPhotoWithOperations && submitter.useOperation){
                     PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:photo];
@@ -214,8 +228,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         if(self.enableGeoTagging){
             video.location = self.location;
         }
-        for(NSString *type in registeredPhotoSubmitterTypes){
-            id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+        NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+        for(PhotoSubmitterAccount *account in accounts){
+            id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
             if(submitter.isVideoSupported && [submitter isLogined]){
                 if(self.submitPhotoWithOperations && submitter.useOperation){
                     PhotoSubmitterOperation *operation = [[PhotoSubmitterOperation alloc] initWithSubmitter:submitter andContent:video];
@@ -234,8 +249,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * set authentication delegate to submitters
  */
 - (void)setAuthenticationDelegate:(id<PhotoSubmitterAuthenticationDelegate>)delegate{
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    for(PhotoSubmitterAccount *account in accounts){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         submitter.authDelegate = delegate;
     }
 }
@@ -265,6 +281,18 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         }
         free(classes);
     }
+    
+    for(NSString *type in registeredPhotoSubmitterTypes){
+        NSArray *accounts = [[PhotoSubmitterAccountManager sharedManager] accountsForType:type];
+        if(accounts.count){
+            for(PhotoSubmitterAccount *account in accounts){
+                [self submitterForAccount:account];
+            }
+        }else{
+            PhotoSubmitterAccount *account = [[PhotoSubmitterAccountManager sharedManager] createAccountForType:type];
+            [self submitterForAccount:account];            
+        }
+    }
 }
 
 /*!
@@ -272,8 +300,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  */
 - (void)refreshCredentials{
     @try{
-        for (NSString *type in [PhotoSubmitterManager registeredPhotoSubmitters]){
-            id<PhotoSubmitterProtocol> submitter = [self submitterForType:type];
+        NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+        for(PhotoSubmitterAccount *account in accounts){
+            id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
             if([submitter isEnabled]){
                 [submitter refreshCredential];
             }
@@ -288,8 +317,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * on url loaded
  */
 - (BOOL)didOpenURL:(NSURL *)url{
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    for(PhotoSubmitterAccount *account in accounts){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         if([submitter isProcessableURL:url]){
             return [submitter didOpenURL:url];
         }
@@ -309,8 +339,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  */
 - (int)enabledSubmitterCount{
     int i = 0;
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    for(PhotoSubmitterAccount *account in accounts){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         if(submitter.isLogined){
             i++;
         }
@@ -382,8 +413,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * requires network
  */
 - (BOOL)requiresNetwork{
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    for(PhotoSubmitterAccount *account in accounts){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         if(submitter.isEnabled && submitter.requiresNetwork){
             return YES;
         }
@@ -396,8 +428,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  */
 - (NSInteger)maxCommentLength{
     int max = 0;
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    for(PhotoSubmitterAccount *account in accounts){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         if(submitter.isEnabled && submitter.requiresNetwork &&
            submitter.maximumLengthOfComment > max){
             max = submitter.maximumLengthOfComment;
@@ -405,6 +438,13 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     }
     return max;
     
+}
+
+/*!
+ * submitters
+ */
+- (NSArray *)submitters{
+    return [submitters_ allValues];
 }
 
 #pragma mark -
@@ -608,8 +648,9 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         return;
     }
     [photoDelegates_ addObject:photoDelegate];
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    for(PhotoSubmitterAccount *account in accounts){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         for(id<PhotoSubmitterPhotoDelegate> d in photoDelegates_){
             [submitter addPhotoDelegate:d];
         }
@@ -661,8 +702,8 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 /*!
  * get submitter
  */
-+ (id<PhotoSubmitterProtocol>)submitterForType:(NSString *)type{
-    return [[PhotoSubmitterManager sharedInstance] submitterForType:type];
++ (id<PhotoSubmitterProtocol>)submitterForAccount:(PhotoSubmitterAccount *)account{
+    return [[PhotoSubmitterManager sharedInstance] submitterForAccount:account];
 }
 
 /*!
@@ -694,11 +735,12 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  */
 + (void) unregisterPhotoSubmitterWithTypeName:(NSString *)type{
     [self sharedInstance];
-    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
     int i = 0;
     int found = -1;
-    for(NSString *type in registeredPhotoSubmitterTypes){
-        if([type isEqualToString:submitter.type]){
+    type = [PhotoSubmitterManager normalizeTypeName:type];
+    
+    for(NSString *t in registeredPhotoSubmitterTypes){
+        if([t isEqualToString:type]){
             found = i;
         }
     }
@@ -721,8 +763,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         }
     }
         
-    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
-    [registeredPhotoSubmitterTypes addObject:submitter.type];
+    [registeredPhotoSubmitterTypes addObject:type];
 }
 
 /*!

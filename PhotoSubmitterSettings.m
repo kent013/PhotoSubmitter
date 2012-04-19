@@ -12,6 +12,7 @@
 
 #import "PhotoSubmitterSettings.h"
 #import "PhotoSubmitterManager.h"
+#import "RegexKitLite.h"
 
 /*!
  * singleton instance
@@ -129,8 +130,14 @@ static PhotoSubmitterSettings* PhotoSubmitterSettingsSingletonInstance;
  */
 - (NSMutableDictionary *)submitterEnabledDates{
     id retval = [self readSetting:PS_KEY_SUBMITTER_ENABLED_DATES];
+    
     if([retval isKindOfClass:[NSMutableDictionary class]]){
-        return retval;
+        NSMutableDictionary *dates = (NSMutableDictionary *)retval;
+        if([[dates allKeys] objectAtIndex:0] != nil &&
+           [[[dates allKeys] objectAtIndex:0] isKindOfClass:[NSString class]] &&
+           [[[dates allKeys] objectAtIndex:0] isMatchedByRegex:@"PhotoSubmitter$"] == NO){
+            return retval;
+        }
     }
     [self writeSetting:PS_KEY_SUBMITTER_ENABLED_DATES value:nil];
     return nil;

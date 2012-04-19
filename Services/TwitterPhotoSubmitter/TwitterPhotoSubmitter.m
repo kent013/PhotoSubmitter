@@ -135,8 +135,8 @@
 /*!
  * initialize
  */
-- (id)init{
-    self = [super init];
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+    self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
     }
@@ -164,7 +164,7 @@
                                          cancelButtonTitle:[PSLang localized:@"Twitter_Ask_For_Configure_Cancel"]
                                          otherButtonTitles:[PSLang localized:@"Twitter_Ask_For_Configure_OK"], nil];
                         [alert show];
-                        [self.authDelegate photoSubmitter:self didLogout:self.type];
+                        [self.authDelegate photoSubmitter:self didLogout:self.account];
                     }else{
                         UIAlertView* alert = 
                         [[UIAlertView alloc] initWithTitle:[PSLang localized:@"Twitter_Account_Error_Title"]
@@ -173,13 +173,13 @@
                                          cancelButtonTitle:[PSLang localized:@"Twitter_Account_Error_OK"]
                                          otherButtonTitles:nil, nil];
                         [alert show];
-                        [self.authDelegate photoSubmitter:self didLogout:self.type];
+                        [self.authDelegate photoSubmitter:self didLogout:self.account];
                     }
                 });
             }else{
-                [self.authDelegate photoSubmitter:self didLogout:self.type];
+                [self.authDelegate photoSubmitter:self didLogout:self.account];
             }
-            [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
+            [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.account];
         }];
     });
 }
@@ -290,7 +290,7 @@
  * get setting view
  */
 - (PhotoSubmitterServiceSettingTableViewController *)settingView{
-    return [[TwitterPhotoSubmitterSettingTableViewController alloc] initWithType:self.type];
+    return [[TwitterPhotoSubmitterSettingTableViewController alloc] initWithAccount:self.account];
 }
 
 /*!

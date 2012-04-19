@@ -125,7 +125,7 @@
  * encode
  */
 - (void)encodeWithCoder:(NSCoder*)coder {
-    [coder encodeObject:self.submitter.type forKey:@"submitter_type"];
+    [coder encodeObject:self.submitter.account forKey:@"account"];
     [coder encodeObject:self.content forKey:@"content"];
 }
 
@@ -136,8 +136,8 @@
     delegates_ = [[NSMutableArray alloc] init];
     self = [super init];
     if (self) {
-        self.submitter = 
-            [PhotoSubmitterManager submitterForType:[coder decodeObjectForKey:@"submitter_type"]];
+        PhotoSubmitterAccount *account = [coder decodeObjectForKey:@"account"];
+        self.submitter = [PhotoSubmitterManager submitterForAccount:account];
         self.content = [coder decodeObjectForKey:@"content"];
     }
     return self;

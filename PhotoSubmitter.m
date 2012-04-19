@@ -39,28 +39,28 @@
  * get enabled key
  */
 - (NSString *)keyForEnabled{
-    return [NSString stringWithFormat:@"PS%@Enabled", self.name];
+    return [NSString stringWithFormat:@"PS%@Enabled", self.account.accountHash];
 }
 
 /*!
  * get username key
  */
 - (NSString *)keyForUsername{
-    return [NSString stringWithFormat:@"PS%@Username", self.name];
+    return [NSString stringWithFormat:@"PS%@Username", self.account.accountHash];
 }
 
 /*!
  * get albums key
  */
 - (NSString *)keyForAlbums{
-    return [NSString stringWithFormat:@"PS%@Albums", self.name];
+    return [NSString stringWithFormat:@"PS%@Albums", self.account.accountHash];
 }
 
 /*!
  * get target album key
  */
 - (NSString *)keyForTargetAlbum{
-    return [NSString stringWithFormat:@"PS%@TargetAlbum", self.name];
+    return [NSString stringWithFormat:@"PS%@TargetAlbum", self.account.accountHash];
 }
 
 /*!
@@ -89,6 +89,7 @@
 @synthesize isSequencial = isSequencial_;
 @synthesize useOperation = useOperation_;
 @synthesize requiresNetwork = requiresNetwork_;
+@synthesize account = account_;
 @synthesize authDelegate;
 @synthesize dataDelegate;
 @synthesize albumDelegate;
@@ -96,9 +97,10 @@
 /*!
  * initialize
  */
-- (id)init{
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
     self = [super init];
     if(self){
+        account_ = account;
         photos_ = [[NSMutableDictionary alloc] init];
         requests_ = [[NSMutableDictionary alloc] init];
         operationDelegates_ = [[NSMutableDictionary alloc] init];
@@ -127,10 +129,10 @@
     id<PhotoSubmitterInstanceProtocol> instance = [self subclassInstance];
     if(self.isSessionValid){
         [self enable];
-        [self.authDelegate photoSubmitter:self didLogin:self.type];
+        [self.authDelegate photoSubmitter:self didLogin:self.account];
         return;
     }
-    [self.authDelegate photoSubmitter:self willBeginAuthorization:self.type];
+    [self.authDelegate photoSubmitter:self willBeginAuthorization:self.account];
     [instance onLogin];
 }
 
@@ -141,7 +143,7 @@
     id<PhotoSubmitterInstanceProtocol> instance = [self subclassInstance];
     [instance onLogout];
     [self clearCredentials];
-    [self.authDelegate photoSubmitter:self didLogout:self.type];
+    [self.authDelegate photoSubmitter:self didLogout:self.account];
 }
 
 /*!
@@ -149,7 +151,7 @@
  */
 - (void)enable{
     [self setSetting:[NSNumber numberWithBool:YES] forKey:[self keyForEnabled]];
-    [self.authDelegate photoSubmitter:self didLogin:self.type];
+    [self.authDelegate photoSubmitter:self didLogin:self.account];
 }
 
 /*!
@@ -157,7 +159,7 @@
  */
 - (void)disable{
     [self removeSettingForKey:self.keyForEnabled];
-    [self.authDelegate photoSubmitter:self didLogout:self.type];
+    [self.authDelegate photoSubmitter:self didLogout:self.account];
 }
 
 /*!
@@ -218,7 +220,7 @@
  */
 - (void)completeLogin{
     [self enable]; //enable signals didLogin
-    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
+    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.account];
 }
 
 /*!
@@ -226,15 +228,15 @@
  */
 - (void)completeLoginFailed{
     [self clearCredentials];
-    [self.authDelegate photoSubmitter:self didLogout:self.type];
-    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
+    [self.authDelegate photoSubmitter:self didLogout:self.account];
+    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.account];
 }
 /*!
  * complete logout operation and send signal to delegate
  */
 - (void)completeLogout{
     [self clearCredentials];
-    [self.authDelegate photoSubmitter:self didLogout:self.type];
+    [self.authDelegate photoSubmitter:self didLogout:self.account];
 }
 
 #pragma mark - contents
@@ -471,9 +473,9 @@
  */
 - (PhotoSubmitterServiceSettingTableViewController *)settingViewInternal{
     if(self.isAlbumSupported){
-        return [[AlbumPhotoSubmitterSettingTableViewController alloc] initWithType:self.type];
+        return [[AlbumPhotoSubmitterSettingTableViewController alloc] initWithAccount:self.account];
     }
-    return [[SimplePhotoSubmitterSettingTableViewController alloc] initWithType:self.type];
+    return [[SimplePhotoSubmitterSettingTableViewController alloc] initWithAccount:self.account];
 }
 
 /*!

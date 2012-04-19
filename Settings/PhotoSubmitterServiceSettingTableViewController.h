@@ -12,9 +12,9 @@
 
 
 @interface PhotoSubmitterServiceSettingTableViewController : UITableViewController<PhotoSubmitterServiceSettingTableViewProtocol>{
-    NSString *type_;
+    PhotoSubmitterAccount *account_;
 }
 
-- (id)initWithType:(NSString *)type;
-@property (nonatomic, readonly) NSString *type;
+- (id)initWithAccount:(PhotoSubmitterAccount *)account;
+@property (nonatomic, readonly) PhotoSubmitterAccount *account;
 @end

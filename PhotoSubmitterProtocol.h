@@ -20,6 +20,7 @@
 @protocol PhotoSubmitterAlbumDelegate;
 
 @class PhotoSubmitterServiceSettingTableViewController;
+@class PhotoSubmitterAccount;
 
 /*!
  * protocol for submitter
@@ -50,6 +51,9 @@
 @property (nonatomic, readonly) PhotoSubmitterServiceSettingTableViewController *settingView;
 @property (nonatomic, readonly) NSInteger maximumLengthOfComment;
 @property (nonatomic, readonly) NSInteger maximumLengthOfVideo;
+@property (nonatomic, readonly) PhotoSubmitterAccount *account;
+
+- (id) initWithAccount:(PhotoSubmitterAccount *)account;
 - (void) login;
 - (void) logout;
 - (void) enable;
@@ -86,10 +90,10 @@
  */
 @protocol PhotoSubmitterAuthenticationDelegate <NSObject>
 @required
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willBeginAuthorization:(NSString *)type;
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAuthorizationFinished:(NSString *)type;
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogin:(NSString *) type;
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogout:(NSString *) type;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willBeginAuthorization:(PhotoSubmitterAccount *)account;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAuthorizationFinished:(PhotoSubmitterAccount *)account;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogin:(PhotoSubmitterAccount *)account;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogout:(PhotoSubmitterAccount *)account;
 @end
 
 /*!

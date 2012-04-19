@@ -200,8 +200,8 @@ static NSString *kDefaultAlbum = @"/";
 /*!
  * initialize
  */
-- (id)init{
-    self = [super init];
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+    self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
     }
@@ -254,9 +254,10 @@ static NSString *kDefaultAlbum = @"/";
         [self enable];
         result = YES;
     }else{
-        [self.authDelegate photoSubmitter:self didLogout:self.type];
+        [self disable];
+        [self.authDelegate photoSubmitter:self didLogout:self.account];
     }
-    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
+    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.account];
     return result;
 }
 

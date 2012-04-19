@@ -9,6 +9,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <Foundation/Foundation.h>
 #import "PhotoSubmitterImageEntity.h"
+#import "PhotoSubmitterAccount.h"
 #import "PhotoSubmitterSequencialOperationQueue.h"
 #import "PhotoSubmitterServiceSettingViewFactory.h"
 
@@ -22,7 +23,6 @@
     __strong NSMutableDictionary *submitters_;
     __strong NSMutableDictionary *operations_;
     __strong NSMutableDictionary *sequencialOperationQueues_;
-    __strong NSMutableArray *loadedSubmitterTypes_;
     __strong NSOperationQueue *operationQueue_;
     __strong NSMutableArray *delegates_;
     __strong CLLocationManager *locationManager_;
@@ -41,7 +41,6 @@
 
 @property (nonatomic, assign) id<PhotoSubmitterAuthControllerDelegate> authControllerDelegate;
 @property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authenticationDelegate;
-@property (nonatomic, readonly) NSArray* loadedSubmitterTypes;
 @property (nonatomic, readonly) int enabledSubmitterCount;
 @property (nonatomic, readonly) int uploadOperationCount;
 @property (nonatomic, readonly) int errorOperationCount;
@@ -53,6 +52,7 @@
 @property (nonatomic, readonly) BOOL isError;
 @property (nonatomic, readonly) BOOL isPausingOperation;
 @property (nonatomic, readonly) NSInteger maxCommentLength;
+@property (nonatomic, readonly) NSArray *submitters;
 @property (nonatomic, assign) id<PhotoSubmitterSettingViewFactoryProtocol> settingViewFactory;
 
 - (void) submitPhoto:(PhotoSubmitterImageEntity *)photo;
@@ -64,7 +64,8 @@
 - (void) cancel;
 - (void) restart;
 - (void) refreshCredentials;
-- (id<PhotoSubmitterProtocol>) submitterForType:(NSString *)type;
+- (id<PhotoSubmitterProtocol>) submitterForAccount:(PhotoSubmitterAccount *)account;
+- (NSArray *) submittersForType:(NSString *)type;
 - (BOOL) didOpenURL: (NSURL *)url;
 
 - (void) addDelegate:(id<PhotoSubmitterManagerDelegate>)delegate;
@@ -76,7 +77,7 @@
 - (void) clearPhotoDelegate;
 
 + (PhotoSubmitterManager *)sharedInstance;
-+ (id<PhotoSubmitterProtocol>) submitterForType:(NSString *)type;
++ (id<PhotoSubmitterProtocol>) submitterForAccount:(PhotoSubmitterAccount *)account;
 + (int) registeredPhotoSubmitterCount;
 + (NSArray *) registeredPhotoSubmitters;
 + (void) unregisterAllPhotoSubmitters;
