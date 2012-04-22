@@ -59,6 +59,12 @@
  */
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self numberOfSectionsInTableView:tableView];
+        if(count >= 0){
+            return count;
+        }
+    }
     if(self.submitter.isAlbumSupported){
         return 2;
     }
@@ -70,6 +76,12 @@
  */
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self tableView:tableView numberOfRowsInSection:section];
+        if(count >= 0){
+            return count;
+        }
+    }
     if(self.submitter.isAlbumSupported){
         switch (section) {
             case FSV_SECTION_ALBUMS: return self.submitter.albumList.count + 1;
@@ -82,6 +94,10 @@
  * title for section
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    NSString *title = [self.tableViewDelegate settingViewController:self tableView:tableView titleForHeaderInSection:section];
+    if(title != nil){
+        return title;
+    }
     if(self.submitter.isAlbumSupported){
         switch (section) {
             case FSV_SECTION_ALBUMS : return [PSLang localized:@"Detail_Section_Album"]; break;
@@ -94,6 +110,10 @@
  * footer for section
  */
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+    NSString *title = [self.tableViewDelegate settingViewController:self tableView:tableView titleForFooterInSection:section];
+    if(title != nil){
+        return title;
+    }
     if(self.submitter.isAlbumSupported){
         switch (section){
             case FSV_SECTION_ALBUMS: return [NSString stringWithFormat:[PSLang localized:@"Album_Detail_Section_Album_Footer"], self.submitter.name];
@@ -107,7 +127,13 @@
  */
 -(UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
+    UITableViewCell *cell = [self.tableViewDelegate settingViewController:self tableView:tableView cellForRowAtIndexPath:indexPath];
+    
+    if(cell != nil){
+        return cell;
+    }
+    
+    cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     if(indexPath.section == FSV_SECTION_ALBUMS && self.submitter.isAlbumSupported){
         if(self.submitter.albumList.count == indexPath.row){
             cell.textLabel.text = [PSLang localized:@"Album_Detail_Section_Create_Album_Title"];
@@ -133,6 +159,10 @@
  * on row selected
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    BOOL processed = [self.tableViewDelegate settingViewController:self tableView:tableView didSelectRowAtIndexPath:indexPath];
+    if(processed){
+        return;
+    }
     if(indexPath.section == FSV_SECTION_ALBUMS && self.submitter.isAlbumSupported){
         UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
         if(indexPath.row == self.submitter.albumList.count){

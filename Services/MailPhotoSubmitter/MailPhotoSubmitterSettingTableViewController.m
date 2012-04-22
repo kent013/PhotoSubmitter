@@ -30,7 +30,6 @@
 //-----------------------------------------------------------------------------
 @interface MailPhotoSubmitterSettingTableViewController(PrivateImplementation)
 - (void) setupInitialState;
-- (void) didLogoutButtonTapped:(id)sender;
 - (MailPhotoSubmitter *)mailSubmitter;
 - (UITextField *) createTextField;
 @end
@@ -40,14 +39,6 @@
  * initialize
  */
 -(void)setupInitialState{
-}
-
-/*!
- * did logout button tapped
- */
-- (void)didLogoutButtonTapped:(id)sender{
-    [self.submitter logout];
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 /*!
@@ -109,36 +100,44 @@
  */
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self numberOfSectionsInTableView:tableView];
+        if(count >= 0){
+            return count;
+        }
+    }
     return TSV_SECTION_COUNT;
 }
 
 /*!
  * get row number
  */
-- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self tableView:tableView numberOfRowsInSection:section];
+        if(count >= 0){
+            return count;
+        }
+    }
     switch (section) {
         case TSV_SECTION_MAIL: return TSV_SECTION_MAIL_COUNT;
     }
-    return [super tableView:table numberOfRowsInSection:section];
+    return [super tableView:tableView numberOfRowsInSection:section];
 }
 
 /*!
  * title for section
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    NSString *title = [self.tableViewDelegate settingViewController:self tableView:tableView titleForHeaderInSection:section];
+    if(title != nil){
+        return title;
+    }
     switch (section) {
-        case SV_SECTION_ACCOUNT: return [self.submitter.name stringByAppendingString:[PSLang localized:@"Detail_Section_Account"]] ; break;
         case TSV_SECTION_MAIL: return [self.submitter.name stringByAppendingString:[PSLang localized:@"MailPhotoSubmitter_Section_Mail"]] ; break;
     }
-    return nil;
-}
-
-/*!
- * footer for section
- */
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
-    return nil;    
+    return [super tableView:tableView titleForHeaderInSection:section];
 }
 
 /*!
@@ -146,7 +145,12 @@
  */
 -(UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    UITableViewCell *cell = [self.tableViewDelegate settingViewController:self tableView:tableView cellForRowAtIndexPath:indexPath];
+    
+    if(cell != nil){
+        return cell;
+    }
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     if(indexPath.section == SV_SECTION_ACCOUNT){
         cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     }else if(indexPath.section == TSV_SECTION_MAIL){
@@ -218,6 +222,10 @@
  * on row selected
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    BOOL processed = [self.tableViewDelegate settingViewController:self tableView:tableView didSelectRowAtIndexPath:indexPath];
+    if(processed){
+        return;
+    }
     if(indexPath.section == TSV_SECTION_MAIL){
         switch (indexPath.row) {
             case TSV_ROW_MAIL_TO:{

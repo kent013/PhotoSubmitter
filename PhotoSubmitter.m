@@ -19,6 +19,7 @@
 #import "UIImage+EXIF.h"
 #import "PDKeychainBindings.h"
 #import "RegexKitLite.h"
+#import "PhotoSubmitterAccountManager.h"
 #import "AlbumPhotoSubmitterSettingTableViewController.h"
 #import "SimplePhotoSubmitterSettingTableViewController.h"
 
@@ -437,7 +438,14 @@
  * display name
  */
 - (NSString *)displayName{
-    return self.name; 
+    if([[PhotoSubmitterAccountManager sharedManager] countAccountForType:self.type] == 1){
+        return self.name; 
+    }
+    NSString *u = self.username;
+    if(u != nil && [u isEqualToString: @""] == NO){
+        return [NSString stringWithFormat:@"%@(%@)", self.name, self.username];
+    }
+    return self.name;
 }
 
 /*!

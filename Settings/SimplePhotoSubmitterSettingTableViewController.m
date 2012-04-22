@@ -37,10 +37,15 @@
  * did logout button tapped
  */
 - (void)didLogoutButtonTapped:(id)sender{
-    [self.submitter logout];
+    if([[PhotoSubmitterAccountManager sharedManager] countAccountForType:self.submitter.type] > 1){
+        attemptToDeleteAccount_ = YES;
+        [self performSelector:@selector(requestForDeleteAccount:) withObject:self.account afterDelay:1.5];
+    }else{
+        MAConfirmButton *button = (MAConfirmButton *)sender;
+        [button cancel];
+        [self.submitter logout];
+    }
     [self.navigationController popViewControllerAnimated:YES];
-    MAConfirmButton *button = (MAConfirmButton *)sender;
-    [button cancel];
 }
 
 /*!
@@ -71,6 +76,12 @@
  */
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self numberOfSectionsInTableView:tableView];
+        if(count >= 0){
+            return count;
+        }
+    }
     return 2;
 }
 
@@ -79,15 +90,16 @@
  */
 - (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self tableView:table numberOfRowsInSection:section];
+        if(count >= 0){
+            return count;
+        }
+    }
     switch (section) {
         case SV_SECTION_ACCOUNT: 
             if(self.submitter.isMultipleAccountSupported){
-                int count = [[PhotoSubmitterAccountManager sharedManager] countAccountForType:self.submitter.type];
-                if(count > 1){
-                    return 4;
-                }else{
-                    return 3;
-                }
+                return 3;
             }
             return 2;
     }
@@ -98,6 +110,10 @@
  * title for section
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    NSString *title = [self.tableViewDelegate settingViewController:self tableView:tableView titleForHeaderInSection:section];
+    if(title != nil){
+        return title;
+    }
     switch (section) {
         case SV_SECTION_ACCOUNT: return [self.submitter.name stringByAppendingString:[PSLang localized:@"Detail_Section_Account"]] ; break;
     }
@@ -108,6 +124,10 @@
  * footer for section
  */
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+    NSString *title = [self.tableViewDelegate settingViewController:self tableView:tableView titleForFooterInSection:section];
+    if(title != nil){
+        return title;
+    }
     return nil;    
 }
 
@@ -116,7 +136,12 @@
  */
 -(UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    UITableViewCell *cell = [self.tableViewDelegate settingViewController:self tableView:tableView cellForRowAtIndexPath:indexPath];
+    
+    if(cell != nil){
+        return cell;
+    }
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     if(indexPath.section == SV_SECTION_ACCOUNT){
         if(indexPath.row == SV_ROW_ACCOUNT_NAME){
             cell.textLabel.text = [PSLang localized:@"Detail_Row_AccountName"];
@@ -134,12 +159,8 @@
             cell.accessoryView = button;
         }else if(indexPath.row == SV_ROW_ACCOUNT_ADD){
             cell.textLabel.text = [PSLang localized:@"Detail_Row_AddAccount"];
-            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
-        }else if(indexPath.row == SV_ROW_ACCOUNT_DELETE){
-            cell.textLabel.text = [PSLang localized:@"Detail_Row_DeleteAccount"];
-            cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
-        
     }
     return cell;
 }
@@ -150,6 +171,10 @@
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated: YES];
+    BOOL processed = [self.tableViewDelegate settingViewController:self tableView:tableView didSelectRowAtIndexPath:indexPath];
+    if(processed){
+        return;
+    }
     if(self.submitter.isMultipleAccountSupported){
         switch(indexPath.row){
             case SV_ROW_ACCOUNT_ADD:{
@@ -158,12 +183,6 @@
                 [self.navigationController popViewControllerAnimated:YES];
                 [self performSelector:@selector(requestForAddAccount:) withObject:account afterDelay:1.5];
                 break;
-            }
-            case SV_ROW_ACCOUNT_DELETE:{
-                attemptToDeleteAccount_ = YES;
-                [self.navigationController popViewControllerAnimated:YES];
-                [self performSelector:@selector(requestForDeleteAccount:) withObject:self.account afterDelay:1.5];
-                break;                
             }
         }
     }

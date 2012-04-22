@@ -33,6 +33,7 @@
 @implementation PhotoSubmitterServiceSettingTableViewController
 @synthesize account = account_;
 @synthesize settingDelegate;
+@synthesize tableViewDelegate;
 
 /*!
  * initialize

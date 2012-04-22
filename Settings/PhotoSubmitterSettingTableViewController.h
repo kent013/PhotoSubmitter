@@ -16,6 +16,7 @@
  * setting view controller
  */
 @interface PhotoSubmitterSettingTableViewController : UITableViewController<PhotoSubmitterAuthenticationDelegate, PhotoSubmitterServiceSettingDelegate>{
+    __strong id<PhotoSubmitterServiceSettingTableViewDelegate> tableViewDelegate_;
 @protected
     __strong NSMutableDictionary *settingControllers_;
     __strong NSMutableArray *switches_;
@@ -23,6 +24,7 @@
 - (void) updateSocialAppSwitches;
 - (UITableViewCell *) createGeneralSettingCell:(int)tag;
 @property (weak, nonatomic) id<PhotoSubmitterSettingTableViewControllerDelegate> delegate;
+@property (strong, nonatomic) id<PhotoSubmitterServiceSettingTableViewDelegate> tableViewDelegate;
 @end
 
 @protocol PhotoSubmitterSettingTableViewControllerDelegate <NSObject>

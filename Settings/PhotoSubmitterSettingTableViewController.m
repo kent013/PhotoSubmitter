@@ -52,6 +52,7 @@
         if(settingView != nil){
             [settingControllers_ setObject:settingView forKey:submitter.account.accountHash];
             settingView.settingDelegate = self;
+            settingView.tableViewDelegate = tableViewDelegate_;
         }
     }
     
@@ -276,6 +277,8 @@
 //-----------------------------------------------------------------------------
 @implementation PhotoSubmitterSettingTableViewController
 @synthesize delegate;
+@synthesize tableViewDelegate = tableViewDelegate_;
+
 /*!
  * initialize with frame
  */
@@ -372,6 +375,18 @@
  */
 - (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAuthorizationFinished:(PhotoSubmitterAccount *)account{
 }
+
+/*!
+ * tableViewDelegate
+ */
+- (void)setTableViewDelegate:(id<PhotoSubmitterServiceSettingTableViewDelegate>)inTableViewDelegate{
+    tableViewDelegate_ = inTableViewDelegate;
+    for(NSString *key in settingControllers_){
+        PhotoSubmitterSettingTableViewController *view = [settingControllers_ objectForKey:key];
+        view.tableViewDelegate = tableViewDelegate_;
+    }
+}
+
 #pragma mark - PhotoSubmitterServiceSettingDelegate
 /*!
  * when add account cell tapped
@@ -382,6 +397,7 @@
     if(settingView != nil){
         [settingControllers_ setObject:settingView forKey:submitter.account.accountHash];
         settingView.settingDelegate = self;
+        settingView.tableViewDelegate = tableViewDelegate_;
     }
     PhotoSubmitterSwitch *s = [[PhotoSubmitterSwitch alloc] init];
     s.account = submitter.account;
