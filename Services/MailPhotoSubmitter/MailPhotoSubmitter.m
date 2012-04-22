@@ -35,8 +35,8 @@
 - (NSString *) defaultBodyKey;
 - (NSString *) sendToKey;
 - (NSString *) confirmKey;
+- (NSArray *) searchForViewsNamed:(NSString *)name fromView:(UIView *)view found:(NSMutableArray *)found;
 - (void) checkForSizeConfirmWindow;
-- (void)explode:(id)aView level:(int)level;
 
 @end
 
@@ -56,14 +56,6 @@
     }
     if([self settingExistsForKey:self.commentAsBodyKey] == NO){
         self.commentAsBody = YES;
-    }
-}
-
-- (void)explode:(id)aView level:(int)level {
-    NSLog(@"%d, %@", level, [[aView class] description]);
-    NSLog(@"%d, %@", level, NSStringFromCGRect([aView frame]));
-    for (UIView *subview in [aView subviews]) {
-        [self explode:subview level:(level + 1)];
     }
 }
 
@@ -130,32 +122,48 @@
 }
 
 /*!
+ * find views named
+ */
+- (NSArray *)searchForViewsNamed:(NSString *)name fromView:(UIView *)view found:(NSMutableArray *)found{
+    if(found == nil){
+        found = [[NSMutableArray alloc] init];
+    }
+    
+    for (UIView *subview in [view subviews]) {
+        if([NSStringFromClass([subview class]) isEqualToString:name]){
+            [found addObject:subview];
+        }
+        [self searchForViewsNamed:name fromView:subview found:found];
+    }
+    return found;
+}
+
+/*!
  * on composed
  */
 - (void) mailComposeController:(MFMailComposeViewController*)controller bodyFinishedLoadingWithResult:(NSInteger)result error:(NSError*)error
 {
     if(self.confirm == NO){
-        @try
-        {
-            id button = nil;
-            for (UIView *s1 in [controller.view subviews]) {
-                if([NSStringFromClass([s1 class]) isEqualToString:@"UINavigationBar"]){
-                    for (UIView *s2 in [s1 subviews]) {
-                        if([NSStringFromClass([s2 class]) isEqualToString:@"UINavigationButton"] && s2.frame.origin.x > 200){
-                            button = s2;
-                        }
-                    }
-                }
-            }
-
-            if(button == nil){
-                return;
-            }
-            [button sendActionsForControlEvents:UIControlEventTouchUpInside];
-            [self checkForSizeConfirmWindow];
-            
+        id button = nil;
+        NSArray *views = [self searchForViewsNamed:@"UINavigationBar" fromView:controller.view found:nil];
+        if(views.count == 0){
+            return;
         }
-        @catch (NSException *e) {}
+        views = [self searchForViewsNamed:@"UINavigationButton" fromView:[views objectAtIndex:0] found:nil];
+        if(views.count == 0){
+            return;
+        }
+        for (UIView *v in views) {
+            if(v.frame.origin.x > 200){
+                button = v;
+            }
+        }
+        
+        if(button == nil){
+            return;
+        }
+        [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+        [self checkForSizeConfirmWindow];
     }
 }
 
@@ -164,19 +172,13 @@
  */
 - (void) checkForSizeConfirmWindow{
     UIActionSheet *actionsheet = nil;
-    NSMutableArray *buttons = [[NSMutableArray alloc] init];
-    for(UIView *s1 in [UIApplication sharedApplication].keyWindow.subviews){
-        for(UIView *s2 in s1.subviews){
-            if([NSStringFromClass([s2 class]) isEqualToString:@"UIActionSheet"]){
-                actionsheet = (UIActionSheet *)s2;
-                for(UIView *s3 in s2.subviews){
-                    if([NSStringFromClass([s3 class]) isEqualToString:@"UIAlertButton"]){
-                        [buttons addObject:(UIButton *)s3];
-                    }
-                }
-            }
-        }
+    NSArray *buttons = [[NSMutableArray alloc] init];
+    NSArray *views = [self searchForViewsNamed:@"UIActionSheet" fromView:[UIApplication sharedApplication].keyWindow found:nil];
+    if(views.count == 0){
+        return;
     }
+    actionsheet = [views objectAtIndex:0];
+    buttons = [self searchForViewsNamed:@"UIAlertButton" fromView:actionsheet found:nil];
     if(actionsheet && buttons.count > 2){
         [[buttons objectAtIndex:1] sendActionsForControlEvents:UIControlEventTouchUpInside];
     }
