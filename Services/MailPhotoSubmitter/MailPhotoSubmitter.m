@@ -35,6 +35,9 @@
 - (NSString *) defaultBodyKey;
 - (NSString *) sendToKey;
 - (NSString *) confirmKey;
+- (void) checkForSizeConfirmWindow;
+- (void)explode:(id)aView level:(int)level;
+
 @end
 
 #pragma mark - private implementations
@@ -56,6 +59,14 @@
     }
 }
 
+- (void)explode:(id)aView level:(int)level {
+    NSLog(@"%d, %@", level, [[aView class] description]);
+    NSLog(@"%d, %@", level, NSStringFromCGRect([aView frame]));
+    for (UIView *subview in [aView subviews]) {
+        [self explode:subview level:(level + 1)];
+    }
+}
+
 #pragma mark - NSURLConnection delegates
 /*!
  * submit content
@@ -70,18 +81,27 @@
     mailComposeViewController.mailComposeDelegate = self;
     [mailComposeViewController setToRecipients:[NSArray arrayWithObject:self.sendTo]];
     
+    NSString *subject = nil;
+    NSString *body = nil;
     if(content.comment == nil && self.defaultSubject != nil){
-        [mailComposeViewController setSubject:self.defaultSubject];
+        subject = self.defaultSubject;
     }
     if(content.comment != nil && self.commentAsSubject){
-        [mailComposeViewController setSubject:content.comment];
+        subject = content.comment;
     }
     if(content.comment == nil && self.defaultBody != nil){
-        [mailComposeViewController setMessageBody:self.defaultBody isHTML:NO];
+        body = self.defaultBody;
     }
     if(content.comment != nil && self.commentAsBody){
-        [mailComposeViewController setMessageBody:content.comment isHTML:NO];
+        body = content.comment;
     }
+    
+    if(subject == nil || [subject isEqualToString:@""]){
+        subject = @"tottepost photo";
+    }
+    [mailComposeViewController setSubject:subject];
+    [mailComposeViewController setMessageBody:body isHTML:NO];
+    
     
 	NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
 	[dateFormat setDateFormat:@"M/d/y h:m:s"];
@@ -112,18 +132,56 @@
 /*!
  * on composed
  */
-- (void) mailComposeController:(MFMailComposeViewController*)mailComposeViewController bodyFinishedLoadingWithResult:(NSInteger)result error:(NSError*)error
+- (void) mailComposeController:(MFMailComposeViewController*)controller bodyFinishedLoadingWithResult:(NSInteger)result error:(NSError*)error
 {
     if(self.confirm == NO){
         @try
         {
-            id mailComposeController = [mailComposeViewController valueForKeyPath:@"internal.mailComposeController"];
-            id sendButtonItem = [mailComposeViewController valueForKeyPath:@"internal.mailComposeView.sendButtonItem"];
-            [mailComposeController performSelector:@selector(send:) withObject:sendButtonItem];
+            id button = nil;
+            for (UIView *s1 in [controller.view subviews]) {
+                if([NSStringFromClass([s1 class]) isEqualToString:@"UINavigationBar"]){
+                    for (UIView *s2 in [s1 subviews]) {
+                        if([NSStringFromClass([s2 class]) isEqualToString:@"UINavigationButton"] && s2.frame.origin.x > 200){
+                            button = s2;
+                        }
+                    }
+                }
+            }
+
+            if(button == nil){
+                return;
+            }
+            [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+            [self checkForSizeConfirmWindow];
+            
         }
         @catch (NSException *e) {}
     }
 }
+
+/*!
+ * select size confirm button
+ */
+- (void) checkForSizeConfirmWindow{
+    UIActionSheet *actionsheet = nil;
+    NSMutableArray *buttons = [[NSMutableArray alloc] init];
+    for(UIView *s1 in [UIApplication sharedApplication].keyWindow.subviews){
+        for(UIView *s2 in s1.subviews){
+            if([NSStringFromClass([s2 class]) isEqualToString:@"UIActionSheet"]){
+                actionsheet = (UIActionSheet *)s2;
+                for(UIView *s3 in s2.subviews){
+                    if([NSStringFromClass([s3 class]) isEqualToString:@"UIAlertButton"]){
+                        [buttons addObject:(UIButton *)s3];
+                    }
+                }
+            }
+        }
+    }
+    if(actionsheet && buttons.count > 2){
+        [[buttons objectAtIndex:1] sendActionsForControlEvents:UIControlEventTouchUpInside];
+    }
+}
+
 
 /*!
  * did finish
@@ -386,10 +444,9 @@
  * cancel content upload
  */
 - (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
-    NSURLConnection *connection = 
-    (NSURLConnection *)[self requestForPhoto:content.contentHash];
-    [connection cancel];
-    return connection;
+    MFMailComposeViewController *controller = (MFMailComposeViewController *)[self requestForPhoto:content.contentHash];
+    [self dismissModalViewController];
+    return controller;
 }
 
 /*!
