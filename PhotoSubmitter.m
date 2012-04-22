@@ -620,9 +620,29 @@
     }
     return [requests_ objectForKey:[key lastObject]];
 }
+#pragma mark - present setting view
+/*!
+ * present authentication view
+ */
+- (void) presentAuthenticationView:(UIViewController *)viewController{
+	[[[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestNavigationControllerForPresentAuthenticationView] pushViewController:viewController animated:YES];
+}
 
-#pragma mark -
-#pragma mark util methods
+/*!
+ * present modal view
+ */
+- (void) presentModalViewController:(UIViewController *)viewController{
+    [[[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView] presentModalViewController:viewController animated:YES];
+}
+
+/*!
+ * dismiss modal view
+ */
+- (void) dismissModalViewController{
+    [[[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView] dismissModalViewControllerAnimated:YES];
+}
+
+#pragma mark - util methods
 /*!
  * clear request data
  */

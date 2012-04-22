@@ -63,6 +63,62 @@
         tags = common
         en = Are you sure?
         ja = 本当にログアウトしますか？
+    [MailPhotoSubmitter_Section_Mail]
+        tags = common
+        en = EMail Setting
+        ja = メール設定
+    [MailPhotoSubmitter_To_Placeholder]
+        tags = common
+        en = To address
+        ja = 送信先
+    [MailPhotoSubmitter_CommentAsBody_Title]
+        tags = common
+        en = Comment as body
+        ja = コメントを本文に
+    [MailPhotoSubmitter_CommentAsSubject_Title]
+        tags = common
+        en = Comment as subject
+        ja = コメントを件名に
+    [MailPhotoSubmitter_DefaultBody_Placeholder]
+        tags = common
+        en = Default body
+        ja = デフォルトの本文
+    [MailPhotoSubmitter_DefaultSubject_Placeholder]
+        tags = common
+        en = Default subject
+        ja = デフォルトの件名
+    [MailPhotoSubmitter_ConfirmMail_Title]
+        tags = common
+        en = Confirm content
+        ja = 送信内容を確認する
+    [MailPhotoSubmitter_Alert_InvalidAddress_Title]
+        tags = common
+        en = Error
+        ja = エラー
+    [MailPhotoSubmitter_Alert_InvalidAddress_Message]
+        tags = common
+        en = %@ is not valid send to email address.
+        ja = %@ は正しい送信先メールアドレスではありません
+    [MailPhotoSubmitter_Alert_EmptyAddress_Message]
+        tags = common
+        en = Please specify send to address.
+        ja = 送信先アドレスが空です
+    [MailPhotoSubmitter_Alert_InvalidAddress_Button_Title]
+        tags = common
+        en = OK
+        ja = OK
+    [MailPhotoSubmitter_Alert_MailRequired_Title]
+        tags = common
+        en = Error
+        ja = エラー
+    [MailPhotoSubmitter_Alert_MailRequired_Message]
+        tags = common
+        en = Mail address is not available
+        ja = メールアドレスが設定されていません
+    [MailPhotoSubmitter_Alert_MailRequired_Button_Title]
+        tags = common
+        en = OK
+        ja = OK
     [Album_Detail_Section_Album_Footer]
         tags = common
         en = Selected album will be used for tottepost\n If you want to delete/edit album, please do so at %@.

@@ -61,6 +61,8 @@
 //Public Implementations
 //-----------------------------------------------------------------------------
 @implementation SimplePhotoSubmitterSettingTableViewController
+@synthesize attemptToAddAccount = attemptToAddAccount_;
+@synthesize attemptToDeleteAccount = attemptToDeleteAccount_;
 
 #pragma mark -
 #pragma mark tableview methods
@@ -151,14 +153,16 @@
     if(self.submitter.isMultipleAccountSupported){
         switch(indexPath.row){
             case SV_ROW_ACCOUNT_ADD:{
+                attemptToAddAccount_ = YES;
                 PhotoSubmitterAccount *account = [[PhotoSubmitterAccountManager sharedManager] createAccountForType:self.submitter.type];
                 [self.navigationController popViewControllerAnimated:YES];
-                [self performSelector:@selector(requestForAddAccount:) withObject:account afterDelay:1];
+                [self performSelector:@selector(requestForAddAccount:) withObject:account afterDelay:1.5];
                 break;
             }
             case SV_ROW_ACCOUNT_DELETE:{
+                attemptToDeleteAccount_ = YES;
                 [self.navigationController popViewControllerAnimated:YES];
-                [self performSelector:@selector(requestForDeleteAccount:) withObject:self.account afterDelay:1];
+                [self performSelector:@selector(requestForDeleteAccount:) withObject:self.account afterDelay:1.5];
                 break;                
             }
         }
@@ -173,6 +177,8 @@
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [self.submitter updateUsernameWithDelegate:self];
+    attemptToAddAccount_ = NO;
+    attemptToDeleteAccount_ = NO;
 }
 
 #pragma mark -

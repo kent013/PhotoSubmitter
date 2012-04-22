@@ -305,7 +305,10 @@
  * get setting view
  */
 - (PhotoSubmitterServiceSettingTableViewController *)settingView{
-    return [[TwitterPhotoSubmitterSettingTableViewController alloc] initWithAccount:self.account];
+    if(settingView_ == nil){
+        settingView_ = [[TwitterPhotoSubmitterSettingTableViewController alloc] initWithAccount:self.account];
+    }
+    return settingView_;
 }
 
 /*!

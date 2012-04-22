@@ -101,8 +101,7 @@
 -(void)onLogin{
     authController_= [[PhotoSubmitterAccountTableViewController alloc] init];
     authController_.delegate = self;
-    [[[[PhotoSubmitterManager sharedInstance] authControllerDelegate] requestNavigationControllerToPresentAuthenticationView] 
-     pushViewController:authController_ animated:YES];
+    [self presentAuthenticationView:authController_];
 }
 
 /*!

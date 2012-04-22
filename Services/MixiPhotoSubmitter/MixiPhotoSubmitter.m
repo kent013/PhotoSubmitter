@@ -177,7 +177,7 @@ static NSString *kDefaultAlbum = @"tottepost";
  */
 -(void)onLogin{
     MixiSDKAuthorizer *authorizer = (MixiSDKAuthorizer *)mixi_.authorizer;
-    [authorizer setParentViewController:[[PhotoSubmitterManager sharedInstance].authControllerDelegate requestNavigationControllerToPresentAuthenticationView]];
+    [authorizer setParentViewController:[[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestNavigationControllerForPresentAuthenticationView]];
     [mixi_ authorize:@"r_profile",@"r_photo", @"w_photo", nil];
 }
 

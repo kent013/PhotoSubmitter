@@ -40,7 +40,7 @@
     id<PhotoSubmitterAuthenticationDelegate> authDelegate_;
 }
 
-@property (nonatomic, assign) id<PhotoSubmitterAuthControllerDelegate> authControllerDelegate;
+@property (nonatomic, assign) id<PhotoSubmitterNavigationControllerDelegate> navigationControllerDelegate;
 @property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authenticationDelegate;
 @property (nonatomic, readonly) int enabledSubmitterCount;
 @property (nonatomic, readonly) int uploadOperationCount;

@@ -16,7 +16,7 @@
 @protocol PhotoSubmitterPhotoDelegate;
 @protocol PhotoSubmitterPhotoOperationDelegate;
 @protocol PhotoSubmitterDataDelegate;
-@protocol PhotoSubmitterAuthControllerDelegate;
+@protocol PhotoSubmitterNavigationControllerDelegate;
 @protocol PhotoSubmitterAlbumDelegate;
 
 @class PhotoSubmitterServiceSettingTableViewController;
@@ -72,6 +72,9 @@
 - (void) updateAlbumListWithDelegate: (id<PhotoSubmitterDataDelegate>) delegate;
 - (void) updateUsernameWithDelegate: (id<PhotoSubmitterDataDelegate>) delegate;
 - (void) createAlbum:(NSString *)title withDelegate:(id<PhotoSubmitterAlbumDelegate>)delegate;
+- (void) presentAuthenticationView:(UIViewController *)viewController;
+- (void) presentModalViewController: (UIViewController *)viewController;
+- (void) dismissModalViewController;
 @end
 
 /*!
@@ -136,8 +139,9 @@
 /*!
  * protocol for request authentication view
  */
-@protocol PhotoSubmitterAuthControllerDelegate <NSObject>
-- (UINavigationController *) requestNavigationControllerToPresentAuthenticationView;
+@protocol PhotoSubmitterNavigationControllerDelegate <NSObject>
+- (UINavigationController *) requestNavigationControllerForPresentAuthenticationView;
+- (UIViewController *)requestRootViewControllerForPresentModalView;
 @end
 
 /*!

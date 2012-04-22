@@ -95,9 +95,6 @@
     if(content.comment != nil){
         body = [self addTextParam:@"text" value:content.comment body:body boundary:boundaryBreak];
     }
-	
-	NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
-	[dateFormat setDateFormat:@"M/d/y h:m:s"];
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat  = @"yyyyMMddHHmmssSSSS";
@@ -124,32 +121,6 @@
 	
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
     return connection;
-    
-    /*
-    // implementation with RKParams, currently this code does not work.
-    RKParams *params = [RKParams params];
-    if(content.comment != nil){
-        [params setValue:content.comment forParam:@"text"];
-    }
-    //RKParamsAttachment *attachment = [params setData:content.data forParam:@"feedItemFileUpload"];
-    
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    df.dateFormat  = @"yyyyMMddHHmmssSSSS";
-    if(content.isPhoto){
-        attachment.MIMEType = @"image/jpeg";
-        attachment.fileName = [NSString stringWithFormat:@"%@.jpg", [df stringFromDate:content.timestamp]];
-    }else{
-        attachment.MIMEType = @"video/mp4";
-        attachment.fileName = [NSString stringWithFormat:@"%@.mp4", [df stringFromDate:content.timestamp]];
-    }    
-    NSLog(@"RKParams HTTPHeaderValueForContentType = %@", [params HTTPHeaderValueForContentType]);
-    NSLog(@"RKParams HTTPHeaderValueForContentLength = %d", [params HTTPHeaderValueForContentLength]);
-    
-    RKClient *client = [RKClient clientWithBaseURL:[SFAuthContext context].instanceUrl];
-    client.defaultHTTPEncoding = NSUTF8StringEncoding;
-    RKRequest *request = [client post:url params:params delegate:self];
-    return request;
-     */
 }
 
 #pragma mark - NSURLConnection delegates
@@ -175,50 +146,6 @@
     NSString *hash = [self photoForRequest:connection];
     [self photoSubmitter:self didProgressChanged:hash progress:progress];
 }
-
-//#pragma mark - RKClient delegates
-///*!
-// * did load response
-// */
-//- (void)request:(RKRequest *)request didLoadResponse:(RKResponse *)response{
-//    NSLog(@"%@", request);
-//    if(response.isSuccessful){
-//        [self completeSubmitContentWithRequest:request];
-//    }else{
-//        [self completeSubmitContentWithRequest:request andError:nil];
-//    }
-//}
-//
-///*!
-// * did send body data, progress
-// */
-//- (void)request:(RKRequest *)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
-//    CGFloat progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
-//    NSString *hash = [self photoForRequest:request];
-//    [self photoSubmitter:self didProgressChanged:hash progress:progress];    
-//}
-//
-///*! 
-// * did fail
-// */
-//- (void)request:(RKRequest *)request didFailLoadWithError:(NSError *)error{
-//    [self completeSubmitContentWithRequest:request andError:error];
-//}
-//
-///*!
-// * did timeout
-// */
-//- (void)requestDidTimeout:(RKRequest *)request{
-//    [self completeSubmitContentWithRequest:request andError:nil];
-//}
-//
-///*!
-// * request will prepare for send
-// */
-//- (void)requestWillPrepareForSend:(RKRequest *)request{
-//    request.defaultHTTPEncoding = NSUTF8StringEncoding;
-//    [[SFAuthContext context] addOAuthHeader:request];
-//}
 @end
 
 //-----------------------------------------------------------------------------
@@ -247,7 +174,7 @@
 -(void)onLogin{
 	[SFMappingManager initialize];
 	SFOAuthViewController* oauthViewController = [[SFOAuthViewController alloc] init]; 
-	[[[PhotoSubmitterManager sharedInstance].authControllerDelegate requestNavigationControllerToPresentAuthenticationView] pushViewController:oauthViewController animated:YES];
+    [self presentAuthenticationView:oauthViewController];
     [SFAuthContext context].delegate = self;
 }
 

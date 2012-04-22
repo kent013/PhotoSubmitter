@@ -142,7 +142,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 @synthesize isError = isError_;
 @synthesize errorOperationCount = errorOperationCount_;
 @synthesize isPausingOperation = isPausingOperation_;
-@synthesize authControllerDelegate;
+@synthesize navigationControllerDelegate;
 @synthesize settingViewFactory;
 @synthesize submitters;
 @dynamic authenticationDelegate;

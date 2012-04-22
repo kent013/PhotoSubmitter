@@ -16,17 +16,22 @@
 #import "PhotoSubmitterAlbumEntity.h"
 #import "PhotoSubmitterManager.h"
 
-#define PS_FACEBOOK_AUTH_TOKEN @"PSFacebookAccessTokenKey"
-#define PS_FACEBOOK_AUTH_EXPIRATION_DATE @"PSFacebookExpirationDateKey"
+#define PS_FACEBOOK_AUTH_TOKEN_KEY @"PSFacebook%@AccessTokenKey"
+#define PS_FACEBOOK_AUTH_EXPIRATION_DATE_KEY @"PSFacebook%@ExpirationDateKey"
 
 #define PS_FACEBOOK_PHOTO_WIDTH 960
 #define PS_FACEBOOK_PHOTO_HEIGHT 720
+
+static NSString *PhotoSubmitterFacebookAuthRequestAccount;
+
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
 @interface FacebookPhotoSubmitter(PrivateImplementation)
 - (void) setupInitialState;
 - (void) getUserInfomation;
+- (NSString *) accessTokenKey;
+- (NSString *) expirationKey;
 @end
 
 #pragma mark - private implementations
@@ -41,10 +46,10 @@
                    requiresNetwork:YES 
                   isAlbumSupported:YES];
     facebook_ = [[Facebook alloc] initWithAppId:PHOTO_SUBMITTER_FACEBOOK_API_ID urlSchemeSuffix:[PhotoSubmitterManager photoSubmitterCustomSchemaSuffix] andDelegate:self];
-    if ([self settingExistsForKey:PS_FACEBOOK_AUTH_TOKEN] 
-        && [self settingExistsForKey:PS_FACEBOOK_AUTH_EXPIRATION_DATE]) {
-        facebook_.accessToken = [self settingForKey:PS_FACEBOOK_AUTH_TOKEN];
-        facebook_.expirationDate = [self settingForKey:PS_FACEBOOK_AUTH_EXPIRATION_DATE];
+    if ([self settingExistsForKey:self.accessTokenKey] 
+        && [self settingExistsForKey:self.expirationKey]) {
+        facebook_.accessToken = [self settingForKey:self.accessTokenKey];
+        facebook_.expirationDate = [self settingForKey:self.expirationKey];
     }
 }
 
@@ -52,9 +57,9 @@
  * clear facebook access token key
  */
 - (void)clearCredentials{
-    if ([self settingExistsForKey:PS_FACEBOOK_AUTH_TOKEN]) {
-        [self removeSettingForKey:PS_FACEBOOK_AUTH_TOKEN];
-        [self removeSettingForKey:PS_FACEBOOK_AUTH_EXPIRATION_DATE];
+    if ([self settingExistsForKey:self.accessTokenKey]) {
+        [self removeSettingForKey:self.accessTokenKey];
+        [self removeSettingForKey:self.expirationKey];
     } 
     [super clearCredentials];
 }
@@ -64,6 +69,20 @@
  */
 - (void)getUserInfomation{
     [facebook_ requestWithGraphPath:@"me" andDelegate:self];
+}
+
+/*!
+ * get authtoken key
+ */
+- (NSString *)accessTokenKey{
+    return [NSString stringWithFormat:PS_FACEBOOK_AUTH_TOKEN_KEY, self.account.accountHash];
+}
+
+/*!
+ * get expiration key
+ */
+- (NSString *)expirationKey{
+    return [NSString stringWithFormat:PS_FACEBOOK_AUTH_EXPIRATION_DATE_KEY, self.account.accountHash];
 }
 
 #pragma mark - FBRequestWithUploadProgressDelegate
@@ -151,6 +170,7 @@
     NSArray *permissions = 
     [NSArray arrayWithObjects:@"publish_stream", @"user_location", @"user_photos", @"offline_access", @"user_videos", nil];
     [facebook_ authorize:permissions];
+    PhotoSubmitterFacebookAuthRequestAccount = self.account.accountHash;
 }
 
 /*!
@@ -171,7 +191,8 @@
  * check url is processable
  */
 - (BOOL)isProcessableURL:(NSURL *)url{
-    if([url.absoluteString isMatchedByRegex:@"^fb[0-9]+"]){
+    if([url.absoluteString isMatchedByRegex:@"^fb[0-9]+"] &&
+       [PhotoSubmitterFacebookAuthRequestAccount isEqualToString:self.account.accountHash]){
         return YES;
     }
     return NO;
@@ -188,10 +209,17 @@
  * is session valid
  */
 - (BOOL)isSessionValid{
-    if ([self settingForKey:PS_FACEBOOK_AUTH_TOKEN]) {
+    if ([self settingForKey:self.accessTokenKey]) {
         return YES;
     }
     return NO;
+}
+
+/*!
+ * multiple account support
+ */
+- (BOOL)isMultipleAccountSupported{
+    return YES;
 }
 
 #pragma mark - contents
@@ -285,8 +313,8 @@
  * facebook delegate, did login suceeded
  */
 - (void)fbDidLogin {
-    [self setSetting:[facebook_ accessToken] forKey:PS_FACEBOOK_AUTH_TOKEN];
-    [self setSetting:[facebook_ expirationDate] forKey:PS_FACEBOOK_AUTH_EXPIRATION_DATE];
+    [self setSetting:[facebook_ accessToken] forKey:self.accessTokenKey];
+    [self setSetting:[facebook_ expirationDate] forKey:self.expirationKey];
     
     [self completeLogin];
     [self getUserInfomation];
