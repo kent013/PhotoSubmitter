@@ -105,12 +105,12 @@
     if(content.isPhoto){
         filename = [NSString stringWithFormat:@"%@.jpg", [df stringFromDate:content.timestamp]];
         mimeType = @"image/jpeg";
+        [mailComposeViewController addAttachmentData:((PhotoSubmitterImageEntity *)content).autoRotatedData mimeType:mimeType fileName:filename];
     }else{
         filename = [NSString stringWithFormat:@"%@.mp4", [df stringFromDate:content.timestamp]];
         mimeType = @"video/mp4";
+        [mailComposeViewController addAttachmentData:content.data mimeType:mimeType fileName:filename];
     }
-    
-    [mailComposeViewController addAttachmentData:content.data mimeType:mimeType fileName:filename];
     if(self.confirm == NO){
         [mailComposeViewController view];
     }else{     
