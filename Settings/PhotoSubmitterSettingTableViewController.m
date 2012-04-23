@@ -44,6 +44,7 @@
     self.tableView.delegate = self;
     switches_ = [[NSMutableArray alloc] init];
     settingControllers_ = [[NSMutableDictionary alloc] init];
+    cells_ = [[NSMutableDictionary alloc] init];
     
     NSArray *submitters = [PhotoSubmitterManager sharedInstance].submitters;
     for(id<PhotoSubmitterProtocol> submitter in submitters){
@@ -141,8 +142,13 @@
     PhotoSubmitterAccount *account = [self indexToAccount:tag];
     id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
     
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-    cell.imageView.image = submitter.icon;
+    NSString *identifier = [NSString stringWithFormat:@"social_%@", submitter.account.accountHash];
+    UITableViewCell *cell = [cells_ objectForKey:identifier];
+    if(cell == nil){
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
+        cell.imageView.image = submitter.icon;
+    }
+    
     cell.textLabel.text = submitter.displayName;
     PhotoSubmitterSwitch *s = [switches_ objectAtIndex:tag];
     cell.accessoryView = s;
@@ -150,6 +156,10 @@
         [s setOn:YES animated:NO];
     }else{
         [s setOn:NO animated:NO];
+    }
+    
+    if([cells_ objectForKey:identifier] == nil){
+        [cells_ setObject:cell forKey:identifier];
     }
     return cell;
 }
@@ -312,7 +322,15 @@
  */
 - (UITableViewCell *)createGeneralSettingCell:(int)tag{
     PhotoSubmitterSettings *settings = [PhotoSubmitterSettings getInstance];
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    
+    NSString *identifier = [NSString stringWithFormat:@"general_%d", tag];
+    
+    UITableViewCell *cell = [cells_ objectForKey:identifier];
+    if(cell){
+        return cell;
+    }
+    
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
     switch (tag) {
         case SV_GENERAL_COMMENT:
         {
@@ -340,6 +358,7 @@
             break;
         }
     }
+    [cells_ setObject:cell forKey:identifier];
     return cell;
 }
 
@@ -434,7 +453,11 @@
     [self.navigationItem setRightBarButtonItem:doneButton animated:YES];
     [self setTitle:[PSLang localized:@"Settings_Title"]];
     
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:SV_GENERAL_COMMENT inSection:SV_SECTION_GENERAL], nil] withRowAnimation:NO];
+    UITableViewCell *cell = [self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:SV_GENERAL_COMMENT inSection:SV_SECTION_GENERAL]];
+    UISwitch *s = (UISwitch *)cell.accessoryView;
+    if(s && [s isKindOfClass:[UISwitch class]]){
+        [s setOn:[PhotoSubmitterSettings getInstance].commentPostEnabled animated:YES];
+    }
     [self updateSocialAppSwitches];
     //[[PhotoSubmitterManager sharedInstance] refreshCredentials];
 }

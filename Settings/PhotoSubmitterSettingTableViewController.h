@@ -20,6 +20,7 @@
 @protected
     __strong NSMutableDictionary *settingControllers_;
     __strong NSMutableArray *switches_;
+    __strong NSMutableDictionary *cells_;
 }
 - (void) updateSocialAppSwitches;
 - (UITableViewCell *) createGeneralSettingCell:(int)tag;
