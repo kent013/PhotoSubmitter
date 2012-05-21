@@ -98,7 +98,6 @@
 }
 
 #pragma mark - photo
-
 /*!
  * submit photo with data, comment and delegate
  */
@@ -127,6 +126,13 @@
     [interactionController_ presentOpenInMenuFromRect:vc.view.frame inView:vc.view animated:YES];
 
     [delegate photoSubmitterDidOperationFinished:YES];
+}
+
+/*!
+ * submit photo with data, comment and delegate
+ */
+- (id) onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    return nil;
 }
 
 /*!

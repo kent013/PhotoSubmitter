@@ -15,15 +15,9 @@
 //Private Implementations
 //-----------------------------------------------------------------------------
 @interface GDrivePhotoSubmitterSettingTableViewController(PrivateImplementation)
-- (void) setupInitialState;
 @end
 
 @implementation GDrivePhotoSubmitterSettingTableViewController(PrivateImplementation)
-/*!
- * initialize
- */
--(void)setupInitialState{
-}
 @end
 
 //-----------------------------------------------------------------------------
