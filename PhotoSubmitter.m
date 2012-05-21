@@ -500,6 +500,13 @@
     return NO;
 }
 
+/*!
+ * is square
+ */
+- (BOOL)isSquare{
+    return NO;
+}
+
 #pragma mark - UTILITY METHODS
 #pragma mark - request methods
 /*!

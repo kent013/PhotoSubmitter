@@ -13,6 +13,9 @@
 #import "InstagramPhotoSubmitter.h"
 #import "PhotoSubmitterManager.h"
 #import "RegexKitLite.h"
+#import "PSLang.h"
+
+#define PS_INSTAGRAM_URL @"instagram://app"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -31,7 +34,7 @@
                       isSequencial:NO 
                      usesOperation:YES 
                    requiresNetwork:YES 
-                  isAlbumSupported:YES];
+                  isAlbumSupported:NO];
 }
 @end
 
@@ -59,6 +62,19 @@
  * login to Instagram
  */
 -(void)onLogin{
+    if (![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:PS_INSTAGRAM_URL]]) {
+        UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"Instagram_AppNotFound_Title"] 
+                                   message:[PSLang localized:@"Instagram_AppNotFound_Message"]
+                                  delegate:self 
+                         cancelButtonTitle:
+         [PSLang localized:@"Instagram_AppNotFound_Button_Title"]
+                         otherButtonTitles:nil];
+        [alert show];
+        [self completeLoginFailed];
+        return;
+    }
+    [self completeLogin];
 }
 
 /*!
@@ -78,7 +94,7 @@
  * check is session valid
  */
 - (BOOL)isSessionValid{
-    return YES;
+    return self.isEnabled;
 }
 
 #pragma mark - photo
@@ -86,6 +102,25 @@
  * submit photo with data, comment and delegate
  */
 - (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    df.dateFormat  = @"yyyyMMddHHmmssSSSS";
+    NSString *dir = [NSString stringWithFormat:@"%@/Documents/", NSHomeDirectory()];
+    NSString *filename = [NSString stringWithFormat:@"instagram_%@.igo", [df stringFromDate:photo.timestamp]];
+    NSString *path = [dir stringByAppendingString:filename];
+    photo.contentHash = path;
+    [[photo squareData:CGSizeMake(612, 612)] writeToFile:path atomically:NO];
+    
+    interactionController_ = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:path]];
+    interactionController_.delegate = self;
+    interactionController_.UTI = @"com.instagram.exclusivegram";
+    
+    if(photo.comment != nil){
+        interactionController_.annotation = [NSDictionary dictionaryWithObject:photo.comment forKey:@"InstagramCaption"];
+    }
+    
+    UIViewController *vc = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView];
+    [interactionController_ presentOpenInMenuFromRect:vc.view.frame inView:vc.view animated:YES];
+    [self completeSubmitContentWithRequest:photo];
     return nil;
 }
 
@@ -116,5 +151,20 @@
  */
 - (BOOL)isAlbumSupported{
     return NO;
+}
+
+#pragma mark - other properties
+/*!
+ * is square
+ */
+- (BOOL)isSquare{
+    return YES;
+}
+
+/*!
+ * username
+ */
+- (NSString *)username{
+    return @"----";
 }
 @end

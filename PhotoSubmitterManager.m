@@ -140,6 +140,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
 @synthesize location = location_;
 @synthesize isUploading;
 @synthesize isError = isError_;
+@synthesize isSquarePhotoRequired;
 @synthesize errorOperationCount = errorOperationCount_;
 @synthesize isPausingOperation = isPausingOperation_;
 @synthesize navigationControllerDelegate;
@@ -459,6 +460,21 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         }
     }
     return max;
+    
+}
+
+/*!
+ * is square photo required
+ */
+- (BOOL)isSquarePhotoRequired{
+    NSArray *accounts = [PhotoSubmitterAccountManager sharedManager].accounts;
+    for(PhotoSubmitterAccount *account in accounts){
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
+        if(submitter.isEnabled && submitter.isSquare){
+            return YES;
+        }
+    }
+    return NO;
     
 }
 

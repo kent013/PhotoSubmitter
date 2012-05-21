@@ -43,6 +43,7 @@
 @property (nonatomic, readonly) BOOL isMultipleAccountSupported;
 @property (nonatomic, readonly) BOOL isSessionValid;
 @property (nonatomic, readonly) BOOL requiresNetwork;
+@property (nonatomic, readonly) BOOL isSquare;
 @property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authDelegate;
 @property (nonatomic, assign) id<PhotoSubmitterDataDelegate> dataDelegate;
 @property (nonatomic, assign) id<PhotoSubmitterAlbumDelegate> albumDelegate;

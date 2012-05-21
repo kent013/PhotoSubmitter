@@ -14,6 +14,7 @@
  * get instance with using 
  * [[PhotoSubmitter getInstance] submitterWithType:PhotoSubmitterTypeInstagram]
  */
-@interface InstagramPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol>{
+@interface InstagramPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, UIDocumentInteractionControllerDelegate>{
+    UIDocumentInteractionController *interactionController_;
 }
 @end

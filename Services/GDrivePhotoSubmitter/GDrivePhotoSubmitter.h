@@ -10,6 +10,7 @@
 #import "GTMOAuth2Authentication.h"
 #import "PhotoSubmitterProtocol.h"
 #import "PhotoSubmitter.h"
+#import "GDrivePhotoSubmitterSettingTableViewController.h"
 
 /*!
  * photo submitter for gdrive.
@@ -21,5 +22,6 @@
     __strong NSMutableDictionary *contents_;
     __strong GDataServiceGoogleDocs *service_;
     __strong GDataFeedDocList *docFeed_;
+    __strong GDrivePhotoSubmitterSettingTableViewController *settingView_;
 }
 @end

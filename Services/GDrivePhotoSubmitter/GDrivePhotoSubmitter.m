@@ -17,6 +17,8 @@
 #import "RegexKitLite.h"
 #import "GTMOAuth2ViewControllerTouch.h"
 #import "GTMHTTPUploadFetcher.h"
+#import "GDrivePhotoSubmitterSettingTableViewController.h"
+#import "PSLang.h"
 
 #define PS_GDRIVE_AUTH_URL @"photosubmitter://auth/gdrive"
 #define PS_GDRIVE_KEYCHAIN_NAME @"PSGDriveKeychain"
@@ -191,6 +193,14 @@
         }
         [self completeLoginFailed];
     } else {
+        UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"GDrive_Attention_Title"] 
+                                   message:[PSLang localized:@"GDrive_Attention_Message"]
+                                  delegate:self 
+                         cancelButtonTitle:
+         [PSLang localized:@"GDrive_Attention_Button_Title"]
+                         otherButtonTitles:nil];
+        [alert show];
         auth_ = auth;
         [self completeLogin];
     }
@@ -291,6 +301,7 @@
  * login to Picasa
  */
 -(void)onLogin{
+    
     SEL finishedSel = @selector(viewController:finishedWithAuth:error:);        
     NSString *scope = [GTMOAuth2Authentication scopeWithStrings:PS_GDRIVE_SCOPE, PS_GDRIVE_PROFILE_SCOPE, PS_GDOCS_FEEDS_SCOPE, PS_GDOCS_USER_SCOPE, nil];
     
@@ -435,6 +446,17 @@
 }
 
 #pragma mark - other properties
+
+/*!
+ * get setting view
+ */
+- (PhotoSubmitterServiceSettingTableViewController *)settingView{
+    if(settingView_ == nil){
+        settingView_ = [[GDrivePhotoSubmitterSettingTableViewController alloc] initWithAccount:self.account];
+    }
+    return settingView_;
+}
+
 /*!
  * display name
  */

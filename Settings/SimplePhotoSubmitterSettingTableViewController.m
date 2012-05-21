@@ -115,7 +115,7 @@
         return title;
     }
     switch (section) {
-        case SV_SECTION_ACCOUNT: return [self.submitter.name stringByAppendingString:[PSLang localized:@"Detail_Section_Account"]] ; break;
+        case SV_SECTION_ACCOUNT: return [NSString stringWithFormat:@"%@ %@", self.submitter.displayName, [PSLang localized:@"Detail_Section_Account"]]; break;
     }
     return nil;
 }

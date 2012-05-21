@@ -90,6 +90,7 @@
 //Public Implementations
 //----------------------------------------------------------------------------
 @implementation PhotoSubmitterImageEntity
+@synthesize squareCropRect;
 
 /*!
  * init with data
@@ -98,6 +99,7 @@
     self = [super initWithData:inData];
     if(self){
         resizedImages_ = [[NSMutableDictionary alloc] init];
+        self.squareCropRect = CGRectZero;
     }
     return self;
 }
@@ -173,6 +175,81 @@
     return resized;
 }
 
+/*
+ * crop image data with data
+ * @param data 
+ * @param rect crop rect
+ */
+- (UIImage *)squareImage:(CGSize)size{
+    if(CGRectEqualToRect(self.squareCropRect, CGRectZero)){
+        return image_;
+    }
+
+    NSString *key = [NSString stringWithFormat:@"%@%@", NSStringFromCGSize(size), NSStringFromCGRect(self.squareCropRect)];
+    UIImage *resized = [resizedImages_ objectForKey:key];
+    if(resized){
+        return resized;
+    }
+    
+    UIImage *image = [UIImage imageWithData:data_];
+        
+    image = [[image subImageWithRect:self.squareCropRect] resizedImage:size interpolationQuality:kCGInterpolationHigh];
+    
+    NSData *resizedData = UIImageJPEGRepresentation(resized, 1.0);
+    CGImageSourceRef resizedCFImage = CGImageSourceCreateWithData((__bridge CFDataRef)resizedData, NULL);
+    
+    NSMutableDictionary *metadata = self.metadata;
+    NSMutableDictionary *resizedMetadata = [NSMutableDictionary dictionaryWithDictionary:(__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(resizedCFImage, 0, nil)];
+    NSMutableDictionary *exifMetadata = [metadata objectForKey:(NSString *)kCGImagePropertyExifDictionary];
+    [resizedMetadata setValue:exifMetadata forKey:(NSString *)kCGImagePropertyExifDictionary];
+    CFMutableDataRef resizedCFData = (__bridge_retained CFMutableDataRef)resizedData;
+    CGImageDestinationRef dest = CGImageDestinationCreateWithData(resizedCFData, CGImageSourceGetType(resizedCFImage), 1, NULL);
+    CGImageDestinationAddImageFromSource(dest, resizedCFImage, 0, (__bridge CFDictionaryRef)resizedMetadata);
+    CGImageDestinationFinalize(dest);
+    CFRelease(resizedCFImage);
+    CFRelease(resizedCFData);
+    CFRelease(dest);
+    
+    [resizedImages_ setObject:resized forKey:key];
+    return resized;
+}
+
+/*
+ * crop image data with data
+ * @param data 
+ * @param rect crop rect
+ */
+- (NSData *)squareData:(CGSize)size{
+    if(CGRectEqualToRect(self.squareCropRect, CGRectZero)){
+        return data_;
+    }
+    
+    UIImage *image = [UIImage imageWithData:data_];
+    
+    NSLog(@"%@", NSStringFromCGRect(self.squareCropRect));
+    CGFloat scale = image.size.width / self.squareCropRect.size.width;
+    CGAffineTransform transform = CGAffineTransformMakeScale(scale, scale);
+    CGRect scaled = CGRectApplyAffineTransform(self.squareCropRect, transform);
+    image = [[image subImageWithRect:scaled] resizedImage:size interpolationQuality:kCGInterpolationHigh];
+    
+    NSData *resizedData = UIImageJPEGRepresentation(image, 1.0);
+    CGImageSourceRef resizedCFImage = CGImageSourceCreateWithData((__bridge CFDataRef)resizedData, NULL);
+    
+    NSMutableDictionary *metadata = self.metadata;
+    NSMutableDictionary *resizedMetadata = [NSMutableDictionary dictionaryWithDictionary:(__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(resizedCFImage, 0, nil)];
+    NSMutableDictionary *exifMetadata = [metadata objectForKey:(NSString *)kCGImagePropertyExifDictionary];
+    [resizedMetadata setValue:exifMetadata forKey:(NSString *)kCGImagePropertyExifDictionary];
+    CFMutableDataRef resizedCFData = (__bridge_retained CFMutableDataRef)resizedData;
+    CGImageDestinationRef dest = CGImageDestinationCreateWithData(resizedCFData, CGImageSourceGetType(resizedCFImage), 1, NULL);
+    CGImageDestinationAddImageFromSource(dest, resizedCFImage, 0, (__bridge CFDictionaryRef)resizedMetadata);
+    CGImageDestinationFinalize(dest);
+    CFRelease(resizedCFImage);
+    CFRelease(resizedCFData);
+    CFRelease(dest);
+    
+    return resizedData;
+}
+
 /*!
  * populate resized image 
  */
@@ -208,12 +285,21 @@
 }
 
 /*!
+ * encode
+ */
+- (void)encodeWithCoder:(NSCoder*)coder {
+    [super encodeWithCoder:coder];
+    [coder encodeCGRect:squareCropRect_ forKey:@"squareCropRect"];
+}
+
+/*!
  * init with coder
  */
 - (id)initWithCoder:(NSCoder*)coder {
     self = [super initWithCoder:coder];
     if (self) {
         resizedImages_ = [[NSMutableDictionary alloc] init];
+        squareCropRect_ = [coder decodeCGRectForKey:@"squareCropRect"];
     }
     return self;
 }

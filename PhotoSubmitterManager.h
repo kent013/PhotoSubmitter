@@ -52,6 +52,7 @@
 @property (nonatomic, readonly) BOOL isUploading;
 @property (nonatomic, readonly) BOOL isError;
 @property (nonatomic, readonly) BOOL isPausingOperation;
+@property (nonatomic, readonly) BOOL isSquarePhotoRequired;
 @property (nonatomic, readonly) NSInteger maxCommentLength;
 @property (nonatomic, readonly) NSArray *submitters;
 @property (nonatomic, assign) id<PhotoSubmitterSettingViewFactoryProtocol> settingViewFactory;

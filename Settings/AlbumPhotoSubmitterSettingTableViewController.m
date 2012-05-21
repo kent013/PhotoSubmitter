@@ -116,7 +116,7 @@
     }
     if(self.submitter.isAlbumSupported){
         switch (section){
-            case FSV_SECTION_ALBUMS: return [NSString stringWithFormat:[PSLang localized:@"Album_Detail_Section_Album_Footer"], self.submitter.name];
+            case FSV_SECTION_ALBUMS: return [NSString stringWithFormat:[PSLang localized:@"Album_Detail_Section_Album_Footer"], self.submitter.displayName];
         }
     }
     return [super tableView:tableView titleForFooterInSection:section];;

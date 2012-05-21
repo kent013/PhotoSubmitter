@@ -219,6 +219,34 @@
         tags = common, twitter
         en = OK
         ja = OK
+    [Instagram_AppNotFound_Title]
+        tags = common, instagram
+        en = Error
+        ja = エラー
+    [Instagram_AppNotFound_Message]
+        tags = common, instagram
+        en = You need Instagram app installed.
+        ja = Instagramがインストールされている必要があります
+    [Instagram_AppNotFound_Button_Title]
+        tags = common, instagram
+        en = OK
+        ja = OK
+    [GDrive_Detail_Section_Account_Footer]
+        tags = common, gdrive
+        en = Uploading photo&video to Google Drive requires you to install Chrome Application from Chrome Web Store. To install Chrome application, you need Chrome Web Browser on your "PC". After installing Chrome, open Chrome Web Store, search "tottepost" and install it. After that, Google Drive allows you to upload photo&video.
+        ja = Google Driveに写真や動画をアップロードするためには、Chrome Web StoreからtottepostをChromeブラウザにインストールする必要があります。まず、ChromeをPCにインストールしてください。Chromeをインストールしたら、Chrome Web Storeを開き、tottepostを検索してインストールしてください。インストールが完了すれば、Google Driveにファイルをアップロードできます。
+    [GDrive_Attention_Title]
+        tags = common, gdrive
+        en = Attention
+        ja = 注意
+    [GDrive_Attention_Message]
+        tags = common, instagram
+        en = To use tottepost with Google Drive, You need to install Chrome App to your !!PC!!, some instraction is in detail section. Tap Google Drive at setting. 
+        ja = Google Driveを利用するためには、PCにChromeアプリをインストールする必要があります。詳細画面に簡単なやり方が書いてありますので、設定画面のGoogle Driveをタップしてください。
+    [GDrive_Attention_Button_Title]
+        tags = common, instagram
+        en = OK
+        ja = OK
     [Alert_Comment_Too_Long]
         tags = common
         en = Comment is too long, please shoten it.
