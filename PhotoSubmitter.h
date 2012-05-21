@@ -88,6 +88,7 @@
 
 //util
 - (void) clearRequest: (NSObject *)request;
+- (void) recoverOldSettings;
 
 //submit photo
 - (void) submitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;

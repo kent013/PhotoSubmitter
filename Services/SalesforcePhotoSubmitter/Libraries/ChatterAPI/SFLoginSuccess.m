@@ -3,7 +3,7 @@
 //  DemoApp
 //
 //  Created by Chris Seymour on 7/11/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 cocotomo. All rights reserved.
 //
 
 #import "SFLoginSuccess.h"

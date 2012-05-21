@@ -22,10 +22,14 @@
 
 /** \cond PRIVATE */
 @interface MixiAuthorizer (PRIVATE)
+/* サブクラスでの実装を促すためのマーカー */
 - (void)subclassResponsibility;
 
 /* アクセストークンをリフレッシュするためのリクエストを取得 */
 - (NSURLRequest*)requestToRefreshAccessToken;
+
+/* userDefaults_が初期化されていなければ初期化して取得 */
+- (MixiUserDefaults*)assuredUserDefaults;
 @end
 /** \endcond */
 
@@ -184,11 +188,11 @@
 #pragma mark -
 
 - (void)store {
-    [userDefaults_ storeAuthorizer:self];
+    [[self assuredUserDefaults] storeAuthorizer:self];
 }
 
 - (BOOL)restore {
-    return [userDefaults_ restoreAuthorizer:self];
+    return [[self assuredUserDefaults] restoreAuthorizer:self];
 }
 
 #pragma mark - Check status
@@ -224,10 +228,18 @@
 }
 
 - (void)subclassResponsibility {
-    @throw [NSError errorWithDomain:@"MixiSDK" 
-                               code:9999 
-                           userInfo:[NSDictionary dictionaryWithObject:@"Subclass responsibility" 
-                                                                forKey:@"message"]];
+    [[NSException exceptionWithName:@"SubclassResponsibility"
+                             reason:@"This method should be implemented in a subclasse of MixiAuthorizer."
+                           userInfo:nil] raise];
+}
+
+#pragma mark - Private
+
+- (MixiUserDefaults*)assuredUserDefaults {
+    if (!userDefaults_ && mixi_) {
+        userDefaults_ = [[MixiUserDefaults alloc] initWithConfig:mixi_.config];        
+    }
+    return userDefaults_;
 }
 
 @end

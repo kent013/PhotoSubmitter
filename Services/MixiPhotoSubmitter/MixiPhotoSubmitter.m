@@ -73,7 +73,8 @@ static NSString *kDefaultAlbum = @"tottepost";
         [mixi_ store];
     }else if([url isMatchedByRegex:@"albums/@me/@self"] && 
              [method isEqualToString:@"POST"]){
-        [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:YES withError:nil];
+        PhotoSubmitterAlbumEntity *album = [[PhotoSubmitterAlbumEntity alloc] initWithId:[data objectForKey:@"id"] name:[data objectForKey:@"title"] privacy:[[data objectForKey:@"privacy"] objectForKey:@"visibility"]];
+        [self.albumDelegate photoSubmitter:self didAlbumCreated:album suceeded:YES withError:nil];
     }else if([url isMatchedByRegex:@"albums/@me/@self"] && 
              [method isEqualToString:@"GET"]){
         NSArray *as = [data objectForKey:@"entry"];

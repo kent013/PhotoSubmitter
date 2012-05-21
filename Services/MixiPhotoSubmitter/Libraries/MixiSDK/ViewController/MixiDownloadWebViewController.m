@@ -15,21 +15,10 @@
 
 @implementation MixiDownloadWebViewController
 
-- (void)loadView
-{
-    // Implement loadView to create a view hierarchy programmatically, without using a nib.
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
+    webView_.delegate = downloadDelegate_;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

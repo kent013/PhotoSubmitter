@@ -306,7 +306,14 @@ static NSString *kDefaultAlbum = @"tottepost";
     }else if([request.tag isEqualToString:kMinusRequestCreateFile]){
         [self completeSubmitContentWithRequest:request];
     }else if([request.tag isEqualToString:kMinusRequestCreateFolder]){
-        [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:YES withError:nil];
+        NSDictionary *a = (NSDictionary *)result;
+        NSString *privacy = @"private";
+        if([a objectForKey:@"is_public"]){
+            privacy = @"public";
+        }
+        PhotoSubmitterAlbumEntity *album = 
+        [[PhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:[a objectForKey:@"name"] privacy:privacy];
+        [self.albumDelegate photoSubmitter:self didAlbumCreated:album suceeded:YES withError:nil];
         [self clearRequest:request];
     }else if([request.tag isEqualToString:kMinusRequestFoldersWithUsername]){
         NSArray *as = [result objectForKey:@"results"];

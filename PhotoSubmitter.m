@@ -106,6 +106,8 @@
         requests_ = [[NSMutableDictionary alloc] init];
         operationDelegates_ = [[NSMutableDictionary alloc] init];
         photoDelegates_ = [[NSMutableArray alloc] init];
+        
+        [self recoverOldSettings];
     }
     return self;
 }
@@ -659,6 +661,18 @@
     [self removeOperationDelegateForRequest:request];
     [self removePhotoForRequest:request];
 }
+
+/*!
+ * recover old settings
+ */
+- (void) recoverOldSettings{
+    NSString *oldEnabled = [NSString stringWithFormat:@"PS%@Enabled", self.name];
+    if([self settingExistsForKey:oldEnabled] && [self settingExistsForKey:self.keyForEnabled] == NO){
+        [self setSetting:[self settingForKey:oldEnabled] forKey:self.keyForEnabled];
+        [self removeSettingForKey:oldEnabled];
+    }
+}
+
 
 #pragma mark - setting methods
 

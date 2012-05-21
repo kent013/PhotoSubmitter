@@ -54,6 +54,18 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 }
 
 /*!
+ * recover old settings
+ */
+- (void) recoverOldSettings{
+    [super recoverOldSettings];
+    if([self settingExistsForKey:@"PSFacebookAccessTokenKey"] && 
+       [self settingExistsForKey:self.accessTokenKey] == NO){
+        [self setSetting:[self settingForKey:@"PSFacebookAccessTokenKey"] forKey:self.accessTokenKey];
+        [self removeSettingForKey:@"PSFacebookAccessTokenKey"];
+    }
+}
+
+/*!
  * clear facebook access token key
  */
 - (void)clearCredentials{
@@ -101,7 +113,10 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
         [self completeSubmitContentWithRequest:request];
     }else if([request.url isMatchedByRegex:@"albums$"] && 
              [request.httpMethod isEqualToString:@"POST"]){
-        [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:YES withError:nil];
+        NSDictionary *a = [result objectForKey:@"data"];
+        PhotoSubmitterAlbumEntity *album = 
+        [[PhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:@"" privacy:@""];
+        [self.albumDelegate photoSubmitter:self didAlbumCreated:album suceeded:YES withError:nil];
     }else if([request.url isMatchedByRegex:@"albums$"] && 
              [request.httpMethod isEqualToString:@"GET"]){
         NSArray *as = [result objectForKey:@"data"];
@@ -110,6 +125,9 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
             PhotoSubmitterAlbumEntity *album = 
             [[PhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:[a objectForKey:@"name"] privacy:[a objectForKey:@"privacy"]];
             [albums addObject:album];
+            if(self.targetAlbum != nil && [self.targetAlbum.albumId isEqualToString:album.albumId]){
+                self.targetAlbum = album;
+            }
         }
         self.albumList = albums;
     }else{

@@ -56,8 +56,8 @@ ofTotalByteCount:(unsigned long long)dataLength;
     GTMOAuth2Authentication *auth = 
     [GTMOAuth2ViewControllerTouch 
      authForGoogleFromKeychainForName:PS_PICASA_KEYCHAIN_NAME
-     clientID:GOOGLE_SUBMITTER_API_KEY
-     clientSecret:GOOGLE_SUBMITTER_API_SECRET];
+     clientID:PICASA_SUBMITTER_API_KEY
+     clientSecret:PICASA_SUBMITTER_API_SECRET];
     if([auth canAuthorize]){
         auth_ = auth;
     }
@@ -233,8 +233,8 @@ ofTotalByteCount:(unsigned long long)dataLength {
     
     GTMOAuth2ViewControllerTouch *viewController = 
     [GTMOAuth2ViewControllerTouch controllerWithScope:scope
-                                             clientID:GOOGLE_SUBMITTER_API_KEY
-                                         clientSecret:GOOGLE_SUBMITTER_API_SECRET
+                                             clientID:PICASA_SUBMITTER_API_KEY
+                                         clientSecret:PICASA_SUBMITTER_API_SECRET
                                      keychainItemName:PS_PICASA_KEYCHAIN_NAME
                                              delegate:self
                                      finishedSelector:finishedSel];
