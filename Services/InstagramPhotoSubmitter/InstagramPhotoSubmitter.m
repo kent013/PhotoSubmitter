@@ -98,10 +98,15 @@
 }
 
 #pragma mark - photo
+
 /*!
  * submit photo with data, comment and delegate
  */
-- (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+- (void)submitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+    if(delegate.isCancelled){
+        return;
+    }
+    
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat  = @"yyyyMMddHHmmssSSSS";
     NSString *dir = [NSString stringWithFormat:@"%@/Documents/", NSHomeDirectory()];
@@ -120,8 +125,8 @@
     
     UIViewController *vc = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView];
     [interactionController_ presentOpenInMenuFromRect:vc.view.frame inView:vc.view animated:YES];
-    [self completeSubmitContentWithRequest:photo];
-    return nil;
+
+    [delegate photoSubmitterDidOperationFinished:YES];
 }
 
 /*!
