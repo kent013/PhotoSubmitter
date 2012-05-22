@@ -384,9 +384,9 @@
  * cancel content upload
  */
 - (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
-    GDataServiceTicket *ticket = (GDataServiceTicket *)[self requestForPhoto:content.contentHash];
-    [ticket cancelTicket];
-    return ticket;
+    NSURLConnection *connection = (NSURLConnection *)[self requestForPhoto:content.contentHash];
+    [connection cancel];
+    return connection;
 }
 
 #pragma mark - album
