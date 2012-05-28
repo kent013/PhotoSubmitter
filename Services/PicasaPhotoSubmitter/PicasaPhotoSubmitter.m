@@ -47,7 +47,7 @@ ofTotalByteCount:(unsigned long long)dataLength;
  * initializer
  */
 -(void)setupInitialState{
-    [self setSubmitterIsConcurrent:NO 
+    [self setSubmitterIsConcurrent:YES
                       isSequencial:NO 
                      usesOperation:YES 
                    requiresNetwork:YES 

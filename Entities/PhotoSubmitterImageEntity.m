@@ -278,6 +278,23 @@
 }
 
 /*!
+ * get image for preview
+ */
+- (UIImage *)imageForPreviewWithOrientation:(UIDeviceOrientation)orientation{
+    if(imageForPreview_!= nil){
+        return imageForPreview_;
+    }
+    UIImage *image = self.image.fixOrientation;
+    if(orientation == UIDeviceOrientationLandscapeLeft){
+        image = [image UIImageRotateByAngle:270];                
+    }else if(orientation == UIDeviceOrientationLandscapeRight){
+        image = [image UIImageRotateByAngle:90];                 
+    }
+    imageForPreview_ = image.fixOrientation;
+    return imageForPreview_;
+}
+
+/*!
  * clone and auto rotate image
  */
 - (PhotoSubmitterImageEntity *)autoRotatedImageEntity{

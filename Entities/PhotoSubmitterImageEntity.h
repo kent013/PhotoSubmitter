@@ -15,6 +15,7 @@
     __strong UIImage *image_;
     __strong NSMutableDictionary *resizedImages_;
     __strong NSMutableDictionary *preservedMetadata_;
+    __strong UIImage *imageForPreview_;
     CGRect squareCropRect_;
 }
 @property (readonly, nonatomic) NSMutableDictionary *metadata;
@@ -25,6 +26,7 @@
 - (void) preprocess;
 - (UIImage *) resizedImage: (CGSize) size;
 - (UIImage *) squareImage: (CGSize) size;
+- (UIImage *) imageForPreviewWithOrientation: (UIDeviceOrientation) orientation;
 - (NSData *) squareData: (CGSize) size;
 - (NSData *) autoRotatedData;
 @end

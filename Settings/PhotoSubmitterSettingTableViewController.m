@@ -147,20 +147,17 @@
     if(cell == nil){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
         cell.imageView.image = submitter.icon;
-    }
-    
-    cell.textLabel.text = submitter.displayName;
-    PhotoSubmitterSwitch *s = [switches_ objectAtIndex:tag];
-    cell.accessoryView = s;
-    if([submitter isLogined]){
-        [s setOn:YES animated:NO];
-    }else{
-        [s setOn:NO animated:NO];
-    }
-    
-    if([cells_ objectForKey:identifier] == nil){
+        cell.textLabel.text = submitter.displayName;
+        PhotoSubmitterSwitch *s = [switches_ objectAtIndex:tag];
+        cell.accessoryView = s;
+        if([submitter isLogined]){
+            [s setOn:YES animated:NO];
+        }else{
+            [s setOn:NO animated:NO];
+        }
         [cells_ setObject:cell forKey:identifier];
-    }
+   }
+    
     return cell;
 }
      

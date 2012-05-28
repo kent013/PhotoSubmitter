@@ -172,13 +172,13 @@
  */
 - (void) checkForSizeConfirmWindow{
     UIActionSheet *actionsheet = nil;
-    NSArray *buttons = [[NSMutableArray alloc] init];
     NSArray *views = [self searchForViewsNamed:@"UIActionSheet" fromView:[UIApplication sharedApplication].keyWindow found:nil];
     if(views.count == 0){
         return;
     }
     actionsheet = [views objectAtIndex:0];
-    buttons = [self searchForViewsNamed:@"UIAlertButton" fromView:actionsheet found:nil];
+    NSArray *buttons = 
+      [self searchForViewsNamed:@"UIAlertButton" fromView:actionsheet found:nil];
     if(actionsheet && buttons.count > 2){
         [[buttons objectAtIndex:1] sendActionsForControlEvents:UIControlEventTouchUpInside];
     }
