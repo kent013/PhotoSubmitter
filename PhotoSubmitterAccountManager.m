@@ -127,10 +127,12 @@ static NSString *kAccounts = @"PhotoSubmitterAccounts";
  * get list of accounts of type
  */
 - (NSArray *)accountsForType:(NSString *)type{
+    type = [type lowercaseString];
     NSMutableArray *array = [[NSMutableArray alloc] init];
     for(NSString *key in accounts_){
         PhotoSubmitterAccount *account = [accounts_ objectForKey:key];
-        if([account.type isEqualToString:type]){
+        
+        if([[account.type lowercaseString] isEqualToString:type]){
             [array addObject:account];
         }
     }

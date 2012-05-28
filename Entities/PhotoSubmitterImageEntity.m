@@ -76,6 +76,15 @@
         [locDict setObject:[NSNumber numberWithFloat:self.location.coordinate.longitude] forKey:(NSString*)kCGImagePropertyGPSLongitude];
     }
 	CGImageDestinationRef dest = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data_, CGImageSourceGetType(img), 1, NULL);
+    if(dest == nil){
+        return;
+    }
+    if(preservedMetadata == nil){
+        return;
+    }
+    if(img == nil){
+        return;
+    }
     
     [preservedMetadata setObject:exifDict forKey:(NSString *)kCGImagePropertyExifDictionary];
     [preservedMetadata setObject:locDict forKey:(NSString *)kCGImagePropertyGPSDictionary];

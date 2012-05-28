@@ -97,6 +97,9 @@
         return;
     }
     PhotoSubmitterContentEntity *content = [contents_ objectForKey:[self photoForRequest:request]]; 
+    if(content == nil){
+        return;
+    }
 	//[request addValue:[NSString stringWithFormat:@"GoogleLogin auth=%@", auth_.accessToken] forHTTPHeaderField:@"Authorization"];
 	[request setHTTPMethod:@"POST"];
 	
@@ -149,6 +152,11 @@
     id<PhotoSubmitterPhotoOperationDelegate> delegate = [self operationDelegateForRequest:request];
     [self clearRequest:request];
     NSURLConnection *connection = [NSURLConnection connectionWithRequest:request delegate:self];
+    
+    if(connection == nil){
+        [self cancelContentSubmit:content];
+        return;
+    }
     
     [self setPhotoHash:content.contentHash forRequest:connection];
     [self addRequest:connection];
@@ -301,6 +309,18 @@
  * login to Picasa
  */
 -(void)onLogin{
+    if([PhotoSubmitterManager isSubmitterEnabledForType:@"picasa"]){
+        UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"GData_Error_Title"] 
+                                   message:[PSLang localized:@"GData_Error_Message"]
+                                  delegate:self 
+                         cancelButtonTitle:
+         [PSLang localized:@"GData_Error_Button_Title"]
+                         otherButtonTitles:nil];
+        [alert show];
+        [self disable];
+        return;
+    }
     
     SEL finishedSel = @selector(viewController:finishedWithAuth:error:);        
     NSString *scope = [GTMOAuth2Authentication scopeWithStrings:PS_GDRIVE_SCOPE, PS_GDRIVE_PROFILE_SCOPE, PS_GDOCS_FEEDS_SCOPE, PS_GDOCS_USER_SCOPE, nil];

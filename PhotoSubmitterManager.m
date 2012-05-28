@@ -829,4 +829,19 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
     }
     return type;
 }
+
+/*!
+ * check if submitter for type enabled
+ */
++ (BOOL)isSubmitterEnabledForType:(NSString *)type{
+    type = [PhotoSubmitterManager normalizeTypeName:type];
+    PhotoSubmitterManager *manager = [PhotoSubmitterManager sharedInstance];
+    NSArray *submitters = [manager submittersForType:type];
+    for(id<PhotoSubmitterProtocol> submitter in submitters){
+        if(submitter.isLogined){
+            return YES;
+        }
+    }
+    return NO;
+}
 @end

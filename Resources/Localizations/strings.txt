@@ -247,6 +247,18 @@
         tags = common, instagram
         en = OK
         ja = OK
+    [GData_Error_Title]
+      tags = common, gdrive, picasa
+      en = Error
+      ja = エラー
+    [GData_Error_Message]
+      tags = common, gdrive, picasa
+      en = Sorry, you cannot use Picasa and Google Drive at the same time. Please logout another one.
+      ja = 申し訳ありません。PicasaとGoogle Driveは同時に利用できません。片方をログアウトしてからご利用ください。
+    [GData_Error_Button_Title]
+      tags = common, gdrive, picasa
+      en = OK
+      ja = OK
     [Alert_Comment_Too_Long]
         tags = common
         en = Comment is too long, please shoten it.

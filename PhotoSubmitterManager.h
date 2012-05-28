@@ -83,6 +83,7 @@
 + (id<PhotoSubmitterProtocol>) submitterForAccount:(PhotoSubmitterAccount *)account;
 + (void) removeSubmitterForAccount:(PhotoSubmitterAccount *)account;
 + (int) registeredPhotoSubmitterCount;
++ (BOOL) isSubmitterEnabledForType:(NSString *)type;
 + (NSArray *) registeredPhotoSubmitters;
 + (void) unregisterAllPhotoSubmitters;
 + (void) unregisterPhotoSubmitterWithTypeName:(NSString *)type;

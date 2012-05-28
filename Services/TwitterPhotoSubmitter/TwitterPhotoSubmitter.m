@@ -126,6 +126,11 @@
     NSURLConnection *connection = 
     [[NSURLConnection alloc] initWithRequest:request.signedURLRequest delegate:self startImmediately:NO];
     
+    if(connection == nil){
+        [self cancelContentSubmit:content];
+        return nil;
+    }
+    
     if(connection != nil){
         [connection start];
     }    

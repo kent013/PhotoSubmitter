@@ -16,6 +16,7 @@
 #import "RegexKitLite.h"
 #import "GTMOAuth2ViewControllerTouch.h"
 #import "GTMHTTPUploadFetcher.h"
+#import "PSLang.h"
 
 #define PS_PICASA_AUTH_URL @"photosubmitter://auth/picasa"
 #define PS_PICASA_KEYCHAIN_NAME @"PSPicasaKeychain"
@@ -228,6 +229,19 @@ ofTotalByteCount:(unsigned long long)dataLength {
  * login to Picasa
  */
 -(void)onLogin{
+    if([PhotoSubmitterManager isSubmitterEnabledForType:@"gdrive"]){
+        UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"GData_Error_Title"] 
+                                   message:[PSLang localized:@"GData_Error_Message"]
+                                  delegate:self 
+                         cancelButtonTitle:
+         [PSLang localized:@"GData_Error_Button_Title"]
+                         otherButtonTitles:nil];
+        [alert show];
+        [self disable];
+        return;
+    }
+    
     SEL finishedSel = @selector(viewController:finishedWithAuth:error:);        
     NSString *scope = [GTMOAuth2Authentication scopeWithStrings:PS_PICASA_SCOPE, PS_PICASA_PROFILE_SCOPE, nil];
     
