@@ -231,7 +231,7 @@ static NSString *kDefaultAlbum = @"/";
  */
 - (void)refreshCredential{
     if([[DBSession sharedSession] isLinked] == NO){
-        UIViewController *rv = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView];
+        UIViewController *rv = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestNavigationControllerForPresentAuthenticationView];
         [[DBSession sharedSession] linkFromController:rv];
     }
 }
