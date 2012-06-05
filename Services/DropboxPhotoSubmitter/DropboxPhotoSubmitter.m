@@ -213,7 +213,8 @@ static NSString *kDefaultAlbum = @"/";
  * login to Dropbox
  */
 -(void)onLogin{
-    [[DBSession sharedSession] link];
+    UIViewController *rv = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestNavigationControllerForPresentAuthenticationView];
+    [[DBSession sharedSession] linkFromController:rv];
     [self completeLogin];
 }
 
@@ -230,7 +231,8 @@ static NSString *kDefaultAlbum = @"/";
  */
 - (void)refreshCredential{
     if([[DBSession sharedSession] isLinked] == NO){
-        [[DBSession sharedSession] link];
+        UIViewController *rv = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView];
+        [[DBSession sharedSession] linkFromController:rv];
     }
 }
 

@@ -6,11 +6,8 @@
 //  Copyright 2010 Dropbox, Inc. All rights reserved.
 //
 
-#if __has_feature(objc_arc)
-#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
-#endif
-
 #import "DBAccountInfo.h"
+
 
 @implementation DBAccountInfo
 
@@ -23,6 +20,7 @@
         }
         userId = [[[dict objectForKey:@"uid"] stringValue] retain];
         referralLink = [[dict objectForKey:@"referral_link"] retain];
+        original = [dict retain];
     }
     return self;
 }
@@ -33,6 +31,7 @@
     [quota release];
     [userId release];
     [referralLink release];
+    [original release];
     [super dealloc];
 }
 
@@ -46,21 +45,35 @@
 #pragma mark NSCoding methods
 
 - (void)encodeWithCoder:(NSCoder*)coder {
-    [coder encodeObject:country forKey:@"country"];
-    [coder encodeObject:displayName forKey:@"displayName"];
-    [coder encodeObject:quota forKey:@"quota"];
-    [coder encodeObject:userId forKey:@"userId"];
-    [coder encodeObject:referralLink forKey:@"referralLink"];
+    [coder encodeObject:original forKey:@"original"];
 }
 
 - (id)initWithCoder:(NSCoder*)coder {
-    self = [super init];
-    country = [[coder decodeObjectForKey:@"country"] retain];
-    displayName = [[coder decodeObjectForKey:@"displayName"] retain];
-    quota = [[coder decodeObjectForKey:@"quota"] retain];
-    userId = [[coder decodeObjectForKey:@"userId"] retain];
-    referralLink = [[coder decodeObjectForKey:@"referralLink"] retain];
-    return self;
+    if ([coder containsValueForKey:@"original"]) {
+        return [self initWithDictionary:[coder decodeObjectForKey:@"original"]];
+    } else {
+        NSMutableDictionary *mDict = [NSMutableDictionary dictionary];
+
+        [mDict setObject:[coder decodeObjectForKey:@"country"] forKey:@"country"];
+        [mDict setObject:[coder decodeObjectForKey:@"displayName"] forKey:@"display_name"];
+
+        DBQuota *tempQuota = [coder decodeObjectForKey:@"quota"];
+        NSDictionary *quotaDict =
+            [NSDictionary dictionaryWithObjectsAndKeys:
+             [NSNumber numberWithLongLong:tempQuota.normalConsumedBytes], @"normal",
+             [NSNumber numberWithLongLong:tempQuota.sharedConsumedBytes], @"shared",
+             [NSNumber numberWithLongLong:tempQuota.totalBytes], @"quota", nil];
+        [mDict setObject:quotaDict forKey:@"quota_info"];
+
+        NSNumber *uid = [NSNumber numberWithLongLong:[[coder decodeObjectForKey:@"userId"] longLongValue]];
+        [mDict setObject:uid forKey:@"uid"];
+        [mDict setObject:[coder decodeObjectForKey:@"referralLink"] forKey:@"referral_link"];
+        if ([coder containsValueForKey:@"email"]) {
+            [mDict setObject:[coder decodeObjectForKey:@"email"] forKey:@"email"];
+        }
+
+        return [self initWithDictionary:mDict];
+    }
 }
 
 @end
