@@ -25,7 +25,7 @@
 	if (self.count==0 || index<0) {
         return nil;
     }
-	return [[self objectAtIndex:index] retain];
+	return [self objectAtIndex:index];
 }
 
 // if there aren't any objects in the queue

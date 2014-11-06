@@ -336,10 +336,9 @@ static NSURLRequestCachePolicy defaultRequestCachePolicy = NSURLRequestUseProtoc
         type = @"jpeg";
     }
     else if (![type isEqualToString:@"png"]) {
-        @throw [NSError errorWithDomain:kMixiErrorDomain
-                                   code:kMixiRequestErrorInvalidImageType
-                               userInfo:[NSDictionary dictionaryWithObject:@"Invalid type. type must be 'jpeg' or 'png.'"
-                                                                    forKey:@"message"]];
+        [[NSException exceptionWithName:@"MixiRequestErrorInvalidImageType"
+                                 reason:@"Invalid type. type must be 'jpeg' or 'png.'"
+                               userInfo:nil] raise];
     }
     if (imageType_) {
         [imageType_ release];

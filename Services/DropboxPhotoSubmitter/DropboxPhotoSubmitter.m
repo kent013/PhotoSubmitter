@@ -200,8 +200,8 @@ static NSString *kDefaultAlbum = @"/";
 /*!
  * initialize
  */
-- (id)init{
-    self = [super init];
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+    self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
     }
@@ -213,7 +213,8 @@ static NSString *kDefaultAlbum = @"/";
  * login to Dropbox
  */
 -(void)onLogin{
-    [[DBSession sharedSession] link];
+    UIViewController *rv = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestNavigationControllerForPresentAuthenticationView];
+    [[DBSession sharedSession] linkFromController:rv];
     [self completeLogin];
 }
 
@@ -230,7 +231,8 @@ static NSString *kDefaultAlbum = @"/";
  */
 - (void)refreshCredential{
     if([[DBSession sharedSession] isLinked] == NO){
-        [[DBSession sharedSession] link];
+        UIViewController *rv = [[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestNavigationControllerForPresentAuthenticationView];
+        [[DBSession sharedSession] linkFromController:rv];
     }
 }
 
@@ -254,9 +256,10 @@ static NSString *kDefaultAlbum = @"/";
         [self enable];
         result = YES;
     }else{
-        [self.authDelegate photoSubmitter:self didLogout:self.type];
+        [self disable];
+        [self.authDelegate photoSubmitter:self didLogout:self.account];
     }
-    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
+    [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.account];
     return result;
 }
 

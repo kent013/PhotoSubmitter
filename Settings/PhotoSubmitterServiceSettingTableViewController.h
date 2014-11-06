@@ -10,11 +10,30 @@
 #import "PhotoSubmitterManager.h"
 #import "PhotoSubmitterSettingTableViewProtocol.h"
 
+@protocol PhotoSubmitterServiceSettingDelegate;
+@protocol PhotoSubmitterServiceSettingTableViewDelegate;
 
 @interface PhotoSubmitterServiceSettingTableViewController : UITableViewController<PhotoSubmitterServiceSettingTableViewProtocol>{
-    NSString *type_;
+    PhotoSubmitterAccount *account_;
 }
 
-- (id)initWithType:(NSString *)type;
-@property (nonatomic, readonly) NSString *type;
+- (id)initWithAccount:(PhotoSubmitterAccount *)account;
+@property (nonatomic, readonly) PhotoSubmitterAccount *account;
+@property (nonatomic, assign) id<PhotoSubmitterServiceSettingDelegate> settingDelegate;
+@property (nonatomic, assign) id<PhotoSubmitterServiceSettingTableViewDelegate> tableViewDelegate;
+@end
+
+
+@protocol PhotoSubmitterServiceSettingDelegate <NSObject>
+- (void) didRequestForAddAccount:(PhotoSubmitterAccount *)account;
+- (void) didRequestForDeleteAccount:(PhotoSubmitterAccount *)account;
+@end
+
+@protocol PhotoSubmitterServiceSettingTableViewDelegate <NSObject>
+- (NSInteger) settingViewController:(PhotoSubmitterServiceSettingTableViewController *)settingViewController numberOfSectionsInTableView:(UITableView *)tableView;
+- (NSInteger)settingViewController:(PhotoSubmitterServiceSettingTableViewController *)settingViewController tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section;
+- (NSString *)settingViewController:(PhotoSubmitterServiceSettingTableViewController *)settingViewController tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section;
+- (NSString *)settingViewController:(PhotoSubmitterServiceSettingTableViewController *)settingViewController tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section;
+- (UITableViewCell *) settingViewController:(PhotoSubmitterServiceSettingTableViewController *)settingViewController tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
+- (BOOL) settingViewController:(PhotoSubmitterServiceSettingTableViewController *)settingViewController tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 @end

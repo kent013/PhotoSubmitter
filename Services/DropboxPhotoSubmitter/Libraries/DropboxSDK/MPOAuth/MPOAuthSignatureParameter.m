@@ -6,17 +6,13 @@
 //  Copyright 2008 matrixPointer. All rights reserved.
 //
 
-#if __has_feature(objc_arc)
-#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
-#endif
-
 #import "MPOAuthSignatureParameter.h"
 #import "MPOAuthURLRequest.h"
 #import "NSString+URLEscapingAdditions.h"
 #import "NSURL+MPURLParameterAdditions.h"
 
 #import <CommonCrypto/CommonHMAC.h>
-#include "DBBase64Transcoder.h"
+#include "Base64Transcoder.h"
 
 @interface MPOAuthSignatureParameter ()
 - (id)initUsingHMAC_SHA1WithText:(NSString *)inText andSecret:(NSString *)inSecret forRequest:(MPOAuthURLRequest *)inRequest;
@@ -44,7 +40,7 @@
 	//Base64 Encoding
 	char base64Result[32];
 	size_t theResultLength = 32;
-	DBBase64EncodeData(result, 20, base64Result, &theResultLength);
+	Base64EncodeData(result, 20, base64Result, &theResultLength);
 	NSData *theData = [NSData dataWithBytes:base64Result length:theResultLength];
 	NSString *base64EncodedResult = [[[NSString alloc] initWithData:theData encoding:NSUTF8StringEncoding] autorelease];
 	

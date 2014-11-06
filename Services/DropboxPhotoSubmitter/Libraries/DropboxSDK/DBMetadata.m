@@ -5,9 +5,6 @@
 //  Created by Brian Smith on 5/3/10.
 //  Copyright 2010 Dropbox, Inc. All rights reserved.
 //
-#if __has_feature(objc_arc)
-#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
-#endif
 
 #import "DBMetadata.h"
 
@@ -40,6 +37,11 @@
                 [[[DBMetadata dateFormatter] dateFromString:[dict objectForKey:@"modified"]] retain];
         }
 
+        if ([dict objectForKey:@"client_mtime"]) {
+            clientMtime =
+                [[[DBMetadata dateFormatter] dateFromString:[dict objectForKey:@"client_mtime"]] retain];
+        }
+
         path = [[dict objectForKey:@"path"] retain];
         isDirectory = [[dict objectForKey:@"is_dir"] boolValue];
         
@@ -68,6 +70,7 @@
 
 - (void)dealloc {
     [lastModifiedDate release];
+    [clientMtime release];
     [path release];
     [contents release];
     [hash release];
@@ -82,6 +85,7 @@
 @synthesize thumbnailExists;
 @synthesize totalBytes;
 @synthesize lastModifiedDate;
+@synthesize clientMtime;
 @synthesize path;
 @synthesize isDirectory;
 @synthesize contents;
@@ -114,6 +118,7 @@
         thumbnailExists = [coder decodeBoolForKey:@"thumbnailExists"];
         totalBytes = [coder decodeInt64ForKey:@"totalBytes"];
         lastModifiedDate = [[coder decodeObjectForKey:@"lastModifiedDate"] retain];
+        clientMtime = [[coder decodeObjectForKey:@"clientMtime"] retain];
         path = [[coder decodeObjectForKey:@"path"] retain];
         isDirectory = [coder decodeBoolForKey:@"isDirectory"];
         contents = [[coder decodeObjectForKey:@"contents"] retain];
@@ -132,6 +137,7 @@
     [coder encodeBool:thumbnailExists forKey:@"thumbnailExists"];
     [coder encodeInt64:totalBytes forKey:@"totalBytes"];
     [coder encodeObject:lastModifiedDate forKey:@"lastModifiedDate"];
+    [coder encodeObject:clientMtime forKey:@"clientMtime"];
     [coder encodeObject:path forKey:@"path"];
     [coder encodeBool:isDirectory forKey:@"isDirectory"];
     [coder encodeObject:contents forKey:@"contents"];

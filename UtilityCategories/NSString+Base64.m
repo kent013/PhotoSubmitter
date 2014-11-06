@@ -22,7 +22,7 @@
 
 #import "NSString+Base64.h"
 
-#import "base64.h"
+#import "ps_base64.h"
 
 
 @implementation NSString (Base64)
@@ -30,7 +30,7 @@
 - (NSString*) base64Encoding {
 	const char *inputString = [self UTF8String];
     char *encodedString;
-    base64_encode(inputString, strlen(inputString), &encodedString);
+    ps_base64_encode(inputString, strlen(inputString), &encodedString);
     
     NSString *retval = [NSString stringWithUTF8String:encodedString];
     free(encodedString);

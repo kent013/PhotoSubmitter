@@ -5,19 +5,15 @@
 //  Created by Brian Smith on 4/8/10.
 //  Copyright 2010 Dropbox, Inc. All rights reserved.
 //
-#if __has_feature(objc_arc)
-#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
-#endif
 
 #import "DBSession.h"
 
-#import <CommonCrypto/CommonDigest.h>
-
+#import "DBKeychain.h"
 #import "DBLog.h"
 #import "MPOAuthCredentialConcreteStore.h"
 #import "MPOAuthSignatureParameter.h"
 
-NSString *kDBSDKVersion = @"1.1"; // TODO: parameterize from build system
+NSString *kDBSDKVersion = @"1.2.3-b1"; // TODO: parameterize from build system
 
 NSString *kDBDropboxAPIHost = @"api.dropbox.com";
 NSString *kDBDropboxAPIContentHost = @"api-content.dropbox.com";
@@ -29,24 +25,22 @@ NSString *kDBRootAppFolder = @"sandbox";
 
 NSString *kDBProtocolHTTPS = @"https";
 
-static NSString *kDBProtocolDropbox = @"dbapi-1";
+NSString *kDBDropboxUnknownUserId = @"unknown";
 
 static DBSession *_sharedSession = nil;
-static NSString *kDBDropboxSavedCredentialsOld = @"kDBDropboxSavedCredentialsKey";
-static NSString *kDBDropboxSavedCredentials = @"kDBDropboxSavedCredentials";
+static NSString *kDBDropboxSavedCredentialsOldOld = @"kDBDropboxSavedCredentialsKey";
+static NSString *kDBDropboxSavedCredentialsOld = @"kDBDropboxSavedCredentials";
 static NSString *kDBDropboxUserCredentials = @"kDBDropboxUserCredentials";
 static NSString *kDBDropboxUserId = @"kDBDropboxUserId";
-static NSString *kDBDropboxUnknownUserId = @"unknown";
+static NSString *kDBCredentialsVersionKey = @"DBCredentialVersion";
+static NSInteger kDBCredentialsVersion = 2;
+
 
 
 @interface DBSession ()
 
-- (NSDictionary*)savedCredentials;
 - (void)saveCredentials;
-- (void)clearSavedCredentials;
 - (void)setAccessToken:(NSString *)token accessTokenSecret:(NSString *)secret forUserId:(NSString *)userId;
-- (NSString *)appScheme;
-- (BOOL)appConformsToScheme;
 
 @end
 
@@ -74,29 +68,58 @@ static NSString *kDBDropboxUnknownUserId = @"unknown";
                 
         credentialStores = [NSMutableDictionary new];
         
-        NSDictionary *oldSavedCredentials =
-            [[NSUserDefaults standardUserDefaults] objectForKey:kDBDropboxSavedCredentialsOld];
-        if (oldSavedCredentials) {
-            if ([key isEqual:[oldSavedCredentials objectForKey:kMPOAuthCredentialConsumerKey]]) {
-                NSString *token = [oldSavedCredentials objectForKey:kMPOAuthCredentialAccessToken];
-                NSString *secret = [oldSavedCredentials objectForKey:kMPOAuthCredentialAccessTokenSecret];
-                [self setAccessToken:token accessTokenSecret:secret forUserId:kDBDropboxUnknownUserId];
+        NSDictionary *oldOldCredentials =
+            [[NSUserDefaults standardUserDefaults] objectForKey:kDBDropboxSavedCredentialsOldOld];
+        if (oldOldCredentials) {
+            if ([key isEqual:[oldOldCredentials objectForKey:kMPOAuthCredentialConsumerKey]]) {
+                // These credentials are the same structure as version 1, but in userDefaults
+                NSString *token = [oldOldCredentials objectForKey:kMPOAuthCredentialAccessToken];
+                NSString *secret = [oldOldCredentials objectForKey:kMPOAuthCredentialAccessTokenSecret];
+                [self updateAccessToken:token accessTokenSecret:secret forUserId:kDBDropboxUnknownUserId];
             }
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDBDropboxSavedCredentialsOldOld];
+            [[NSUserDefaults standardUserDefaults] synchronize];
         }
-        
-        NSDictionary *savedCredentials = [self savedCredentials];
+
+        NSDictionary *oldCredentials =
+            [[NSUserDefaults standardUserDefaults] objectForKey:kDBDropboxSavedCredentialsOld];
+        if (oldCredentials) {
+            if ([key isEqual:[oldCredentials objectForKey:kMPOAuthCredentialConsumerKey]]) {
+                // These credentials are the same structure as version 2, but in userDefaults and missing version
+				NSArray *allUserCredentials = [oldCredentials objectForKey:kDBDropboxUserCredentials];
+				for (NSDictionary *userCredentials in allUserCredentials) {
+					NSString *userId = [userCredentials objectForKey:kDBDropboxUserId];
+					NSString *token = [userCredentials objectForKey:kMPOAuthCredentialAccessToken];
+					NSString *secret = [userCredentials objectForKey:kMPOAuthCredentialAccessTokenSecret];
+					[self setAccessToken:token accessTokenSecret:secret forUserId:userId];
+				}
+				[self saveCredentials];
+            }
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDBDropboxSavedCredentialsOld];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+        }
+
+        NSDictionary *savedCredentials = [DBKeychain credentials];
         if (savedCredentials != nil) {
             if ([key isEqualToString:[savedCredentials objectForKey:kMPOAuthCredentialConsumerKey]]) {
-            
-                NSArray *allUserCredentials = [savedCredentials objectForKey:kDBDropboxUserCredentials];
-                for (NSDictionary *userCredentials in allUserCredentials) {
-                    NSString *userId = [userCredentials objectForKey:kDBDropboxUserId];
-                    NSString *token = [userCredentials objectForKey:kMPOAuthCredentialAccessToken];
-                    NSString *secret = [userCredentials objectForKey:kMPOAuthCredentialAccessTokenSecret];
-                    [self setAccessToken:token accessTokenSecret:secret forUserId:userId];
+                NSInteger version = [[savedCredentials objectForKey:kDBCredentialsVersionKey] intValue];
+                if (version == 1) {
+                    // These credentials are version 1 in the keychain
+                    NSString *token = [savedCredentials objectForKey:kMPOAuthCredentialAccessToken];
+                    NSString *secret = [savedCredentials objectForKey:kMPOAuthCredentialAccessTokenSecret];
+                    [self updateAccessToken:token accessTokenSecret:secret forUserId:kDBDropboxUnknownUserId];
+                } else {
+                    // These credentials are version 2 in the keychain
+                    NSArray *allUserCredentials = [savedCredentials objectForKey:kDBDropboxUserCredentials];
+                    for (NSDictionary *userCredentials in allUserCredentials) {
+                        NSString *userId = [userCredentials objectForKey:kDBDropboxUserId];
+                        NSString *token = [userCredentials objectForKey:kMPOAuthCredentialAccessToken];
+                        NSString *secret = [userCredentials objectForKey:kMPOAuthCredentialAccessTokenSecret];
+                        [self setAccessToken:token accessTokenSecret:secret forUserId:userId];
+                    }
                 }
             } else {
-                [self clearSavedCredentials];
+                [DBKeychain deleteCredentials];
             }
         }
         
@@ -108,6 +131,7 @@ static NSString *kDBDropboxUnknownUserId = @"unknown";
 - (void)dealloc {
     [baseCredentials release];
     [credentialStores release];
+    [anonymousStore release];
     [root release];
     [super dealloc];
 }
@@ -141,84 +165,9 @@ static NSString *kDBDropboxUnknownUserId = @"unknown";
     return [credentialStores count] != 0;
 }
 
-- (void)linkUserId:(NSString *)userId {
-    if (![self appConformsToScheme]) {
-        DBLogError(@"DropboxSDK: unable to link; app isn't registered for correct URL scheme (%@)", [self appScheme]);
-        return;
-    }
-
-    NSString *userIdStr = @"";
-    if (userId && ![userId isEqual:kDBDropboxUnknownUserId]) {
-        userIdStr = [NSString stringWithFormat:@"&u=%@", userId];
-    }
-    
-    NSString *consumerKey = [baseCredentials objectForKey:kMPOAuthCredentialConsumerKey];
-    
-    NSData *consumerSecret = 
-        [[baseCredentials objectForKey:kMPOAuthCredentialConsumerSecret] dataUsingEncoding:NSUTF8StringEncoding];
-    unsigned char md[CC_SHA1_DIGEST_LENGTH];
-    CC_SHA1(consumerSecret.bytes, [consumerSecret length], md);
-    NSUInteger sha_32 = htonl(((NSUInteger *)md)[CC_SHA1_DIGEST_LENGTH/sizeof(NSUInteger) - 1]);
-    NSString *secret = [NSString stringWithFormat:@"%x", sha_32];
-    
-    NSString *urlStr = nil;
-    
-    NSURL *dbURL =
-        [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@/connect", kDBProtocolDropbox, kDBDropboxAPIVersion]];
-    if ([[UIApplication sharedApplication] canOpenURL:dbURL]) {
-        urlStr = [NSString stringWithFormat:@"%@?k=%@&s=%@%@", dbURL, consumerKey, secret, userIdStr];
-    } else {
-        urlStr = [NSString stringWithFormat:@"%@://%@/%@/connect?k=%@&s=%@%@", 
-            kDBProtocolHTTPS, kDBDropboxWebHost, kDBDropboxAPIVersion, consumerKey, secret, userIdStr];
-    }
-    
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlStr]];
-}
-
-- (void)link {
-    [self linkUserId:nil];
-}    
-
-/* A private function for parsing URL parameters. */
-- (NSDictionary*)parseURLParams:(NSString *)query {
-    NSArray *pairs = [query componentsSeparatedByString:@"&"];
-    NSMutableDictionary *params = [[[NSMutableDictionary alloc] init] autorelease];
-    for (NSString *pair in pairs) {
-        NSArray *kv = [pair componentsSeparatedByString:@"="];
-        NSString *val =
-            [[kv objectAtIndex:1]
-             stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
-        [params setObject:val forKey:[kv objectAtIndex:0]];
-    }
-  return params;
-}
-
-- (BOOL)handleOpenURL:(NSURL *)url {
-    NSString *expected = [NSString stringWithFormat:@"%@://%@/", [self appScheme], kDBDropboxAPIVersion];
-    if (![[url absoluteString] hasPrefix:expected]) {
-        return NO;
-    }
-    
-    NSArray *components = [[url path] pathComponents];
-    NSString *methodName = [components count] > 1 ? [components objectAtIndex:1] : nil;
-    
-    if ([methodName isEqual:@"connect"]) {
-        NSDictionary *params = [self parseURLParams:[url query]];
-        NSString *token = [params objectForKey:@"oauth_token"];
-        NSString *secret = [params objectForKey:@"oauth_token_secret"];
-        NSString *userId = [params objectForKey:@"uid"];
-        [self updateAccessToken:token accessTokenSecret:secret forUserId:userId];
-    } else if ([methodName isEqual:@"cancelled"]) {
-        DBLogInfo(@"DropboxSDK: user canceled Dropbox link");
-    }
-    
-    return YES;
-}
-
 - (void)unlinkAll {
     [credentialStores removeAllObjects];
-    [self clearSavedCredentials];
+    [DBKeychain deleteCredentials];
 }
 
 - (void)unlinkUserId:(NSString *)userId {
@@ -228,7 +177,10 @@ static NSString *kDBDropboxUnknownUserId = @"unknown";
 
 - (MPOAuthCredentialConcreteStore *)credentialStoreForUserId:(NSString *)userId {
     if (!userId) {
-        return [[[MPOAuthCredentialConcreteStore alloc] initWithCredentials:baseCredentials] autorelease];
+        if (!anonymousStore) {
+            anonymousStore = [[MPOAuthCredentialConcreteStore alloc] initWithCredentials:baseCredentials];
+        }
+        return anonymousStore;
     }
     return [credentialStores objectForKey:userId];
 }
@@ -240,12 +192,12 @@ static NSString *kDBDropboxUnknownUserId = @"unknown";
 
 #pragma mark private methods
 
-- (NSDictionary *)savedCredentials {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:kDBDropboxSavedCredentials];
-}
-
 - (void)saveCredentials {
-    NSMutableDictionary *credentials = [NSMutableDictionary dictionaryWithDictionary:baseCredentials];
+    NSMutableDictionary *credentials = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                        [baseCredentials objectForKey:kMPOAuthCredentialConsumerKey], kMPOAuthCredentialConsumerKey,
+                                        [NSNumber numberWithInt:kDBCredentialsVersion], kDBCredentialsVersionKey,
+                                        nil];
+
     NSMutableArray *allUserCredentials = [NSMutableArray array];
     for (NSString *userId in [credentialStores allKeys]) {
         MPOAuthCredentialConcreteStore *store = [credentialStores objectForKey:userId];
@@ -257,41 +209,7 @@ static NSString *kDBDropboxUnknownUserId = @"unknown";
         [userCredentials release];
     }
     [credentials setObject:allUserCredentials forKey:kDBDropboxUserCredentials];
-    
-    [[NSUserDefaults standardUserDefaults] setObject:credentials forKey:kDBDropboxSavedCredentials];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDBDropboxSavedCredentialsOld];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (void)clearSavedCredentials {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kDBDropboxSavedCredentials];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (NSString *)appScheme {
-    NSString *consumerKey = [baseCredentials objectForKey:kMPOAuthCredentialConsumerKey];
-    return [NSString stringWithFormat:@"db-%@", consumerKey];
-}
-
-- (BOOL)appConformsToScheme {
-    NSString *appScheme = [self appScheme];
-
-    NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
-    NSData *plistData = [NSData dataWithContentsOfFile:plistPath];
-    NSDictionary *loadedPlist = 
-            [NSPropertyListSerialization 
-             propertyListFromData:plistData mutabilityOption:0 format:NULL errorDescription:NULL];
-
-    NSArray *urlTypes = [loadedPlist objectForKey:@"CFBundleURLTypes"];
-    for (NSDictionary *urlType in urlTypes) {
-        NSArray *schemes = [urlType objectForKey:@"CFBundleURLSchemes"];
-        for (NSString *scheme in schemes) {
-            if ([scheme isEqual:appScheme]) {
-                return YES;
-            }
-        }
-    }
-    return NO;
+    [DBKeychain setCredentials:credentials];
 }
 
 @end

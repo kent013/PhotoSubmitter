@@ -10,8 +10,10 @@
 #import <Accounts/Accounts.h>
 #import "PhotoSubmitter.h"
 #import "PhotoSubmitterProtocol.h"
+#import "TwitterPhotoSubmitterSettingTableViewController.h"
 
 @interface TwitterPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, NSURLConnectionDataDelegate, NSURLConnectionDelegate, UIAlertViewDelegate>{
+    __strong TwitterPhotoSubmitterSettingTableViewController *settingView_;
     __strong ACAccountStore *accountStore_;
     __strong NSString *defaultComment_;
 }

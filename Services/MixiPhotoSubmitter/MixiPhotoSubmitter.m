@@ -73,7 +73,8 @@ static NSString *kDefaultAlbum = @"tottepost";
         [mixi_ store];
     }else if([url isMatchedByRegex:@"albums/@me/@self"] && 
              [method isEqualToString:@"POST"]){
-        [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:YES withError:nil];
+        PhotoSubmitterAlbumEntity *album = [[PhotoSubmitterAlbumEntity alloc] initWithId:[data objectForKey:@"id"] name:[data objectForKey:@"title"] privacy:[[data objectForKey:@"privacy"] objectForKey:@"visibility"]];
+        [self.albumDelegate photoSubmitter:self didAlbumCreated:album suceeded:YES withError:nil];
     }else if([url isMatchedByRegex:@"albums/@me/@self"] && 
              [method isEqualToString:@"GET"]){
         NSArray *as = [data objectForKey:@"entry"];
@@ -163,8 +164,8 @@ static NSString *kDefaultAlbum = @"tottepost";
 /*!
  * initialize
  */
-- (id)init{
-    self = [super init];
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+    self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
     }
@@ -177,7 +178,7 @@ static NSString *kDefaultAlbum = @"tottepost";
  */
 -(void)onLogin{
     MixiSDKAuthorizer *authorizer = (MixiSDKAuthorizer *)mixi_.authorizer;
-    [authorizer setParentViewController:[[PhotoSubmitterManager sharedInstance].authControllerDelegate requestNavigationControllerToPresentAuthenticationView]];
+    [authorizer setParentViewController:[[PhotoSubmitterManager sharedInstance].navigationControllerDelegate requestNavigationControllerForPresentAuthenticationView]];
     [mixi_ authorize:@"r_profile",@"r_photo", @"w_photo", nil];
 }
 

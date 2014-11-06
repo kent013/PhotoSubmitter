@@ -114,8 +114,8 @@ static NSString *kDefaultAlbum = @"tottepost";
 /*!
  * initialize
  */
-- (id)init{
-    self = [super init];
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+    self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
     }
@@ -129,7 +129,7 @@ static NSString *kDefaultAlbum = @"tottepost";
 -(void)onLogin{
     authController_ = [[PhotoSubmitterAccountTableViewController alloc] init];
     authController_.delegate = self;
-    [[[[PhotoSubmitterManager sharedInstance] authControllerDelegate] requestNavigationControllerToPresentAuthenticationView] pushViewController:authController_ animated:YES];
+    [self presentAuthenticationView:authController_];
 }
 
 /*!
@@ -306,7 +306,14 @@ static NSString *kDefaultAlbum = @"tottepost";
     }else if([request.tag isEqualToString:kMinusRequestCreateFile]){
         [self completeSubmitContentWithRequest:request];
     }else if([request.tag isEqualToString:kMinusRequestCreateFolder]){
-        [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:YES withError:nil];
+        NSDictionary *a = (NSDictionary *)result;
+        NSString *privacy = @"private";
+        if([a objectForKey:@"is_public"]){
+            privacy = @"public";
+        }
+        PhotoSubmitterAlbumEntity *album = 
+        [[PhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:[a objectForKey:@"name"] privacy:privacy];
+        [self.albumDelegate photoSubmitter:self didAlbumCreated:album suceeded:YES withError:nil];
         [self clearRequest:request];
     }else if([request.tag isEqualToString:kMinusRequestFoldersWithUsername]){
         NSArray *as = [result objectForKey:@"results"];
@@ -330,7 +337,6 @@ static NSString *kDefaultAlbum = @"tottepost";
  * request failed
  */
 - (void)request:(MinusRequest *)request didFailWithError:(NSError *)error{
-    NSLog(@"%@", error);
     if([request.tag isEqualToString:kMinusRequestActiveUser]){
     }else if([request.tag isEqualToString:kMinusRequestCreateFile]){
         [self completeSubmitContentWithRequest:request andError:error];
@@ -339,6 +345,9 @@ static NSString *kDefaultAlbum = @"tottepost";
         [self.albumDelegate photoSubmitter:self didAlbumCreated:nil suceeded:NO withError:error];
     }else{
         NSLog(@"%s", __PRETTY_FUNCTION__);
+        if(error.code == 401){
+            [self logout];
+        }
     }
     [self clearRequest:request];
 }

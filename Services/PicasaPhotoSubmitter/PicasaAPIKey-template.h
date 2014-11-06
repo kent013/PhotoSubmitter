@@ -9,5 +9,5 @@
 /*!
  * api key and secret for google
  */
-#define GOOGLE_SUBMITTER_API_KEY       @""
-#define GOOGLE_SUBMITTER_API_SECRET @""
+#define PICASA_SUBMITTER_API_KEY       @""
+#define PICASA_SUBMITTER_API_SECRET @""

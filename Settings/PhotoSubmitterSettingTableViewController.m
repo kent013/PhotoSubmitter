@@ -16,26 +16,26 @@
 #import "PhotoSubmitterSettings.h"
 #import "PSLang.h"
 #import "PhotoSubmitterSwitch.h"
+#import "PhotoSubmitterAccountManager.h"
+#import "RegexKitLite.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
 @interface PhotoSubmitterSettingTableViewController(PrivateImplementation)
 - (void) setupInitialState;
-- (PhotoSubmitterServiceSettingTableViewController *)settingTableViewControllerForType:(NSString *) type;
+- (PhotoSubmitterServiceSettingTableViewController *)settingTableViewControllerForAccount:(PhotoSubmitterAccount *)account;
 - (void) settingDone:(id)sender;
 - (UITableViewCell *) createSocialAppButtonWithTag:(int)tag;
 - (void) didSocialAppSwitchChanged:(id)sender;
 - (void) didGeneralSwitchChanged:(id)sender;
-- (NSString *) indexToSubmitterType:(int) index;
-- (int) submitterTypeToIndex:(NSString *) type;
+- (PhotoSubmitterAccount *) indexToAccount:(int) index;
+- (int) accountToIndex:(NSString *) hash;
 - (UISwitch *)createSwitchWithTag:(int)tag on:(BOOL)on;
 - (void) sortSocialAppCell;
-- (void) updateSubmitterEnabledDates;
 @end
 
-#pragma mark -
-#pragma mark Private Implementations
+#pragma mark - Private Implementations
 @implementation PhotoSubmitterSettingTableViewController(PrivateImplementation)
 /*!
  * setup initial state
@@ -44,30 +44,26 @@
     self.tableView.delegate = self;
     switches_ = [[NSMutableArray alloc] init];
     settingControllers_ = [[NSMutableDictionary alloc] init];
+    cells_ = [[NSMutableDictionary alloc] init];
     
-    for(NSString *type in [PhotoSubmitterManager registeredPhotoSubmitters]){
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    NSArray *submitters = [PhotoSubmitterManager sharedInstance].submitters;
+    for(id<PhotoSubmitterProtocol> submitter in submitters){
         PhotoSubmitterServiceSettingTableViewController *settingView = 
           submitter.settingView;
         if(settingView != nil){
-            [settingControllers_ setObject:settingView forKey:type];
+            [settingControllers_ setObject:settingView forKey:submitter.account.accountHash];
+            settingView.settingDelegate = self;
+            settingView.tableViewDelegate = tableViewDelegate_;
         }
     }
     
     [PhotoSubmitterManager sharedInstance].authenticationDelegate = self;
     
-    NSDictionary *submitterEnabledDates = [PhotoSubmitterSettings getInstance].submitterEnabledDates;
-    NSArray *keys = [submitterEnabledDates allKeys];
-    if(submitterEnabledDates == nil || 
-       [PhotoSubmitterManager registeredPhotoSubmitterCount] != submitterEnabledDates.count){
-        keys = [PhotoSubmitterManager registeredPhotoSubmitters];
-    }
     int i = 0;
-    for(NSString *type in keys){
+    for(id<PhotoSubmitterProtocol> submitter in submitters){
         PhotoSubmitterSwitch *s = [[PhotoSubmitterSwitch alloc] init];
-        s.submitterType = type;
+        s.account = submitter.account;
         s.index = i;
-        s.onEnabled = [submitterEnabledDates objectForKey:type];
         [s addTarget:self action:@selector(didSocialAppSwitchChanged:) forControlEvents:UIControlEventValueChanged];
         [switches_ addObject:s];
         i++;
@@ -78,12 +74,11 @@
 /*!
  * get setting table view fo type
  */
-- (PhotoSubmitterServiceSettingTableViewController *)settingTableViewControllerForType:(NSString *)type{
-    return [settingControllers_ objectForKey:type];
+- (PhotoSubmitterServiceSettingTableViewController *)settingTableViewControllerForAccount:(PhotoSubmitterAccount *)account{
+    return [settingControllers_ objectForKey:account.accountHash];
 }
 
-#pragma mark -
-#pragma mark tableview methods
+#pragma mark - tableview methods
 /*! 
  * get section number
  */
@@ -99,7 +94,7 @@
 {
     switch (section) {
         case SV_SECTION_GENERAL: return SV_GENERAL_COUNT;
-        case SV_SECTION_ACCOUNTS: return [PhotoSubmitterManager registeredPhotoSubmitterCount];
+        case SV_SECTION_ACCOUNTS: return [PhotoSubmitterManager sharedInstance].submitters.count;
     }
     return 0;
 }
@@ -144,19 +139,25 @@
  * create social app button
  */
 -(UITableViewCell *) createSocialAppButtonWithTag:(int)tag{
-    NSString *type = [self indexToSubmitterType:tag];
-    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    PhotoSubmitterAccount *account = [self indexToAccount:tag];
+    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
     
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-    cell.imageView.image = submitter.icon;
-    cell.textLabel.text = submitter.displayName;
-    PhotoSubmitterSwitch *s = [switches_ objectAtIndex:tag];
-    cell.accessoryView = s;
-    if([submitter isLogined]){
-        [s setOn:YES animated:NO];
-    }else{
-        [s setOn:NO animated:NO];
-    }
+    NSString *identifier = [NSString stringWithFormat:@"social_%@", submitter.account.accountHash];
+    UITableViewCell *cell = [cells_ objectForKey:identifier];
+    if(cell == nil){
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
+        cell.imageView.image = submitter.icon;
+        cell.textLabel.text = submitter.displayName;
+        PhotoSubmitterSwitch *s = [switches_ objectAtIndex:tag];
+        cell.accessoryView = s;
+        if([submitter isLogined]){
+            [s setOn:YES animated:NO];
+        }else{
+            [s setOn:NO animated:NO];
+        }
+        [cells_ setObject:cell forKey:identifier];
+   }
+    
     return cell;
 }
      
@@ -165,10 +166,10 @@
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if(indexPath.section == SV_SECTION_ACCOUNTS){
-        NSString * type = (NSString *)[self indexToSubmitterType:indexPath.row];
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+        PhotoSubmitterAccount *account = [self indexToAccount:indexPath.row];
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
         if(submitter.isEnabled){
-            PhotoSubmitterServiceSettingTableViewController *vc = [self settingTableViewControllerForType:type];
+            PhotoSubmitterServiceSettingTableViewController *vc = [self settingTableViewControllerForAccount:account];
             if(vc != nil){
                 [self.navigationController pushViewController:vc animated:YES];
             }
@@ -182,34 +183,23 @@
  */
 - (void) sortSocialAppCell{
     [switches_ sortUsingComparator:^(PhotoSubmitterSwitch *a, PhotoSubmitterSwitch *b){
-        return [b.onEnabled compare:a.onEnabled];
+        if(a.on != b.on){
+            if(a.on){
+                return NSOrderedAscending;
+            }
+            return NSOrderedDescending;
+        }
+        return (int)[a.account.type compare:b.account.type];
     }];
     
     for(int index = 0; index < switches_.count; index++){
         PhotoSubmitterSwitch *s = [switches_ objectAtIndex:index];
         s.index = index;
     }
-    
-    [self updateSubmitterEnabledDates];
     [self.tableView reloadData];
 }
 
-/*!
- * upldate support type index
- */
-- (void) updateSubmitterEnabledDates{
-    NSMutableDictionary *enabledDates = [[NSMutableDictionary alloc] init];
-    for(PhotoSubmitterSwitch *s in switches_){
-        if(s.onEnabled == nil){
-            s.onEnabled = [NSDate distantPast];
-        }
-        [enabledDates setObject:s.onEnabled forKey:s.submitterType];
-    }
-    [PhotoSubmitterSettings getInstance].submitterEnabledDates = enabledDates;
-}
-
-#pragma mark -
-#pragma mark ui parts delegates
+#pragma mark - ui parts delegates
 /*!
  * done button tapped
  */
@@ -223,8 +213,7 @@
  */
 - (void)didSocialAppSwitchChanged:(id)sender{
     PhotoSubmitterSwitch *s = (PhotoSubmitterSwitch *)sender;
-    NSString *type = [self indexToSubmitterType:s.index];
-    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:type];
+    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:s.account];
     if(s.on){
         [submitter login];
     }else{
@@ -262,15 +251,14 @@
     return s;
 }
 
-#pragma mark -
-#pragma mark conversion methods
+#pragma mark - conversion methods
 /*!
  * convert index to NSString *
  */
-- (NSString *)indexToSubmitterType:(int)index{
+- (PhotoSubmitterAccount *)indexToAccount:(int)index{
     for(PhotoSubmitterSwitch *s in switches_){
         if(s.index == index){
-            return s.submitterType;
+            return s.account;
         }
     }    
     return nil;
@@ -279,9 +267,9 @@
 /*!
  * convert NSString * to index
  */
-- (int)submitterTypeToIndex:(NSString *)type{
+- (int)accountToIndex:(NSString *)hash{
     for(PhotoSubmitterSwitch *s in switches_){
-        if([s.submitterType isEqualToString:type]){
+        if([s.account.accountHash isEqualToString:hash]){
             return s.index;
         }
     }
@@ -296,6 +284,8 @@
 //-----------------------------------------------------------------------------
 @implementation PhotoSubmitterSettingTableViewController
 @synthesize delegate;
+@synthesize tableViewDelegate = tableViewDelegate_;
+
 /*!
  * initialize with frame
  */
@@ -313,13 +303,14 @@
 - (void)updateSocialAppSwitches{
     for(int i = 0; i < switches_.count; i++){
         PhotoSubmitterSwitch *s = [switches_ objectAtIndex:i];
-        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForType:s.submitterType];
+        id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:s.account];
         BOOL isLogined = submitter.isLogined;
         if(isLogined == NO){
             [submitter disable];
         }
         [s setOn:isLogined animated:YES];
     }
+    [self sortSocialAppCell];
 }
 
 
@@ -328,7 +319,15 @@
  */
 - (UITableViewCell *)createGeneralSettingCell:(int)tag{
     PhotoSubmitterSettings *settings = [PhotoSubmitterSettings getInstance];
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    
+    NSString *identifier = [NSString stringWithFormat:@"general_%d", tag];
+    
+    UITableViewCell *cell = [cells_ objectForKey:identifier];
+    if(cell){
+        return cell;
+    }
+    
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
     switch (tag) {
         case SV_GENERAL_COMMENT:
         {
@@ -336,6 +335,7 @@
             UISwitch *s = [self createSwitchWithTag:tag on:settings.commentPostEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
+            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingComment.png"];
             break;
         }    
         case SV_GENERAL_GPS:{
@@ -343,6 +343,7 @@
             UISwitch *s = [self createSwitchWithTag:tag on:settings.gpsEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
+            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingLocation.png"];
             break;
         }
         case SV_GENERAL_IMAGE:{
@@ -350,20 +351,21 @@
             UISwitch *s = [self createSwitchWithTag:tag on:settings.autoEnhance];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
+            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingAutoEnhance.png"];
             break;
         }
     }
+    [cells_ setObject:cell forKey:identifier];
     return cell;
 }
 
-#pragma mark -
-#pragma mark PhotoSubmitterAuthDelegate delegate methods
+#pragma mark - PhotoSubmitterAuthDelegate delegate methods
 /*!
  * photo submitter did login
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogin:(NSString *)type{
-    int index = [self submitterTypeToIndex:type];
-    UISwitch *s = [switches_ objectAtIndex:index];
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogin:(PhotoSubmitterAccount *)account{
+    int index = [self accountToIndex:account.accountHash];
+    PhotoSubmitterSwitch *s = [switches_ objectAtIndex:index];
     [s setOn:YES animated:YES];
     [self sortSocialAppCell];
 }
@@ -371,8 +373,8 @@
 /*!
  * photo submitter did logout
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogout:(NSString *)type{
-    int index = [self submitterTypeToIndex:type];
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogout:(PhotoSubmitterAccount *)account{
+    int index = [self accountToIndex:account.accountHash];
     UISwitch *s = [switches_ objectAtIndex:index];
     [s setOn:NO animated:YES];    
     [self sortSocialAppCell];
@@ -381,28 +383,83 @@
 /*!
  * photo submitter start authorization
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willBeginAuthorization:(NSString *)type{
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willBeginAuthorization:(PhotoSubmitterAccount *)account{
 }
 
 /*!
  * photo submitter authorization finished
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAuthorizationFinished:(NSString *)type{
+- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAuthorizationFinished:(PhotoSubmitterAccount *)account{
 }
 
-#pragma mark -
-#pragma mark UIViewController methods
+/*!
+ * tableViewDelegate
+ */
+- (void)setTableViewDelegate:(id<PhotoSubmitterServiceSettingTableViewDelegate>)inTableViewDelegate{
+    tableViewDelegate_ = inTableViewDelegate;
+    for(NSString *key in settingControllers_){
+        PhotoSubmitterSettingTableViewController *view = [settingControllers_ objectForKey:key];
+        view.tableViewDelegate = tableViewDelegate_;
+    }
+}
+
+#pragma mark - PhotoSubmitterServiceSettingDelegate
+/*!
+ * when add account cell tapped
+ */
+- (void)didRequestForAddAccount:(PhotoSubmitterAccount *)account{
+    id<PhotoSubmitterProtocol> submitter = [PhotoSubmitterManager submitterForAccount:account];
+    PhotoSubmitterServiceSettingTableViewController *settingView = submitter.settingView;
+    if(settingView != nil){
+        [settingControllers_ setObject:settingView forKey:submitter.account.accountHash];
+        settingView.settingDelegate = self;
+        settingView.tableViewDelegate = tableViewDelegate_;
+    }
+    PhotoSubmitterSwitch *s = [[PhotoSubmitterSwitch alloc] init];
+    s.account = submitter.account;
+    s.index = switches_.count;
+    [s addTarget:self action:@selector(didSocialAppSwitchChanged:) forControlEvents:UIControlEventValueChanged];
+    [switches_ addObject:s];
+    int i = 0;
+    for(PhotoSubmitterSwitch *s in switches_){
+        s.index = i;
+        i++;
+    }
+    [self updateSocialAppSwitches];
+}
+
+/*!
+ * delete account
+ */
+- (void)didRequestForDeleteAccount:(PhotoSubmitterAccount *)account{
+    int index = [self accountToIndex:account.accountHash];
+    [switches_ removeObjectAtIndex:index];        
+    int i = 0;
+    for(PhotoSubmitterSwitch *s in switches_){
+        s.index = i;
+        i++;
+    }
+    [settingControllers_ removeObjectForKey:account.accountHash];
+    [[PhotoSubmitterManager sharedInstance] removeSubmitterForAccount:account];
+    [self.tableView reloadData];
+}
+
+#pragma mark - UIViewController methods
 - (void)viewDidAppear:(BOOL)animated{
-    [[PhotoSubmitterManager sharedInstance] refreshCredentials];
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(settingDone:)];
     [self.navigationItem setRightBarButtonItem:doneButton animated:YES];
     [self setTitle:[PSLang localized:@"Settings_Title"]];
     
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:SV_GENERAL_COMMENT inSection:SV_SECTION_GENERAL], nil] withRowAnimation:NO];
+    UITableViewCell *cell = [self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:SV_GENERAL_COMMENT inSection:SV_SECTION_GENERAL]];
+    UISwitch *s = (UISwitch *)cell.accessoryView;
+    if(s && [s isKindOfClass:[UISwitch class]]){
+        [s setOn:[PhotoSubmitterSettings getInstance].commentPostEnabled animated:YES];
+    }
+    [self updateSocialAppSwitches];
+    //[[PhotoSubmitterManager sharedInstance] refreshCredentials];
 }
 
-#pragma mark -
-#pragma mark UIView delegate
+#pragma mark - UIView delegate
 /*!
  * auto rotation
  */

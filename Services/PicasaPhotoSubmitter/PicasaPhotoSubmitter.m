@@ -16,6 +16,7 @@
 #import "RegexKitLite.h"
 #import "GTMOAuth2ViewControllerTouch.h"
 #import "GTMHTTPUploadFetcher.h"
+#import "PSLang.h"
 
 #define PS_PICASA_AUTH_URL @"photosubmitter://auth/picasa"
 #define PS_PICASA_KEYCHAIN_NAME @"PSPicasaKeychain"
@@ -47,7 +48,7 @@ ofTotalByteCount:(unsigned long long)dataLength;
  * initializer
  */
 -(void)setupInitialState{
-    [self setSubmitterIsConcurrent:NO 
+    [self setSubmitterIsConcurrent:YES
                       isSequencial:NO 
                      usesOperation:YES 
                    requiresNetwork:YES 
@@ -56,8 +57,8 @@ ofTotalByteCount:(unsigned long long)dataLength;
     GTMOAuth2Authentication *auth = 
     [GTMOAuth2ViewControllerTouch 
      authForGoogleFromKeychainForName:PS_PICASA_KEYCHAIN_NAME
-     clientID:GOOGLE_SUBMITTER_API_KEY
-     clientSecret:GOOGLE_SUBMITTER_API_SECRET];
+     clientID:PICASA_SUBMITTER_API_KEY
+     clientSecret:PICASA_SUBMITTER_API_SECRET];
     if([auth canAuthorize]){
         auth_ = auth;
     }
@@ -215,8 +216,8 @@ ofTotalByteCount:(unsigned long long)dataLength {
 /*!
  * initialize
  */
-- (id)init{
-    self = [super init];
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+    self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
     }
@@ -228,18 +229,31 @@ ofTotalByteCount:(unsigned long long)dataLength {
  * login to Picasa
  */
 -(void)onLogin{
+    if([PhotoSubmitterManager isSubmitterEnabledForType:@"gdrive"]){
+        UIAlertView *alert =
+        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"GData_Error_Title"] 
+                                   message:[PSLang localized:@"GData_Error_Message"]
+                                  delegate:self 
+                         cancelButtonTitle:
+         [PSLang localized:@"GData_Error_Button_Title"]
+                         otherButtonTitles:nil];
+        [alert show];
+        [self disable];
+        return;
+    }
+    
     SEL finishedSel = @selector(viewController:finishedWithAuth:error:);        
     NSString *scope = [GTMOAuth2Authentication scopeWithStrings:PS_PICASA_SCOPE, PS_PICASA_PROFILE_SCOPE, nil];
     
     GTMOAuth2ViewControllerTouch *viewController = 
     [GTMOAuth2ViewControllerTouch controllerWithScope:scope
-                                             clientID:GOOGLE_SUBMITTER_API_KEY
-                                         clientSecret:GOOGLE_SUBMITTER_API_SECRET
+                                             clientID:PICASA_SUBMITTER_API_KEY
+                                         clientSecret:PICASA_SUBMITTER_API_SECRET
                                      keychainItemName:PS_PICASA_KEYCHAIN_NAME
                                              delegate:self
                                      finishedSelector:finishedSel];
     
-    [[[PhotoSubmitterManager sharedInstance].authControllerDelegate requestNavigationControllerToPresentAuthenticationView] pushViewController:viewController animated:YES];
+    [self presentAuthenticationView:viewController];
 }
 
 /*!

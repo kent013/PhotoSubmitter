@@ -10,6 +10,7 @@
 #import "PhotoSubmitterProtocol.h"
 #import "PhotoSubmitterOperation.h"
 #import "PhotoSubmitterImageEntity.h"
+#import "PhotoSubmitterAccount.h"
 
 /*!
  * this class manages 
@@ -30,6 +31,11 @@
      * an array of id<PhotoSubmitterPhotoDelegate>
      */
     __strong NSMutableArray *photoDelegates_;
+    
+    /*!
+     * account
+     */
+    __strong PhotoSubmitterAccount *account_;
     
     BOOL isConcurrent_;
     BOOL isSequencial_;
@@ -82,6 +88,7 @@
 
 //util
 - (void) clearRequest: (NSObject *)request;
+- (void) recoverOldSettings;
 
 //submit photo
 - (void) submitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;

@@ -100,6 +100,11 @@
     [self storeAccessToken:nil refreshToken:nil];
 }
 
+- (void)dealloc {
+    self.config = nil;
+    [super dealloc];
+}
+
 #pragma mark - KeyChain
 
 - (BOOL)storeAccessToken:(NSString*)accessToken refreshToken:(NSString*)refreshToken {

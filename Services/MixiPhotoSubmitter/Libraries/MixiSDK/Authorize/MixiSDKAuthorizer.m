@@ -17,6 +17,7 @@
 #import "MixiRequest.h"
 #import "MixiUtils.h"
 #import "MixiWebViewController.h"
+#import "MixiSDKAuthorizerWebViewController.h"
 #import "MixiUserDefaults.h"
 #import "SBJson.h"
 
@@ -73,13 +74,20 @@
 - (MixiWebViewController*)authorizerViewController:(NSArray*)permissions {
     [self checkPermissions:permissions];
     NSURL *url = [self tokenURL:permissions];
-     MixiWebViewController *vc = [[[MixiWebViewController alloc] initWithURL:url delegate:self] autorelease];    
+	MixiSDKAuthorizerWebViewController *vc = [[[MixiSDKAuthorizerWebViewController alloc] initWithURL:url delegate:self] autorelease];
+	vc.endpoint = kMixiApiTokenEndpoint;
+	vc.authorizer = self;
     vc.controllerDelegate = self;
     return vc;
 }
 
 - (BOOL)authorizeForPermissions:(NSArray*)permissions {
-    MixiWebViewController *vc = [self authorizerViewController:permissions];
+	if (self.mixi.config.selectorType == kMixiApiTypeSelectorMixiApp) {
+		NSLog(@"MixiSDKAuthorizer is not allowed for a mixi appli.");
+		return NO;
+	}
+	
+	MixiWebViewController *vc = [self authorizerViewController:permissions];
     vc.controllerDelegate = self;
     vc.toolbarTitle = @"利用同意";
     if (self.toolbarColor) vc.toolbarColor = self.toolbarColor;
@@ -119,7 +127,10 @@
         }
         return nil;
     }
-    return [[[MixiWebViewController alloc] initWithHTML:html delegate:self] autorelease];
+    MixiSDKAuthorizerWebViewController *vc = [[[MixiSDKAuthorizerWebViewController alloc] initWithHTML:html delegate:self] autorelease];
+    vc.endpoint = kMixiApiRevokeEndpoint;
+    vc.authorizer = self;
+    return vc;
 }
 
 - (BOOL)revokeWithError:(NSError**)error {
@@ -204,6 +215,7 @@
     
     NSString *urlString = [[webView.request URL] absoluteString];
     if ([urlString rangeOfString:kMixiSuccessAuthCodeFile].location != NSNotFound) {
+    //if ([urlString rangeOfString:self.redirectUrl].location != NSNotFound) {
         [self requestToken:[[webView.request URL] query]];
     }    
 }
@@ -255,10 +267,10 @@
     [self.mixi setPropertiesFromDictionary:data];
     [self notifySuccessWithEndpoint:kMixiApiTokenEndpoint];
     [self dismissIfParentViewControllerExists];
-    
-//    if ([self notifySuccessWithEndpoint:kMixiApiTokenEndpoint]) {
-//        [self dismissIfParentViewControllerExists];
-//    }
+	[self.mixi store];    
+    //if (![self notifySuccessWithEndpoint:kMixiApiTokenEndpoint]) {
+	//	[self dismissIfParentViewControllerExists];
+    //}
 }
 
 - (void)mixi:(Mixi*)mixi didFailWithConnection:(NSURLConnection*)connection error:(NSError*)error {

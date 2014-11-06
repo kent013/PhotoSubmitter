@@ -69,7 +69,7 @@
  */
 +(NSDictionary *)extractMetadata:(NSData *)data{
     CGImageSourceRef image = CGImageSourceCreateWithData((__bridge CFDataRef)data, NULL);
-    NSMutableDictionary *metadata = [NSMutableDictionary dictionaryWithDictionary:(__bridge NSDictionary *)CGImageSourceCopyPropertiesAtIndex(image, 0, nil)];
+    NSMutableDictionary *metadata = [NSMutableDictionary dictionaryWithDictionary:(__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(image, 0, nil)];
     CFRelease(image);
     return metadata;
 }

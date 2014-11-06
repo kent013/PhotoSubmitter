@@ -13,7 +13,7 @@
 #import "PhotoSubmitterSwitch.h"
 
 @implementation PhotoSubmitterSwitch
-@synthesize submitterType;
+@synthesize account;
 @synthesize onEnabled;
 @synthesize index;
 

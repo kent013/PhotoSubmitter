@@ -14,7 +14,7 @@
 #import "TwitterPhotoSubmitterSettingTableViewController.h"
 #import "PSLang.h"
 
-#define PS_TWITTER_USERNAME @"PSTwitterUsername"
+#define PS_TWITTER_USERNAME @"PSTwitter%@Username"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -23,6 +23,7 @@
 - (void) setupInitialState;
 - (ACAccount *)selectedAccount;
 - (id) submitContent:(PhotoSubmitterContentEntity *)content andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
+- (NSString *) usernameKey;
 @end
 
 #pragma mark - private implementations
@@ -57,6 +58,13 @@
         return account;
     }
     return nil;
+}
+
+/*!
+ * get username key
+ */
+- (NSString *)usernameKey{
+    return [NSString stringWithFormat:PS_TWITTER_USERNAME, self.account.accountHash];
 }
 
 #pragma mark - NSURLConnection delegates
@@ -118,6 +126,11 @@
     NSURLConnection *connection = 
     [[NSURLConnection alloc] initWithRequest:request.signedURLRequest delegate:self startImmediately:NO];
     
+    if(connection == nil){
+        [self cancelContentSubmit:content];
+        return nil;
+    }
+    
     if(connection != nil){
         [connection start];
     }    
@@ -135,8 +148,8 @@
 /*!
  * initialize
  */
-- (id)init{
-    self = [super init];
+- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+    self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
     }
@@ -153,23 +166,33 @@
         [accountStore_ requestAccessToAccountsWithType:accountType withCompletionHandler:^(BOOL granted, NSError *error) {
             if(granted) {
                 ACAccount *account = self.selectedAccount;
-                
-                if (account != nil){
-                    [self enable];
-                }else{
-                    UIAlertView* alert = 
-                    [[UIAlertView alloc] initWithTitle:@"Information"
-                                               message:@"Twitter account is not avaliable. do you want to configure it?"
-                                              delegate:self
-                                     cancelButtonTitle:@"Cancel"
-                                     otherButtonTitles:@"Configure", nil];
-                    [alert show];
-                    [self.authDelegate photoSubmitter:self didLogout:self.type];
-                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (account != nil){
+                        [self enable];
+                    }else if([[[UIDevice currentDevice] systemVersion] floatValue] < 5.09){
+                        UIAlertView* alert = 
+                        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"Twitter_Ask_For_Configure_Title"]
+                                                   message:[PSLang localized:@"Twitter_Ask_For_Configure"]
+                                                  delegate:self
+                                         cancelButtonTitle:[PSLang localized:@"Twitter_Ask_For_Configure_Cancel"]
+                                         otherButtonTitles:[PSLang localized:@"Twitter_Ask_For_Configure_OK"], nil];
+                        [alert show];
+                        [self.authDelegate photoSubmitter:self didLogout:self.account];
+                    }else{
+                        UIAlertView* alert = 
+                        [[UIAlertView alloc] initWithTitle:[PSLang localized:@"Twitter_Account_Error_Title"]
+                                                   message:[PSLang localized:@"Twitter_Account_Error"]
+                                                  delegate:self
+                                         cancelButtonTitle:[PSLang localized:@"Twitter_Account_Error_OK"]
+                                         otherButtonTitles:nil, nil];
+                        [alert show];
+                        [self.authDelegate photoSubmitter:self didLogout:self.account];
+                    }
+                });
             }else{
-                [self.authDelegate photoSubmitter:self didLogout:self.type];
+                [self.authDelegate photoSubmitter:self didLogout:self.account];
             }
-            [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.type];
+            [self.authDelegate photoSubmitter:self didAuthorizationFinished:self.account];
         }];
     });
 }
@@ -201,14 +224,14 @@
  * set selected username
  */
 - (NSString *)selectedAccountUsername{
-    return [self settingForKey:PS_TWITTER_USERNAME];
+    return [self settingForKey:self.usernameKey];
 }
 
 /*!
  * set selected username
  */
 - (void)setSelectedAccountUsername:(NSString *)selectedAccountUsername{
-    return [self setSetting:selectedAccountUsername forKey:PS_TWITTER_USERNAME];
+    return [self setSetting:selectedAccountUsername forKey:self.usernameKey];
 }
 
 /*!
@@ -258,6 +281,13 @@
     return NO;
 }
 
+/*!
+ * is multiple account supported
+ */
+- (BOOL)isMultipleAccountSupported{
+    return YES;
+}
+
 #pragma mark - albums
 #pragma mark - username
 /*!
@@ -280,7 +310,10 @@
  * get setting view
  */
 - (PhotoSubmitterServiceSettingTableViewController *)settingView{
-    return [[TwitterPhotoSubmitterSettingTableViewController alloc] initWithType:self.type];
+    if(settingView_ == nil){
+        settingView_ = [[TwitterPhotoSubmitterSettingTableViewController alloc] initWithAccount:self.account];
+    }
+    return settingView_;
 }
 
 /*!

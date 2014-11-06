@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PhotoSubmitterAccount.h"
 
 @interface PhotoSubmitterSwitch : UISwitch
-@property (nonatomic, strong) NSString *submitterType;
+@property (nonatomic, strong) PhotoSubmitterAccount *account;
 @property (nonatomic, strong) NSDate *onEnabled;
 @property (nonatomic, assign) int index;
 @end

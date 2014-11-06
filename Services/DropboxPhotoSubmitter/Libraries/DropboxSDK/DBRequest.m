@@ -6,16 +6,13 @@
 //  Copyright 2010 Dropbox, Inc. All rights reserved.
 //
 
-#if __has_feature(objc_arc)
-#error This file must be compiled with Non-ARC. use -fno-objc_arc flag (or convert project to Non-ARC)
-#endif
-
 #import "DBRequest.h"
 #import "DBLog.h"
 #import "DBError.h"
 #import "JSON.h"
 
-static id networkRequestDelegate = nil;
+
+id<DBNetworkRequestDelegate> dbNetworkRequestDelegate = nil;
 
 
 @interface DBRequest ()
@@ -28,7 +25,7 @@ static id networkRequestDelegate = nil;
 @implementation DBRequest
 
 + (void)setNetworkRequestDelegate:(id<DBNetworkRequestDelegate>)delegate {
-    networkRequestDelegate = delegate;
+    dbNetworkRequestDelegate = delegate;
 }
 
 - (id)initWithURLRequest:(NSURLRequest*)aRequest andInformTarget:(id)aTarget selector:(SEL)aSelector {
@@ -38,7 +35,7 @@ static id networkRequestDelegate = nil;
         selector = aSelector;
         
         urlConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-        [networkRequestDelegate networkRequestStarted];
+        [dbNetworkRequestDelegate networkRequestStarted];
     }
     return self;
 }
@@ -114,7 +111,7 @@ static id networkRequestDelegate = nil;
         }
     }
     
-    [networkRequestDelegate networkRequestStopped];
+    [dbNetworkRequestDelegate networkRequestStopped];
 }
 
 - (id)parseResponseAsType:(Class)cls {
@@ -167,7 +164,7 @@ static id networkRequestDelegate = nil;
             SEL sel = failureSelector ? failureSelector : selector;
             [target performSelector:sel withObject:self];
             
-            [networkRequestDelegate networkRequestStopped];
+            [dbNetworkRequestDelegate networkRequestStopped];
             
             return;
         }
@@ -247,7 +244,7 @@ static id networkRequestDelegate = nil;
     SEL sel = (error && failureSelector) ? failureSelector : selector;
     [target performSelector:sel withObject:self];
     
-    [networkRequestDelegate networkRequestStopped];
+    [dbNetworkRequestDelegate networkRequestStopped];
 }
 
 - (void)connection:(NSURLConnection*)connection didFailWithError:(NSError*)anError {
@@ -272,7 +269,7 @@ static id networkRequestDelegate = nil;
     SEL sel = failureSelector ? failureSelector : selector;
     [target performSelector:sel withObject:self];
 
-    [networkRequestDelegate networkRequestStopped];
+    [dbNetworkRequestDelegate networkRequestStopped];
 }
 
 - (void)connection:(NSURLConnection*)connection didSendBodyData:(NSInteger)bytesWritten 

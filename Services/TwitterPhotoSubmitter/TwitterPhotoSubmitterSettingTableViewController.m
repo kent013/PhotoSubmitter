@@ -22,7 +22,6 @@
 //-----------------------------------------------------------------------------
 @interface TwitterPhotoSubmitterSettingTableViewController(PrivateImplementation)
 - (void) setupInitialState;
-- (void) didLogoutButtonTapped:(id)sender;
 - (TwitterPhotoSubmitter *)twitterSubmitter;
 @end
 
@@ -31,14 +30,6 @@
  * initialize
  */
 -(void)setupInitialState{
-}
-
-/*!
- * did logout button tapped
- */
-- (void)didLogoutButtonTapped:(id)sender{
-    [self.submitter logout];
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 /*!
@@ -61,37 +52,44 @@
  */
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self numberOfSectionsInTableView:tableView];
+        if(count >= 0){
+            return count;
+        }
+    }
     return TSV_SECTION_COUNT;
 }
 
 /*!
  * get row number
  */
-- (NSInteger)tableView:(UITableView *)table numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    if(self.tableViewDelegate){
+        NSInteger count = [self.tableViewDelegate settingViewController:self tableView:tableView numberOfRowsInSection:section];
+        if(count >= 0){
+            return count;
+        }
+    }
     switch (section) {
-        case SV_SECTION_ACCOUNT: return 2;
         case TSV_SECTION_ACCOUNTS: return self.twitterSubmitter.accounts.count;
     }
-    return 0;
+    return [super tableView:tableView numberOfRowsInSection:section];
 }
 
 /*!
  * title for section
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    NSString *title = [self.tableViewDelegate settingViewController:self tableView:tableView titleForHeaderInSection:section];
+    if(title != nil){
+        return title;
+    }
     switch (section) {
-        case SV_SECTION_ACCOUNT: return [self.submitter.name stringByAppendingString:[PSLang localized:@"Detail_Section_Account"]] ; break;
         case TSV_SECTION_ACCOUNTS: return [self.submitter.name stringByAppendingString:[PSLang localized:@"Detail_Section_Twitter_Accounts"]] ; break;
     }
-    return nil;
-}
-
-/*!
- * footer for section
- */
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
-    return nil;    
+    return [super tableView:tableView titleForHeaderInSection:section];
 }
 
 /*!
@@ -99,23 +97,14 @@
  */
 -(UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+    UITableViewCell *cell = [self.tableViewDelegate settingViewController:self tableView:tableView cellForRowAtIndexPath:indexPath];
+    
+    if(cell != nil){
+        return cell;
+    }
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     if(indexPath.section == SV_SECTION_ACCOUNT){
-        if(indexPath.row == SV_ROW_ACCOUNT_NAME){
-            cell.textLabel.text = [PSLang localized:@"Detail_Row_AccountName"];
-            UILabel *label = [[UILabel alloc] init];
-            label.text = self.submitter.username;
-            label.font = [UIFont systemFontOfSize:15.0];
-            [label sizeToFit];
-            label.backgroundColor = [UIColor clearColor];
-            cell.accessoryView = label;
-        }else if(indexPath.row == SV_ROW_ACCOUNT_LOGOUT){
-            cell.textLabel.text = [PSLang localized:@"Detail_Row_Logout"];
-            UIButton *button = [UIButton buttonWithType:SV_BUTTON_TYPE];
-            [button setTitle:[PSLang localized:@"Detail_Row_LogoutButtonTitle"] forState:UIControlStateNormal];
-            [button addTarget:self action:@selector(didLogoutButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-            cell.accessoryView = button;
-        }
+        cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     }else if(indexPath.section == TSV_SECTION_ACCOUNTS){
         ACAccount *account = 
           [self.twitterSubmitter.accounts objectAtIndex:indexPath.row];
@@ -129,26 +118,14 @@
     return cell;
 }
 
-
-/*!
- * will select row at path
- */
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath{
-    if(indexPath.section == TSV_SECTION_ACCOUNTS){
-        ACAccount *account = 
-        [self.twitterSubmitter.accounts objectAtIndex:indexPath.row];
-        if([account.username isEqualToString:self.twitterSubmitter.selectedAccountUsername]){
-            cell.accessoryType = UITableViewCellAccessoryCheckmark;
-        }else{
-            cell.accessoryType = UITableViewCellAccessoryNone;
-        }
-    }
-}
-
 /*!
  * on row selected
  */
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    BOOL processed = [self.tableViewDelegate settingViewController:self tableView:tableView didSelectRowAtIndexPath:indexPath];
+    if(processed){
+        return;
+    }
     if(indexPath.section == TSV_SECTION_ACCOUNTS){
         ACAccount *account = 
         [self.twitterSubmitter.accounts objectAtIndex:indexPath.row];
@@ -157,8 +134,10 @@
             [self.tableView reloadData];
             [self.twitterSubmitter login];
         }
+        [tableView deselectRowAtIndexPath:indexPath animated: YES];
+    }else{
+        [super tableView:tableView didSelectRowAtIndexPath:indexPath];
     }
-    [tableView deselectRowAtIndexPath:indexPath animated: YES];
 }
 
 #pragma mark -

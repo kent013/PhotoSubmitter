@@ -16,10 +16,11 @@
 @protocol PhotoSubmitterPhotoDelegate;
 @protocol PhotoSubmitterPhotoOperationDelegate;
 @protocol PhotoSubmitterDataDelegate;
-@protocol PhotoSubmitterAuthControllerDelegate;
+@protocol PhotoSubmitterNavigationControllerDelegate;
 @protocol PhotoSubmitterAlbumDelegate;
 
 @class PhotoSubmitterServiceSettingTableViewController;
+@class PhotoSubmitterAccount;
 
 /*!
  * protocol for submitter
@@ -39,8 +40,10 @@
 @property (nonatomic, readonly) BOOL isAlbumSupported;
 @property (nonatomic, readonly) BOOL isVideoSupported;
 @property (nonatomic, readonly) BOOL isPhotoSupported;
+@property (nonatomic, readonly) BOOL isMultipleAccountSupported;
 @property (nonatomic, readonly) BOOL isSessionValid;
 @property (nonatomic, readonly) BOOL requiresNetwork;
+@property (nonatomic, readonly) BOOL isSquare;
 @property (nonatomic, assign) id<PhotoSubmitterAuthenticationDelegate> authDelegate;
 @property (nonatomic, assign) id<PhotoSubmitterDataDelegate> dataDelegate;
 @property (nonatomic, assign) id<PhotoSubmitterAlbumDelegate> albumDelegate;
@@ -50,6 +53,9 @@
 @property (nonatomic, readonly) PhotoSubmitterServiceSettingTableViewController *settingView;
 @property (nonatomic, readonly) NSInteger maximumLengthOfComment;
 @property (nonatomic, readonly) NSInteger maximumLengthOfVideo;
+@property (nonatomic, readonly) PhotoSubmitterAccount *account;
+
+- (id) initWithAccount:(PhotoSubmitterAccount *)account;
 - (void) login;
 - (void) logout;
 - (void) enable;
@@ -67,6 +73,9 @@
 - (void) updateAlbumListWithDelegate: (id<PhotoSubmitterDataDelegate>) delegate;
 - (void) updateUsernameWithDelegate: (id<PhotoSubmitterDataDelegate>) delegate;
 - (void) createAlbum:(NSString *)title withDelegate:(id<PhotoSubmitterAlbumDelegate>)delegate;
+- (void) presentAuthenticationView:(UIViewController *)viewController;
+- (void) presentModalViewController: (UIViewController *)viewController;
+- (void) dismissModalViewController;
 @end
 
 /*!
@@ -86,10 +95,10 @@
  */
 @protocol PhotoSubmitterAuthenticationDelegate <NSObject>
 @required
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willBeginAuthorization:(NSString *)type;
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAuthorizationFinished:(NSString *)type;
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogin:(NSString *) type;
-- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogout:(NSString *) type;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willBeginAuthorization:(PhotoSubmitterAccount *)account;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAuthorizationFinished:(PhotoSubmitterAccount *)account;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogin:(PhotoSubmitterAccount *)account;
+- (void) photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didLogout:(PhotoSubmitterAccount *)account;
 @end
 
 /*!
@@ -131,8 +140,9 @@
 /*!
  * protocol for request authentication view
  */
-@protocol PhotoSubmitterAuthControllerDelegate <NSObject>
-- (UINavigationController *) requestNavigationControllerToPresentAuthenticationView;
+@protocol PhotoSubmitterNavigationControllerDelegate <NSObject>
+- (UINavigationController *) requestNavigationControllerForPresentAuthenticationView;
+- (UIViewController *)requestRootViewControllerForPresentModalView;
 @end
 
 /*!
