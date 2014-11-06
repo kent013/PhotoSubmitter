@@ -148,7 +148,7 @@ static const NSString *kMinusBaseURL = @"https://minus.com/api/v2/";
                                data:[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", dataContentType]];
             }else{
                 [self utfAppendBody:body
-                               data:[NSString stringWithString:@"Content-Type: content/unknown\r\n\r\n"]];
+                               data:@"Content-Type: content/unknown\r\n\r\n"];
             }
             [body appendData:(NSData*)dataParam];
             [self utfAppendBody:body data:endLine];

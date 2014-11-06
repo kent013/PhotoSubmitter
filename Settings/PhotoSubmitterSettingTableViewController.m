@@ -189,7 +189,7 @@
             }
             return NSOrderedDescending;
         }
-        return [a.account.type compare:b.account.type];
+        return (int)[a.account.type compare:b.account.type];
     }];
     
     for(int index = 0; index < switches_.count; index++){
