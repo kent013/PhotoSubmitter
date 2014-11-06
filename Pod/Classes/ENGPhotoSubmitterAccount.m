@@ -27,7 +27,7 @@
 /*!
  * initialize
  */
-- (id)initWithType:(NSString *)inType andIndex:(int)inIndex{
+- (id)initWithType:(NSString *)inType andIndex:(NSInteger)inIndex{
     self = [super init];
     if(self){
         type_ = inType;
@@ -51,7 +51,7 @@
  * encode
  */
 - (void)encodeWithCoder:(NSCoder*)coder {
-    [coder encodeInt32:index_ forKey:@"index"];
+    [coder encodeInteger:index_ forKey:@"index"];
     [coder encodeObject:type_ forKey:@"type"];
     [coder encodeObject:accountHash_ forKey:@"accountHash"];
 }

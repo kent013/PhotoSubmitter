@@ -17,9 +17,9 @@
 - (void) addAccount:(ENGPhotoSubmitterAccount *)account;
 - (void) removeAccount:(ENGPhotoSubmitterAccount *)account;
 - (BOOL) containsAccount:(ENGPhotoSubmitterAccount *)account;
-- (int) countAccountForType:(NSString *)type;
+- (NSInteger) countAccountForType:(NSString *)type;
 - (NSArray *) accountsForType:(NSString *)type;
-- (ENGPhotoSubmitterAccount *) accountForType:(NSString *)type andIndex:(int)index;
+- (ENGPhotoSubmitterAccount *) accountForType:(NSString *)type andIndex:(NSInteger)index;
 - (ENGPhotoSubmitterAccount *) accountForHash:(NSString *)hash;
 + (ENGPhotoSubmitterAccountManager *)sharedManager;
 @end

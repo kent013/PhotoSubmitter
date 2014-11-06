@@ -29,7 +29,7 @@
                                                    8,
                                                    0,
                                                    CGImageGetColorSpace(imgRef),
-                                                   CGImageGetAlphaInfo(imgRef));
+                                                   (CGBitmapInfo)CGImageGetAlphaInfo(imgRef));
     CGContextSetInterpolationQuality(bmContext, kCGInterpolationNone);
     CGContextTranslateCTM(bmContext,
                           +(rotatedRect.size.width/2),

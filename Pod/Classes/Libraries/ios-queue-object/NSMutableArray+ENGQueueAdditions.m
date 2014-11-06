@@ -17,7 +17,7 @@
     return queueObject;
 }
 
--(id) peek:(int)index {
+-(id) peek:(NSInteger)index {
 	if (self.count==0 || index<0) {
         return nil;
     }

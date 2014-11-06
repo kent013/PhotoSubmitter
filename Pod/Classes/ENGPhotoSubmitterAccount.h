@@ -8,14 +8,14 @@
 #import "ENGPhotoSubmitterProtocol.h"
 
 @interface ENGPhotoSubmitterAccount : NSObject<NSCoding>{
-    int index_;
+    NSInteger index_;
     __strong NSString *type_;
     __strong NSString *accountHash_;
 }
 
-@property (assign, nonatomic) int index;
+@property (assign, nonatomic) NSInteger index;
 @property (readonly, nonatomic) NSString *type;
 @property (readonly, nonatomic) NSString *accountHash;
 
-- (id) initWithType:(NSString *)type andIndex:(int)index;
+- (id) initWithType:(NSString *)type andIndex:(NSInteger)index;
 @end

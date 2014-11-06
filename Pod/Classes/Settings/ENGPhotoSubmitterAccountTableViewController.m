@@ -140,7 +140,7 @@
     textField.borderStyle = UITextBorderStyleNone;
     textField.clearButtonMode = UITextFieldViewModeWhileEditing;
     textField.returnKeyType = UIReturnKeyDone;
-    textField.textAlignment = UITextAlignmentLeft;
+    textField.textAlignment = NSTextAlignmentLeft;
     textField.delegate = self;
     textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     textField.autocorrectionType = UITextAutocorrectionTypeNo;

@@ -5,7 +5,7 @@
 @interface NSMutableArray (ENGQueueAdditions)
 -(id) dequeue;
 -(void) enqueue:(id)obj;
--(id) peek:(int)index;
+-(id) peek:(NSInteger)index;
 -(id) peekHead;
 -(id) peekTail;
 -(BOOL) empty;

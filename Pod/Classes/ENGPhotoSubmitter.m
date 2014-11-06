@@ -643,14 +643,14 @@
  * present modal view
  */
 - (void) presentModalViewController:(UIViewController *)viewController{
-    [[[ENGPhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView] presentModalViewController:viewController animated:YES];
+    [[[ENGPhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView] presentViewController:viewController animated:YES completion:nil];
 }
 
 /*!
  * dismiss modal view
  */
 - (void) dismissModalViewController{
-    [[[ENGPhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView] dismissModalViewControllerAnimated:YES];
+    [[[ENGPhotoSubmitterManager sharedInstance].navigationControllerDelegate requestRootViewControllerForPresentModalView] dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - util methods

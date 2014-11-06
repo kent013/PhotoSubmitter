@@ -122,7 +122,7 @@
         titleField_.autocapitalizationType = UITextAutocapitalizationTypeNone;
         titleField_.autocorrectionType = UITextAutocorrectionTypeNo;
         titleField_.returnKeyType = UIReturnKeyDone;
-        titleField_.textAlignment = UITextAlignmentLeft;
+        titleField_.textAlignment = NSTextAlignmentLeft;
         titleField_.delegate = self;
         [cell.contentView addSubview:titleField_];
     }

@@ -74,7 +74,7 @@ static NSString *kAccounts = @"PhotoSubmitterAccounts";
  * create account fort type
  */
 - (ENGPhotoSubmitterAccount *)createAccountForType:(NSString *)type{
-    int index = [self countAccountForType:type];
+    NSInteger index = [self countAccountForType:type];
     ENGPhotoSubmitterAccount *account = [[ENGPhotoSubmitterAccount alloc] initWithType:type andIndex:index];
     [self addAccount:account];
     return account;
@@ -107,7 +107,7 @@ static NSString *kAccounts = @"PhotoSubmitterAccounts";
 /*!
  * count matched account
  */
-- (int)countAccountForType:(NSString *)type{
+- (NSInteger)countAccountForType:(NSString *)type{
     return [self accountsForType:type].count;
 }
 
@@ -137,7 +137,7 @@ static NSString *kAccounts = @"PhotoSubmitterAccounts";
 /*!
  * get single account
  */
-- (ENGPhotoSubmitterAccount *)accountForType:(NSString *)type andIndex:(int)index{
+- (ENGPhotoSubmitterAccount *)accountForType:(NSString *)type andIndex:(NSInteger)index{
     for(NSString *key in accounts_){
         ENGPhotoSubmitterAccount *account = [accounts_ objectForKey:key];
         if([account.type isEqualToString:type] &&

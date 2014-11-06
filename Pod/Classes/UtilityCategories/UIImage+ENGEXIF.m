@@ -49,7 +49,7 @@
 	CGImageDestinationRef dest = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imageData, CGImageSourceGetType(img), 1, NULL);
     
     NSMutableDictionary *metadata = 
-        [NSDictionary dictionaryWithObjectsAndKeys:
+        [NSMutableDictionary dictionaryWithObjectsAndKeys:
                     locDict,  (NSString*)kCGImagePropertyGPSDictionary,
                     exifDict, (NSString*)kCGImagePropertyExifDictionary, nil];
 	CGImageDestinationAddImageFromSource(dest, img, 0, (__bridge CFDictionaryRef)metadata);
