@@ -28,3 +28,4 @@ DerivedData
 Thumbs.db
 
 Example/Pods
+Example/Podfile.lock
