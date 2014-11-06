@@ -43,7 +43,7 @@
 
 
 #pragma mark -
-#pragma mark PhotoSubmitterSettingTableViewProtocol methods
+#pragma mark ENGPhotoSubmitterSettingTableViewProtocol methods
 /*!
  * submitter
  */

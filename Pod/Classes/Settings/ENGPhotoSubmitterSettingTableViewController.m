@@ -97,8 +97,8 @@
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     switch (section) {
-        case SV_SECTION_GENERAL : return NSLocalizedStringFromTable(@"Settings_Section_General", @"PhotoSubmitter", nil); break;
-        case SV_SECTION_ACCOUNTS: return NSLocalizedStringFromTable(@"Settings_Section_Accounts", @"PhotoSubmitter", nil); break;
+        case SV_SECTION_GENERAL : return NSLocalizedStringFromTable(@"Settings_Section_General", @"ENGPhotoSubmitter", nil); break;
+        case SV_SECTION_ACCOUNTS: return NSLocalizedStringFromTable(@"Settings_Section_Accounts", @"ENGPhotoSubmitter", nil); break;
     }
     return nil;
 }
@@ -109,7 +109,7 @@
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
     switch (section) {
         case SV_SECTION_GENERAL : break;
-        case SV_SECTION_ACCOUNTS: return NSLocalizedStringFromTable(@"Settings_Section_Accounts_Footer", @"PhotoSubmitter", nil); break;
+        case SV_SECTION_ACCOUNTS: return NSLocalizedStringFromTable(@"Settings_Section_Accounts_Footer", @"ENGPhotoSubmitter", nil); break;
     }
     return nil;    
 }
@@ -324,27 +324,27 @@
     switch (tag) {
         case SV_GENERAL_COMMENT:
         {
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_Comment", @"PhotoSubmitter", nil);
+            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_Comment", @"ENGPhotoSubmitter", nil);
             UISwitch *s = [self createSwitchWithTag:tag on:settings.commentPostEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
-            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingComment.png"];
+            cell.imageView.image = [UIImage imageNamed:@"ENGPhotoSubmitterSettingComment.png"];
             break;
         }    
         case SV_GENERAL_GPS:{
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_GPSTagging", @"PhotoSubmitter", nil);
+            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_GPSTagging", @"ENGPhotoSubmitter", nil);
             UISwitch *s = [self createSwitchWithTag:tag on:settings.gpsEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
-            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingLocation.png"];
+            cell.imageView.image = [UIImage imageNamed:@"ENGPhotoSubmitterSettingLocation.png"];
             break;
         }
         case SV_GENERAL_IMAGE:{
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_Image", @"PhotoSubmitter", nil);
+            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_Image", @"ENGPhotoSubmitter", nil);
             UISwitch *s = [self createSwitchWithTag:tag on:settings.autoEnhance];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
-            cell.imageView.image = [UIImage imageNamed:@"PhotoSubmitterSettingAutoEnhance.png"];
+            cell.imageView.image = [UIImage imageNamed:@"ENGPhotoSubmitterSettingAutoEnhance.png"];
             break;
         }
     }
@@ -352,7 +352,7 @@
     return cell;
 }
 
-#pragma mark - PhotoSubmitterAuthDelegate delegate methods
+#pragma mark - ENGPhotoSubmitterAuthDelegate delegate methods
 /*!
  * photo submitter did login
  */
@@ -396,7 +396,7 @@
     }
 }
 
-#pragma mark - PhotoSubmitterServiceSettingDelegate
+#pragma mark - ENGPhotoSubmitterServiceSettingDelegate
 /*!
  * when add account cell tapped
  */
@@ -441,7 +441,7 @@
 - (void)viewDidAppear:(BOOL)animated{
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(settingDone:)];
     [self.navigationItem setRightBarButtonItem:doneButton animated:YES];
-    [self setTitle:NSLocalizedStringFromTable(@"Settings_Title", @"PhotoSubmitter", nil)];
+    [self setTitle:NSLocalizedStringFromTable(@"Settings_Title", @"ENGPhotoSubmitter", nil)];
     
     UITableViewCell *cell = [self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:SV_GENERAL_COMMENT inSection:SV_SECTION_GENERAL]];
     UISwitch *s = (UISwitch *)cell.accessoryView;

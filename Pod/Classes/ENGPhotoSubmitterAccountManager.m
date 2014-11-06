@@ -6,8 +6,8 @@
 
 #import "ENGPhotoSubmitterAccountManager.h"
 
-static ENGPhotoSubmitterAccountManager *PhotoSubmitterAccountManagerInstance;
-static NSString *kAccounts = @"PhotoSubmitterAccounts";
+static ENGPhotoSubmitterAccountManager *ENGPhotoSubmitterAccountManagerInstance;
+static NSString *kAccounts = @"ENGPhotoSubmitterAccounts";
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -168,10 +168,10 @@ static NSString *kAccounts = @"PhotoSubmitterAccounts";
  * singleton
  */
 + (ENGPhotoSubmitterAccountManager *)sharedManager{
-    if(PhotoSubmitterAccountManagerInstance == nil){
-        PhotoSubmitterAccountManagerInstance = 
+    if(ENGPhotoSubmitterAccountManagerInstance == nil){
+        ENGPhotoSubmitterAccountManagerInstance =
         [[ENGPhotoSubmitterAccountManager alloc] init];
     }
-    return PhotoSubmitterAccountManagerInstance;
+    return ENGPhotoSubmitterAccountManagerInstance;
 }
 @end

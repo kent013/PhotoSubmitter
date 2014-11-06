@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ENGPhotoSubmitterSettingTableViewController.h"
+#import "ENGPhotoSubmitterProtocol.h"
 
-@interface ENGViewController : UIViewController
-
+@interface ENGViewController : UIViewController<UIImagePickerControllerDelegate, UINavigationControllerDelegate, ENGPhotoSubmitterSettingTableViewControllerDelegate, ENGPhotoSubmitterPhotoDelegate, ENGPhotoSubmitterNavigationControllerDelegate>{
+    ENGPhotoSubmitterSettingTableViewController *settingViewController_;
+    UINavigationController *settingNavigationController_;
+    UIImagePickerController *imagePicker_;
+}
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "ENGAppDelegate.h"
+#import "ENGPhotoSubmitterManager.h"
 
 @implementation ENGAppDelegate
 
@@ -48,6 +49,6 @@
  */
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [[PhotoSubmitterManager sharedInstance] didOpenURL:url];
+    return [[ENGPhotoSubmitterManager sharedInstance] didOpenURL:url];
 }
 @end

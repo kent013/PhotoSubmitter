@@ -11,7 +11,7 @@
 /*!
  * singleton instance
  */
-static ENGPhotoSubmitterSettings* PhotoSubmitterSettingsSingletonInstance;
+static ENGPhotoSubmitterSettings* ENGPhotoSubmitterSettingsSingletonInstance;
 
 #define PS_KEY_COMMENT_POST_ENABLED @"commentPostEnabled"
 #define PS_KEY_GPS_ENABLED @"gpsEnabled"
@@ -150,9 +150,9 @@ static ENGPhotoSubmitterSettings* PhotoSubmitterSettingsSingletonInstance;
  * singleton method
  */
 + (ENGPhotoSubmitterSettings *)getInstance{
-    if(PhotoSubmitterSettingsSingletonInstance == nil){
-        PhotoSubmitterSettingsSingletonInstance = [[ENGPhotoSubmitterSettings alloc] init];
+    if(ENGPhotoSubmitterSettingsSingletonInstance == nil){
+        ENGPhotoSubmitterSettingsSingletonInstance = [[ENGPhotoSubmitterSettings alloc] init];
     }
-    return PhotoSubmitterSettingsSingletonInstance;
+    return ENGPhotoSubmitterSettingsSingletonInstance;
 }
 @end

@@ -18,11 +18,11 @@
 /*!
  * singleton instance
  */
-static ENGPhotoSubmitterManager* PhotoSubmitterSingletonInstance_ = nil;
+static ENGPhotoSubmitterManager* ENGPhotoSubmitterSingletonInstance_ = nil;
 /*!
  * custom schema suffix value
  */
-static NSString *PhotoSubmitterCustomSchemaSuffix_ = @"";
+static NSString *ENGPhotoSubmitterCustomSchemaSuffix_ = @"";
 
 /*!
  * photo submitter supported types
@@ -713,25 +713,25 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
  * singleton method
  */
 + (ENGPhotoSubmitterManager *)sharedInstance{
-    if(PhotoSubmitterSingletonInstance_ == nil){
-        PhotoSubmitterSingletonInstance_ = [[ENGPhotoSubmitterManager alloc] init];
-        [PhotoSubmitterSingletonInstance_ loadSubmitters];
+    if(ENGPhotoSubmitterSingletonInstance_ == nil){
+        ENGPhotoSubmitterSingletonInstance_ = [[ENGPhotoSubmitterManager alloc] init];
+        [ENGPhotoSubmitterSingletonInstance_ loadSubmitters];
     }
-    return PhotoSubmitterSingletonInstance_;
+    return ENGPhotoSubmitterSingletonInstance_;
 }
 
 /*!
  * get PhotoSubmitter's custom schema suffix
  */
 + (NSString *)photoSubmitterCustomSchemaSuffix{
-    return PhotoSubmitterCustomSchemaSuffix_;
+    return ENGPhotoSubmitterCustomSchemaSuffix_;
 }
 
 /*!
  * set PhotoSubmitter's custom schema suffix
  */
 + (void)setPhotoSubmitterCustomSchemaSuffix:(NSString *)suffix{
-    PhotoSubmitterCustomSchemaSuffix_ = suffix;
+    ENGPhotoSubmitterCustomSchemaSuffix_ = suffix;
 }
 
 /*!

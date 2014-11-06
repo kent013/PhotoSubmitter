@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "Facebook.h"
-#import "FBRequest+UploadProgress.h"
-#import "PhotoSubmitterProtocol.h"
-#import "PhotoSubmitter.h"
+#import "FBRequest+ENGUploadProgress.h"
+#import "ENGPhotoSubmitterProtocol.h"
+#import "ENGPhotoSubmitter.h"
 
 /*!
  * photo submitter for facebook.
@@ -19,7 +19,7 @@
  * or
  * [PhotoSubmitter facebookPhotoSubmitter]
  */
-@interface FacebookPhotoSubmitter : PhotoSubmitter<PhotoSubmitterInstanceProtocol, FBSessionDelegate, FBRequestWithUploadProgressDelegate>{
+@interface FacebookPhotoSubmitter : ENGPhotoSubmitter<ENGPhotoSubmitterInstanceProtocol, FBSessionDelegate, ENGFBRequestWithUploadProgressDelegate>{
     __strong Facebook *facebook_;
 }
 @end

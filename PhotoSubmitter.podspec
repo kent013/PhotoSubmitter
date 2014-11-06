@@ -41,4 +41,13 @@ Pod::Spec.new do |s|
   s.dependency "SBJson"
   s.dependency "RegexKitLite"
   s.dependency "Base64nl"
+
+  s.subspec 'Facebook' do |facebook|
+    facebook.source_files = 'Pod/Classes/Services/FacebookPhotoSubmitter/**/*.{h,m}'
+    facebook.exclude_files = "Pod/Classes/Services/FacebookPhotoSubmitter/*APIKey-template.h"
+    facebook.dependency 'Facebook-iOS-SDK'
+    facebook.resource_bundles = {
+      'PhotoSubmitter' => ['Pod/Classes/Services/FacebookPhotoSubmitter/Resources/Images/*.png']
+    }
+  end
 end

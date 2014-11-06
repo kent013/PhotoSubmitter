@@ -93,7 +93,7 @@
     }
     if(self.submitter.isAlbumSupported){
         switch (section) {
-            case FSV_SECTION_ALBUMS : return NSLocalizedStringFromTable(@"Detail_Section_Album", @"PhotoSubmitter", nil); break;
+            case FSV_SECTION_ALBUMS : return NSLocalizedStringFromTable(@"Detail_Section_Album", @"ENGPhotoSubmitter", nil); break;
         }
     }
     return [super tableView:tableView titleForHeaderInSection:section];
@@ -109,7 +109,7 @@
     }
     if(self.submitter.isAlbumSupported){
         switch (section){
-            case FSV_SECTION_ALBUMS: return [NSString stringWithFormat:NSLocalizedStringFromTable(@"Album_Detail_Section_Album_Footer", @"PhotoSubmitter", nil), self.submitter.displayName];
+            case FSV_SECTION_ALBUMS: return [NSString stringWithFormat:NSLocalizedStringFromTable(@"Album_Detail_Section_Album_Footer", @"ENGPhotoSubmitter", nil), self.submitter.displayName];
         }
     }
     return [super tableView:tableView titleForFooterInSection:section];;
@@ -129,7 +129,7 @@
     cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     if(indexPath.section == FSV_SECTION_ALBUMS && self.submitter.isAlbumSupported){
         if(self.submitter.albumList.count == indexPath.row){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Album_Detail_Section_Create_Album_Title", @"PhotoSubmitter", nil);
+            cell.textLabel.text = NSLocalizedStringFromTable(@"Album_Detail_Section_Create_Album_Title", @"ENGPhotoSubmitter", nil);
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }else{
             ENGPhotoSubmitterAlbumEntity *album = [self.submitter.albumList objectAtIndex:indexPath.row];
@@ -174,7 +174,7 @@
 }
 
 #pragma mark -
-#pragma mark PhotoSubmitterAlbumDelegate methods
+#pragma mark ENGPhotoSubmitterAlbumDelegate methods
 - (void)photoSubmitter:(id<ENGPhotoSubmitterProtocol>)photoSubmitter didAlbumUpdated:(NSMutableArray *)albums{
     if(photoSubmitter.targetAlbum == nil){
         for(ENGPhotoSubmitterAlbumEntity *album in albums){

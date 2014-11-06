@@ -32,7 +32,7 @@
     NSInteger errorOperationCount_;
     
     /*!
-     * an array of id<PhotoSubmitterPhotoDelegate>
+     * an array of id<ENGPhotoSubmitterPhotoDelegate>
      */
     __strong NSMutableArray *photoDelegates_;
     id<ENGPhotoSubmitterAuthenticationDelegate> authDelegate_;

@@ -1,20 +1,13 @@
 //
 //  FacebookPhotoSubmitter.m
-//  PhotoSubmitter for Facebook
 //
 //  Created by ISHITOYA Kentaro on 11/12/13.
-//  Copyright (c) 2011 cocotomo. All rights reserved.
 //
 
-#if ! __has_feature(objc_arc)
-#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
-#endif
-
-#import "FacebookAPIKey.h"
 #import "FacebookPhotoSubmitter.h"
 #import "RegexKitLite.h"
-#import "PhotoSubmitterAlbumEntity.h"
-#import "PhotoSubmitterManager.h"
+#import "ENGPhotoSubmitterAlbumEntity.h"
+#import "ENGPhotoSubmitterManager.h"
 
 #define PS_FACEBOOK_AUTH_TOKEN_KEY @"PSFacebook%@AccessTokenKey"
 #define PS_FACEBOOK_AUTH_EXPIRATION_DATE_KEY @"PSFacebook%@ExpirationDateKey"
@@ -114,16 +107,16 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
     }else if([request.url isMatchedByRegex:@"albums$"] && 
              [request.httpMethod isEqualToString:@"POST"]){
         NSDictionary *a = [result objectForKey:@"data"];
-        PhotoSubmitterAlbumEntity *album = 
-        [[PhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:@"" privacy:@""];
+        ENGPhotoSubmitterAlbumEntity *album =
+        [[ENGPhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:@"" privacy:@""];
         [self.albumDelegate photoSubmitter:self didAlbumCreated:album suceeded:YES withError:nil];
     }else if([request.url isMatchedByRegex:@"albums$"] && 
              [request.httpMethod isEqualToString:@"GET"]){
         NSArray *as = [result objectForKey:@"data"];
         NSMutableArray *albums = [[NSMutableArray alloc] init];
         for(NSDictionary *a in as){
-            PhotoSubmitterAlbumEntity *album = 
-            [[PhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:[a objectForKey:@"name"] privacy:[a objectForKey:@"privacy"]];
+            ENGPhotoSubmitterAlbumEntity *album =
+            [[ENGPhotoSubmitterAlbumEntity alloc] initWithId:[a objectForKey:@"id"] name:[a objectForKey:@"name"] privacy:[a objectForKey:@"privacy"]];
             [albums addObject:album];
             if(self.targetAlbum != nil && [self.targetAlbum.albumId isEqualToString:album.albumId]){
                 self.targetAlbum = album;
@@ -172,7 +165,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 /*!
  * initialize
  */
-- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+- (id)initWithAccount:(ENGPhotoSubmitterAccount *)account{
     self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
@@ -244,7 +237,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 /*!
  * submit photo with data, comment and delegate
  */
-- (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+- (id)onSubmitPhoto:(ENGPhotoSubmitterImageEntity *)photo andOperationDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate{
     CGSize size = CGSizeMake(PS_FACEBOOK_PHOTO_WIDTH, PS_FACEBOOK_PHOTO_HEIGHT);
     if(photo.image.size.width < photo.image.size.height){
         size = CGSizeMake(PS_FACEBOOK_PHOTO_HEIGHT, PS_FACEBOOK_PHOTO_WIDTH);
@@ -266,7 +259,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 /*!
  * submit video
  */
-- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{    
+- (id)onSubmitVideo:(ENGPhotoSubmitterVideoEntity *)video andOperationDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate{
     NSMutableDictionary *params = 
     [NSMutableDictionary dictionaryWithObjectsAndKeys: 
      video.data, @"source", 
@@ -280,7 +273,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 /*!
  * cancel content upload
  */
-- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
+- (id)onCancelContentSubmit:(ENGPhotoSubmitterContentEntity *)content{
     FBRequest *request = (FBRequest *)[self requestForPhoto:content.contentHash];
     [request.connection cancel];
     return request;
@@ -297,7 +290,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 /*!
  * create album
  */
-- (void)createAlbum:(NSString *)title withDelegate:(id<PhotoSubmitterAlbumDelegate>)delegate{
+- (void)createAlbum:(NSString *)title withDelegate:(id<ENGPhotoSubmitterAlbumDelegate>)delegate{
     self.albumDelegate = delegate;
     NSMutableDictionary *params = 
     [NSMutableDictionary dictionaryWithObjectsAndKeys: 
@@ -312,7 +305,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 /*!
  * update album list
  */
-- (void)updateAlbumListWithDelegate:(id<PhotoSubmitterDataDelegate>)delegate{
+- (void)updateAlbumListWithDelegate:(id<ENGPhotoSubmitterDataDelegate>)delegate{
     self.dataDelegate = delegate;
     [facebook_ requestWithGraphPath:@"me/albums" andDelegate:self];
 }
@@ -321,7 +314,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 /*!
  * update username
  */
-- (void)updateUsernameWithDelegate:(id<PhotoSubmitterDataDelegate>)delegate{
+- (void)updateUsernameWithDelegate:(id<ENGPhotoSubmitterDataDelegate>)delegate{
     self.dataDelegate = delegate;
     [self getUserInfomation];
 }

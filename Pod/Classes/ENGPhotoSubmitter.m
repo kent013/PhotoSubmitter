@@ -117,7 +117,7 @@
     isAlbumSupported_ = isAlbumSupported;
 }
 
-#pragma mark - PhotoSubmitterProtocol methods
+#pragma mark - ENGPhotoSubmitterProtocol methods
 #pragma mark - authorization
 /*!
  * login

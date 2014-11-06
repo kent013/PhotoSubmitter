@@ -35,7 +35,10 @@
         [self performSelector:@selector(requestForDeleteAccount:) withObject:self.account afterDelay:1.5];
     }else{
         MAConfirmButton *button = (MAConfirmButton *)sender;
+        #pragma clang diagnostic push
+        #pragma GCC diagnostic ignored "-Wundeclared-selector"
         [button performSelector:@selector(cencel)];
+        #pragma clang diagnostic pop
         [self.submitter logout];
     }
     [self.navigationController popViewControllerAnimated:YES];
@@ -108,7 +111,7 @@
         return title;
     }
     switch (section) {
-        case SV_SECTION_ACCOUNT: return [NSString stringWithFormat:@"%@ %@", self.submitter.displayName, NSLocalizedStringFromTable(@"Detail_Section_Account", @"PhotoSubmitter", nil)]; break;
+        case SV_SECTION_ACCOUNT: return [NSString stringWithFormat:@"%@ %@", self.submitter.displayName, NSLocalizedStringFromTable(@"Detail_Section_Account", @"ENGPhotoSubmitter", nil)]; break;
     }
     return nil;
 }
@@ -137,7 +140,7 @@
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     if(indexPath.section == SV_SECTION_ACCOUNT){
         if(indexPath.row == SV_ROW_ACCOUNT_NAME){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_AccountName", @"PhotoSubmitter", nil);
+            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_AccountName", @"ENGPhotoSubmitter", nil);
             UILabel *label = [[UILabel alloc] init];
             label.text = self.submitter.username;
             label.font = [UIFont systemFontOfSize:15.0];
@@ -145,13 +148,13 @@
             label.backgroundColor = [UIColor clearColor];
             cell.accessoryView = label;
         }else if(indexPath.row == SV_ROW_ACCOUNT_LOGOUT){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_Logout", @"PhotoSubmitter", nil);
-            MAConfirmButton *button = [MAConfirmButton buttonWithTitle:NSLocalizedStringFromTable(@"Detail_Row_LogoutButtonTitle", @"PhotoSubmitter", nil) confirm:NSLocalizedStringFromTable(@"Detail_Row_LogoutButtonConfirm", @"PhotoSubmitter", nil)];
+            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_Logout", @"ENGPhotoSubmitter", nil);
+            MAConfirmButton *button = [MAConfirmButton buttonWithTitle:NSLocalizedStringFromTable(@"Detail_Row_LogoutButtonTitle", @"ENGPhotoSubmitter", nil) confirm:NSLocalizedStringFromTable(@"Detail_Row_LogoutButtonConfirm", @"ENGPhotoSubmitter", nil)];
             [button setTintColor:[UIColor colorWithRed:0.694 green:0.184 blue:0.196 alpha:1]];
             [button addTarget:self action:@selector(didLogoutButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
             cell.accessoryView = button;
         }else if(indexPath.row == SV_ROW_ACCOUNT_ADD){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_AddAccount", @"PhotoSubmitter", nil);
+            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_AddAccount", @"ENGPhotoSubmitter", nil);
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
     }
@@ -194,7 +197,7 @@
 }
 
 #pragma mark -
-#pragma mark PhotoSubmitterAlbumDelegate methods
+#pragma mark ENGPhotoSubmitterAlbumDelegate methods
 /*!
  * album
  */

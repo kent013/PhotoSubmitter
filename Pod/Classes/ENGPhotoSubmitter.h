@@ -21,12 +21,12 @@
     __strong NSMutableDictionary *requests_;
 
     /*!
-     * an array of id<PhotoSubmitterOperationDelegate>
+     * an array of id<ENGPhotoSubmitterOperationDelegate>
      */
     __strong NSMutableDictionary *operationDelegates_;
     
     /*!
-     * an array of id<PhotoSubmitterPhotoDelegate>
+     * an array of id<ENGPhotoSubmitterPhotoDelegate>
      */
     __strong NSMutableArray *photoDelegates_;
     

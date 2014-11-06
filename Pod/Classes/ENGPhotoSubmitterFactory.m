@@ -39,7 +39,7 @@
             for (int i = 0; i < numClasses; i++) {
                 Class cls = classes[i];
                 NSString *className = [NSString stringWithUTF8String:class_getName(cls)];
-                if([className isMatchedByRegex:@"PhotoSubmitter$"]){
+                if([className isMatchedByRegex:@"ENGPhotoSubmitter$"]){
                     [loadedClasses setObject:className forKey:className];
                 }
             }

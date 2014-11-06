@@ -35,7 +35,7 @@
 -(void)setupInitialState{
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc ] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(handleCreateButtonTapped:)];
     
-    [self.navigationItem setTitle:NSLocalizedStringFromTable(@"Create_Album_Navigation_Title", @"PhotoSubmitter", nil)];
+    [self.navigationItem setTitle:NSLocalizedStringFromTable(@"Create_Album_Navigation_Title", @"ENGPhotoSubmitter", nil)];
     [self.navigationItem setRightBarButtonItem:doneButton animated:YES];
 }
 
@@ -53,12 +53,12 @@
     if(title == nil || [title isEqualToString: @""]){
         UIAlertView *alert =
         [[UIAlertView alloc] initWithTitle:
-         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Empty_Title", @"PhotoSubmitter", nil) 
+         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Empty_Title", @"ENGPhotoSubmitter", nil)
                                    message:
-         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Empty_Message", @"PhotoSubmitter", nil)
+         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Empty_Message", @"ENGPhotoSubmitter", nil)
                                   delegate:self 
                          cancelButtonTitle:
-         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Empty_Button_Title", @"PhotoSubmitter", nil)
+         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Empty_Button_Title", @"ENGPhotoSubmitter", nil)
                          otherButtonTitles:nil];
         [alert show];
         return;
@@ -94,7 +94,7 @@
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     switch (section) {
-        case CSV_SECTION_CREATE_ALBUM: return NSLocalizedStringFromTable(@"Create_Album_Section_Title", @"PhotoSubmitter", nil);
+        case CSV_SECTION_CREATE_ALBUM: return NSLocalizedStringFromTable(@"Create_Album_Section_Title", @"ENGPhotoSubmitter", nil);
     }
     return nil;
 }
@@ -116,7 +116,7 @@
         titleField_ = [[UITextField alloc] init];
         titleField_.frame = CGRectInset(cell.frame, 20, 12);
         titleField_.borderStyle = UITextBorderStyleNone;
-        titleField_.placeholder = NSLocalizedStringFromTable(@"Create_Album_Placeholder", @"PhotoSubmitter", nil);
+        titleField_.placeholder = NSLocalizedStringFromTable(@"Create_Album_Placeholder", @"ENGPhotoSubmitter", nil);
         titleField_.clearButtonMode = UITextFieldViewModeWhileEditing;
         titleField_.spellCheckingType = UITextSpellCheckingTypeNo;
         titleField_.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -139,7 +139,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated: YES];
 }
 
-#pragma mark - PhotoSubmitterAlbumDelegate
+#pragma mark - ENGPhotoSubmitterAlbumDelegate
 /*!
  * on album created
  */
@@ -149,11 +149,11 @@
     }else{
         UIAlertView *alert =
         [[UIAlertView alloc] initWithTitle:
-         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Failed_Title", @"PhotoSubmitter", nil) 
+         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Failed_Title", @"ENGPhotoSubmitter", nil)
                                    message: error.localizedDescription
                                   delegate:self 
                          cancelButtonTitle:
-         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Failed_Button_Title", @"PhotoSubmitter", nil)
+         NSLocalizedStringFromTable(@"Create_Album_Alert_Creation_Failed_Button_Title", @"ENGPhotoSubmitter", nil)
                          otherButtonTitles:nil];
         [alert show];
         return;

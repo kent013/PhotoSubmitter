@@ -27,7 +27,7 @@
 -(void)setupInitialState{
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc ] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(handleDoneButtonTapped:)];
     
-    [self.navigationItem setTitle:NSLocalizedStringFromTable(@"Account_Navigation_Title", @"PhotoSubmitter", nil)];
+    [self.navigationItem setTitle:NSLocalizedStringFromTable(@"Account_Navigation_Title", @"ENGPhotoSubmitter", nil)];
     [self.navigationItem setRightBarButtonItem:doneButton animated:YES];
 }
 
@@ -116,8 +116,8 @@
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     switch (section) {
-        case ASV_SECTION_USERNAME: return NSLocalizedStringFromTable(@"Account_Section_Username", @"PhotoSubmitter", nil);
-        case ASV_SECTION_PASSWORD: return NSLocalizedStringFromTable(@"Account_Section_Password", @"PhotoSubmitter", nil);
+        case ASV_SECTION_USERNAME: return NSLocalizedStringFromTable(@"Account_Section_Username", @"ENGPhotoSubmitter", nil);
+        case ASV_SECTION_PASSWORD: return NSLocalizedStringFromTable(@"Account_Section_Password", @"ENGPhotoSubmitter", nil);
     }
     return nil;
 }
@@ -148,11 +148,11 @@
     
     switch (indexPath.section) {
         case ASV_SECTION_USERNAME : 
-            textField.placeholder = NSLocalizedStringFromTable(@"Account_Section_Username_Placeholder", @"PhotoSubmitter", nil);
+            textField.placeholder = NSLocalizedStringFromTable(@"Account_Section_Username_Placeholder", @"ENGPhotoSubmitter", nil);
             usernameTextField_ = textField;
             break;
         case ASV_SECTION_PASSWORD : 
-            textField.placeholder = NSLocalizedStringFromTable(@"Account_Section_Password_Placeholder", @"PhotoSubmitter", nil);
+            textField.placeholder = NSLocalizedStringFromTable(@"Account_Section_Password_Placeholder", @"ENGPhotoSubmitter", nil);
             textField.secureTextEntry = YES;
             passwordTextField_ = textField;
             break;

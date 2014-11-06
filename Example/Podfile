@@ -3,6 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 target 'PhotoSubmitter', :exclusive => true do
   pod "FBNetworkReachability", :git => "https://github.com/dev5tec/FBNetworkReachability.git"
   pod "PhotoSubmitter", :path => "../"
+  pod "PhotoSubmitter/Facebook", :path => "../"
 end
 
 target 'Tests', :exclusive => true do

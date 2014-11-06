@@ -1,19 +1,17 @@
 //
 //  FBRequest+UploadProgress.h
-//  tottepost
 //
 //  Created by ISHITOYA Kentaro on 11/12/13.
-//  Copyright (c) 2011 cocotomo. All rights reserved.
 //
 
 #import "FBRequest.h"
 
-@protocol FBRequestWithUploadProgressDelegate;
+@protocol ENGFBRequestWithUploadProgressDelegate;
 
-@interface FBRequest(UploadProgress)
+@interface FBRequest(ENGUploadProgress)
 @end
 
-@protocol FBRequestWithUploadProgressDelegate <FBRequestDelegate>
+@protocol ENGFBRequestWithUploadProgressDelegate <FBRequestDelegate, NSObject>
 @optional
 /**
  * Called as the body (message data) of a request

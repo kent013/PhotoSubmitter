@@ -18,6 +18,12 @@
 #define COCOAPODS_VERSION_MINOR_Base64nl 2
 #define COCOAPODS_VERSION_PATCH_Base64nl 0
 
+// Bolts
+#define COCOAPODS_POD_AVAILABLE_Bolts
+#define COCOAPODS_VERSION_MAJOR_Bolts 1
+#define COCOAPODS_VERSION_MINOR_Bolts 1
+#define COCOAPODS_VERSION_PATCH_Bolts 3
+
 // Expecta
 #define COCOAPODS_POD_AVAILABLE_Expecta
 #define COCOAPODS_VERSION_MAJOR_Expecta 0
@@ -29,6 +35,12 @@
 #define COCOAPODS_VERSION_MAJOR_FBNetworkReachability 1
 #define COCOAPODS_VERSION_MINOR_FBNetworkReachability 0
 #define COCOAPODS_VERSION_PATCH_FBNetworkReachability 1
+
+// Facebook-iOS-SDK
+#define COCOAPODS_POD_AVAILABLE_Facebook_iOS_SDK
+#define COCOAPODS_VERSION_MAJOR_Facebook_iOS_SDK 3
+#define COCOAPODS_VERSION_MINOR_Facebook_iOS_SDK 20
+#define COCOAPODS_VERSION_PATCH_Facebook_iOS_SDK 0
 
 // ISO8601DateFormatterValueTransformer
 #define COCOAPODS_POD_AVAILABLE_ISO8601DateFormatterValueTransformer
@@ -65,6 +77,12 @@
 #define COCOAPODS_VERSION_MAJOR_PhotoSubmitter 0
 #define COCOAPODS_VERSION_MINOR_PhotoSubmitter 1
 #define COCOAPODS_VERSION_PATCH_PhotoSubmitter 0
+
+// PhotoSubmitter/Facebook
+#define COCOAPODS_POD_AVAILABLE_PhotoSubmitter_Facebook
+#define COCOAPODS_VERSION_MAJOR_PhotoSubmitter_Facebook 0
+#define COCOAPODS_VERSION_MINOR_PhotoSubmitter_Facebook 1
+#define COCOAPODS_VERSION_PATCH_PhotoSubmitter_Facebook 0
 
 // RKValueTransformers
 #define COCOAPODS_POD_AVAILABLE_RKValueTransformers

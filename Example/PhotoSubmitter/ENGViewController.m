@@ -7,8 +7,7 @@
 //
 
 #import "ENGViewController.h"
-#import "ENGPhotoSubmitter.h"
-#import "ENGPhotoSubmitterSettingTableViewController.h";
+#import "ENGPhotoSubmitterManager.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -25,13 +24,16 @@
  */
 - (void)setupInitialState{
     //You can enable specific services like this
-    //[PhotoSubmitterManager unregisterAllPhotoSubmitters];
-    //[PhotoSubmitterManager registerPhotoSubmitterWithTypeNames:[NSArray arrayWithObjects: @"facebook", @"twitter", @"dropbox", @"minus", @"file", nil]];
+    //[ENGPhotoSubmitterManager unregisterAllPhotoSubmitters];
+    //[ENGPhotoSubmitterManager registerPhotoSubmitterWithTypeNames:[NSArray arrayWithObjects: @"facebook", @"twitter", @"dropbox", @"minus", @"file", nil]];
     
     //these three delegates are important.
     [[ENGPhotoSubmitterManager sharedInstance] addPhotoDelegate:self];
-    [ENGPhotoSubmitterManager sharedInstance].authControllerDelegate = self;
+    [ENGPhotoSubmitterManager sharedInstance].navigationControllerDelegate = self;
     [ENGPhotoSubmitterManager sharedInstance].submitPhotoWithOperations = YES;
+    
+    [ENGPhotoSubmitterManager unregisterAllPhotoSubmitters];
+    [ENGPhotoSubmitterManager registerPhotoSubmitterWithTypeNames:[NSArray arrayWithObjects: @"facebook", nil]];
     
     //UI implementation
     UIButton *showSettingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -65,7 +67,7 @@
         ipc.sourceType =
         UIImagePickerControllerSourceTypeCamera;
         ipc.allowsEditing = YES;
-        [self presentModalViewController:ipc animated:YES];
+        [self presentViewController:ipc animated:YES completion:nil];
         imagePicker_ = ipc;
     }
 }
@@ -75,68 +77,64 @@
  */
 - (void) handleShowSettingButtonTapped:(UIButton *)sender{
     [UIApplication sharedApplication].statusBarHidden = NO;
-    [self presentModalViewController:settingNavigationController_ animated:YES];
+    [self presentViewController:settingNavigationController_ animated:YES completion:nil];
 }
 
 @end
 
 @implementation ENGViewController
 /*!
- * initialization
- */
-- (id)init{
-    self = [super init];
-    if(self){
-        [self setupInitialState];
-    }
-    return self;
-}
-
-/*!
  * when the photo taken, submit photo to logined services
  */
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo{
-    PhotoSubmitterImageEntity *photo = [[PhotoSubmitterImageEntity alloc] initWithImage:image];
-    [[PhotoSubmitterManager sharedInstance] submitPhoto:photo];
+    ENGPhotoSubmitterImageEntity *photo = [[ENGPhotoSubmitterImageEntity alloc] initWithImage:image];
+    [[ENGPhotoSubmitterManager sharedInstance] submitPhoto:photo];
     [self dismissModalViewControllerAnimated:YES];
 }
 
-#pragma mark - PhotoSubmitterAuthControllerDelegate
+#pragma mark - ENGPhotoSubmitterNavigationControllerDelegate
 /*!
- * return navigation controller to present authentication view
+ * request UINavigationController to present authentication view
  */
-- (UINavigationController *)requestNavigationControllerToPresentAuthenticationView{
+- (UINavigationController *) requestNavigationControllerForPresentAuthenticationView{
     return settingNavigationController_;
 }
 
-#pragma mark - PhotoSubmitterPhotoDelegate
+/*!
+ * request to present modalview
+ */
+- (UIViewController *)requestRootViewControllerForPresentModalView{
+    return self;
+}
+
+#pragma mark - ENGPhotoSubmitterPhotoDelegate
 /*!
  * photo did submitted
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didSubmitted:(NSString *)imageHash suceeded:(BOOL)suceeded message:(NSString *)message{
+- (void)photoSubmitter:(id<ENGPhotoSubmitterProtocol>)photoSubmitter didSubmitted:(NSString *)imageHash suceeded:(BOOL)suceeded message:(NSString *)message{
     NSLog(@"submitted: %@,%d,%@", imageHash,suceeded,message);
 }
 
 /*!
  * progress changed
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didProgressChanged:(NSString *)imageHash progress:(CGFloat)progress{
+- (void)photoSubmitter:(id<ENGPhotoSubmitterProtocol>)photoSubmitter didProgressChanged:(NSString *)imageHash progress:(CGFloat)progress{
     NSLog(@"progress: %@,%f",imageHash,progress);
 }
 
 /*!
  * photo did canceled
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didCanceled:(NSString *)imageHash{
+- (void)photoSubmitter:(id<ENGPhotoSubmitterProtocol>)photoSubmitter didCanceled:(NSString *)imageHash{
 }
 
 /*!
  * photo will statrt upload
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter willStartUpload:(NSString *)imageHash{
+- (void)photoSubmitter:(id<ENGPhotoSubmitterProtocol>)photoSubmitter willStartUpload:(NSString *)imageHash{
 }
 
-#pragma mark - PhotoSubmitterSettingViewControllerDelegate
+#pragma mark - ENGPhotoSubmitterSettingViewControllerDelegate
 /*!
  * setting view dismissed
  */
@@ -146,6 +144,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self setupInitialState];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
