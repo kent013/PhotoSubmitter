@@ -1,6 +1,19 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'PhotoSubmitter', :exclusive => true do
+  pod "FBNetworkReachability", :git => "https://github.com/dev5tec/FBNetworkReachability.git"
+  pod "KissXML"
+  pod "RestKit"
+  pod "SVProgressHUD"
+  pod "MAConfirmButton"
+  pod "UIImage-Categories"
+  pod "NYXImagesKit"
+  pod "ZipArchive"
+  pod "PDKeychainBindingsController"
+  pod "Reachability"
+  pod "SBJson"
+  pod "RegexKitLite"
+  pod "Base64nl"
   pod "PhotoSubmitter", :path => "../"
 end
 

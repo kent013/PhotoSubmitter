@@ -26,3 +26,5 @@ DerivedData
 *APIKey.h
 *.swp
 Thumbs.db
+
+Example/Pods
