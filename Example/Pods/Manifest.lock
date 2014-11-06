@@ -1,0 +1,20 @@
+PODS:
+  - Expecta (0.3.1)
+  - PhotoSubmitter (0.1.0)
+  - Specta (0.2.1)
+
+DEPENDENCIES:
+  - Expecta
+  - PhotoSubmitter (from `../`)
+  - Specta (~> 0.2.1)
+
+EXTERNAL SOURCES:
+  PhotoSubmitter:
+    :path: ../
+
+SPEC CHECKSUMS:
+  Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
+  PhotoSubmitter: 36d0a31b3d6bc348710561d85a66b0198c660b5e
+  Specta: 9141310f46b1f68b676650ff2854e1ed0b74163a
+
+COCOAPODS: 0.34.2

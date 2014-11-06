@@ -47,6 +47,14 @@ Sample Projects
 - [PhotoSubmitterExample](https://github.com/kent013/PhotoSubmitterExample), minimum implementation using PhotoSubmitter.
 
 
+Installation
+------------------------------------------
+PhotoSubmitter is available through [CocoaPods](http://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+    pod "PhotoSubmitter"
+
+
 PhotoSubmitter Client Code
 ------------------------------------------
 PhotoSubmitter supports authentication with code like,
