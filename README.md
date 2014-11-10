@@ -13,12 +13,17 @@ So, I developed PhotoSubmitter library as an abstraction layer for this situatio
 
 Upper left screenshot is tottepost, and the right one is service setting view of PhotoSubmitter.
 
+Caution
+-------------------------------------------
+Currently we supports Dropbox/Facebook/Twitter and File.
+
+
 Functionality
 -------------------------------------------
 ```
 * Submitting photo
  - Submit photo to services
-   Twitter/Facebook/Dropbox/Evernote/Picasa/Fotolife/Minus/Flickr/Mixi.
+   Twitter/Facebook/Dropbox/(~~Evernote/Picasa/Fotolife/Minus/Flickr/Mixi~~).
  - Submit video to services
    Facebook/Dropbox/Minus/Flickr
  - Asynchronous upload
@@ -71,7 +76,7 @@ There are a lot of supported services, Facebook, Twitter, Dropbox and so on. You
 
 ```
 [[PhotoSubmitterManager submitterForType:@"dropbox"] login];
-[[PhotoSubmitterManager submitterForType:@"evernote"] login];
+[[PhotoSubmitterManager submitterForType:@"twitter"] login];
 ```
 
 You can use type name like "dropbox" or "Dropbox" or "DropboxPhotoSubmitter". Once PhotoSubmitter is enabled and authenticated, you can submit photo to the service like this,
