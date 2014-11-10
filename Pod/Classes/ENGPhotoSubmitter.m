@@ -14,6 +14,7 @@
 #import "ENGPhotoSubmitterAccountManager.h"
 #import "ENGAlbumPhotoSubmitterSettingTableViewController.h"
 #import "ENGSimplePhotoSubmitterSettingTableViewController.h"
+#import "ENGImageLoader.h"
 #import "UIImage+ENGDigest.h"
 #import "UIImage+ENGEXIF.h"
 
@@ -62,7 +63,7 @@
  * get icon name
  */
 - (NSString *)getIconImageNameWithSize:(int)size{
-    return [NSString stringWithFormat:@"%@_%d.png", 
+    return [NSString stringWithFormat:@"%@_%d",
             [self.name lowercaseString], size];
 }
 
@@ -425,7 +426,7 @@
  * name
  */
 - (NSString *)name{
-    NSString *name = [self.type stringByMatching:@"^(.+)PhotoSubmitter" capture:1L];
+    NSString *name = [self.type stringByMatching:@"^ENG(.+)PhotoSubmitter" capture:1L];
     assert(name != nil);
     return name;
 }
@@ -448,14 +449,14 @@
  * icon image
  */
 - (UIImage *)icon{
-    return [UIImage imageNamed:[self getIconImageNameWithSize:32]];
+    return [ENGImageLoader loadImageNamed: [self getIconImageNameWithSize:32] fromBundle:self.name];
 }
 
 /*!
  * small icon image
  */
 - (UIImage *)smallIcon{
-    return [UIImage imageNamed:[self getIconImageNameWithSize:16]];
+    return [ENGImageLoader loadImageNamed: [self getIconImageNameWithSize:16] fromBundle:self.name];
 }
 
 /*!

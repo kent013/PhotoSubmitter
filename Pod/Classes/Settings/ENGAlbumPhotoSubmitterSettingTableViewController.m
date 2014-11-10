@@ -8,6 +8,7 @@
 #import "ENGAlbumPhotoSubmitterSettingTableViewController.h"
 #import "ENGPhotoSubmitterManager.h"
 #import "ENGPhotoSubmitterAlbumEntity.h"
+#import "ENGPhotoSubmitterLocalization.h"
 
 #define FSV_SECTION_ACCOUNT 0
 #define FSV_SECTION_ALBUMS 1
@@ -93,7 +94,7 @@
     }
     if(self.submitter.isAlbumSupported){
         switch (section) {
-            case FSV_SECTION_ALBUMS : return NSLocalizedStringFromTable(@"Detail_Section_Album", @"ENGPhotoSubmitter", nil); break;
+            case FSV_SECTION_ALBUMS : return NSLocalizedStringFromTable(@"Detail_Section_Album", @"PhotoSubmitter", nil); break;
         }
     }
     return [super tableView:tableView titleForHeaderInSection:section];
@@ -109,7 +110,7 @@
     }
     if(self.submitter.isAlbumSupported){
         switch (section){
-            case FSV_SECTION_ALBUMS: return [NSString stringWithFormat:NSLocalizedStringFromTable(@"Album_Detail_Section_Album_Footer", @"ENGPhotoSubmitter", nil), self.submitter.displayName];
+            case FSV_SECTION_ALBUMS: return [NSString stringWithFormat:ENGPhotoSubmitterLocalization(@"Album_Detail_Section_Album_Footer"), self.submitter.displayName];
         }
     }
     return [super tableView:tableView titleForFooterInSection:section];;
@@ -129,7 +130,7 @@
     cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
     if(indexPath.section == FSV_SECTION_ALBUMS && self.submitter.isAlbumSupported){
         if(self.submitter.albumList.count == indexPath.row){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Album_Detail_Section_Create_Album_Title", @"ENGPhotoSubmitter", nil);
+            cell.textLabel.text = ENGPhotoSubmitterLocalization(@"Album_Detail_Section_Create_Album_Title");
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }else{
             ENGPhotoSubmitterAlbumEntity *album = [self.submitter.albumList objectAtIndex:indexPath.row];

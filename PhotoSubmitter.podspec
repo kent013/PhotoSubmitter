@@ -25,8 +25,10 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '6.0'
   s.requires_arc = true
   s.source_files = 'Pod/Classes/*.{h,m}', 'Pod/Classes/{Libraries,Entities,UtilityCategories,Settings}/**/*.{h,m}'
-  s.resource_bundles = {
-    'PhotoSubmitter' => ['Pod/Assets/*.png']
+  s.resource_bundle = {
+    'ENGPhotoSubmitter' => 
+      ['Pod/Assets/Images/*.png',
+       'Pod/Assets/Localizations/*.lproj']
   }
   s.dependency "FBNetworkReachability"
   s.dependency "KissXML"
@@ -46,8 +48,8 @@ Pod::Spec.new do |s|
     facebook.source_files = 'Pod/Classes/Services/FacebookPhotoSubmitter/**/*.{h,m}'
     facebook.exclude_files = "Pod/Classes/Services/FacebookPhotoSubmitter/*APIKey-template.h"
     facebook.dependency 'Facebook-iOS-SDK'
-    facebook.resource_bundles = {
-      'PhotoSubmitter' => ['Pod/Classes/Services/FacebookPhotoSubmitter/Resources/Images/*.png']
+    facebook.resource_bundle = {
+      'ENGPhotoSubmitter-Facebook' => 'Pod/Classes/Services/FacebookPhotoSubmitter/Resources/Images/*.png'
     }
   end
 end

@@ -27,13 +27,13 @@
     //[ENGPhotoSubmitterManager unregisterAllPhotoSubmitters];
     //[ENGPhotoSubmitterManager registerPhotoSubmitterWithTypeNames:[NSArray arrayWithObjects: @"facebook", @"twitter", @"dropbox", @"minus", @"file", nil]];
     
+    [ENGPhotoSubmitterManager unregisterAllPhotoSubmitters];
+    [ENGPhotoSubmitterManager registerPhotoSubmitterWithTypeNames:[NSArray arrayWithObjects: @"facebook", nil]];
+    
     //these three delegates are important.
     [[ENGPhotoSubmitterManager sharedInstance] addPhotoDelegate:self];
     [ENGPhotoSubmitterManager sharedInstance].navigationControllerDelegate = self;
     [ENGPhotoSubmitterManager sharedInstance].submitPhotoWithOperations = YES;
-    
-    [ENGPhotoSubmitterManager unregisterAllPhotoSubmitters];
-    [ENGPhotoSubmitterManager registerPhotoSubmitterWithTypeNames:[NSArray arrayWithObjects: @"facebook", nil]];
     
     //UI implementation
     UIButton *showSettingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];

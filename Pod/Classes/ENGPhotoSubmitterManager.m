@@ -292,7 +292,7 @@ static NSMutableArray* registeredPhotoSubmitterTypes = nil;
         for (int i = 0; i < numClasses; i++) {
             Class cls = classes[i];
             NSString *className = [NSString stringWithUTF8String:class_getName(cls)];
-            if([className isMatchedByRegex:@"^(.+?)PhotoSubmitter$"]){
+            if([className isMatchedByRegex:@"^(?!Pods)(ENG.+?)PhotoSubmitter$"]){
                 [registeredPhotoSubmitterTypes addObject:className];
             }
         }

@@ -10,6 +10,8 @@
 #import "ENGPhotoSubmitterSettings.h"
 #import "ENGPhotoSubmitterSwitch.h"
 #import "ENGPhotoSubmitterAccountManager.h"
+#import "ENGPhotoSubmitterLocalization.h"
+#import "ENGImageLoader.h"
 #import "RegexKitLite.h"
 
 //-----------------------------------------------------------------------------
@@ -97,8 +99,8 @@
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     switch (section) {
-        case SV_SECTION_GENERAL : return NSLocalizedStringFromTable(@"Settings_Section_General", @"ENGPhotoSubmitter", nil); break;
-        case SV_SECTION_ACCOUNTS: return NSLocalizedStringFromTable(@"Settings_Section_Accounts", @"ENGPhotoSubmitter", nil); break;
+        case SV_SECTION_GENERAL : return ENGPhotoSubmitterLocalization(@"Settings_Section_General"); break;
+        case SV_SECTION_ACCOUNTS: return ENGPhotoSubmitterLocalization(@"Settings_Section_Accounts"); break;
     }
     return nil;
 }
@@ -109,7 +111,7 @@
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
     switch (section) {
         case SV_SECTION_GENERAL : break;
-        case SV_SECTION_ACCOUNTS: return NSLocalizedStringFromTable(@"Settings_Section_Accounts_Footer", @"ENGPhotoSubmitter", nil); break;
+        case SV_SECTION_ACCOUNTS: return ENGPhotoSubmitterLocalization(@"Settings_Section_Accounts_Footer"); break;
     }
     return nil;    
 }
@@ -324,27 +326,27 @@
     switch (tag) {
         case SV_GENERAL_COMMENT:
         {
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_Comment", @"ENGPhotoSubmitter", nil);
+            cell.textLabel.text = ENGPhotoSubmitterLocalization(@"Settings_Row_Comment");
             UISwitch *s = [self createSwitchWithTag:tag on:settings.commentPostEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
-            cell.imageView.image = [UIImage imageNamed:@"ENGPhotoSubmitterSettingComment.png"];
+            cell.imageView.image = [ENGImageLoader loadImageNamed:@"PhotoSubmitterSettingComment"];
             break;
         }    
         case SV_GENERAL_GPS:{
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_GPSTagging", @"ENGPhotoSubmitter", nil);
+            cell.textLabel.text = ENGPhotoSubmitterLocalization(@"Settings_Row_GPSTagging");
             UISwitch *s = [self createSwitchWithTag:tag on:settings.gpsEnabled];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
-            cell.imageView.image = [UIImage imageNamed:@"ENGPhotoSubmitterSettingLocation.png"];
+            cell.imageView.image = [ENGImageLoader loadImageNamed:@"PhotoSubmitterSettingLocation"];
             break;
         }
         case SV_GENERAL_IMAGE:{
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Settings_Row_Image", @"ENGPhotoSubmitter", nil);
+            cell.textLabel.text = ENGPhotoSubmitterLocalization(@"Settings_Row_Image");
             UISwitch *s = [self createSwitchWithTag:tag on:settings.autoEnhance];
             [s addTarget:self action:@selector(didGeneralSwitchChanged:) forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = s;
-            cell.imageView.image = [UIImage imageNamed:@"ENGPhotoSubmitterSettingAutoEnhance.png"];
+            cell.imageView.image = [ENGImageLoader loadImageNamed:@"PhotoSubmitterSettingAutoEnhance"];
             break;
         }
     }
@@ -441,7 +443,7 @@
 - (void)viewDidAppear:(BOOL)animated{
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(settingDone:)];
     [self.navigationItem setRightBarButtonItem:doneButton animated:YES];
-    [self setTitle:NSLocalizedStringFromTable(@"Settings_Title", @"ENGPhotoSubmitter", nil)];
+    [self setTitle:ENGPhotoSubmitterLocalization(@"Settings_Title")];
     
     UITableViewCell *cell = [self tableView:self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:SV_GENERAL_COMMENT inSection:SV_SECTION_GENERAL]];
     UISwitch *s = (UISwitch *)cell.accessoryView;

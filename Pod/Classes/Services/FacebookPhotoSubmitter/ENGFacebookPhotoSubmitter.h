@@ -1,9 +1,8 @@
 //
-//  FacebookPhotoSubmitter.h
-//  PhotoSubmitter for Facebook
+//  ENGFacebookPhotoSubmitter.h
+//  ENGPhotoSubmitter for Facebook
 //
 //  Created by ISHITOYA Kentaro on 11/12/13.
-//  Copyright (c) 2011 cocotomo. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -19,7 +18,9 @@
  * or
  * [PhotoSubmitter facebookPhotoSubmitter]
  */
-@interface FacebookPhotoSubmitter : ENGPhotoSubmitter<ENGPhotoSubmitterInstanceProtocol, FBSessionDelegate, ENGFBRequestWithUploadProgressDelegate>{
+@interface ENGFacebookPhotoSubmitter : ENGPhotoSubmitter<ENGPhotoSubmitterInstanceProtocol, FBSessionDelegate, ENGFBRequestWithUploadProgressDelegate>{
     __strong Facebook *facebook_;
 }
+
++ (void)setFacebookAPIKey:(NSString *)APIKey;
 @end

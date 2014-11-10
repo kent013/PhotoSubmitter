@@ -8,6 +8,7 @@
 #import "ENGSimplePhotoSubmitterSettingTableViewController.h"
 #import "ENGPhotoSubmitterServiceSettingTableViewController.h"
 #import "ENGPhotoSubmitterAccountManager.h"
+#import "ENGPhotoSubmitterLocalization.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
@@ -111,7 +112,7 @@
         return title;
     }
     switch (section) {
-        case SV_SECTION_ACCOUNT: return [NSString stringWithFormat:@"%@ %@", self.submitter.displayName, NSLocalizedStringFromTable(@"Detail_Section_Account", @"ENGPhotoSubmitter", nil)]; break;
+        case SV_SECTION_ACCOUNT: return [NSString stringWithFormat:@"%@ %@", self.submitter.displayName, ENGPhotoSubmitterLocalization(@"Detail_Section_Account")]; break;
     }
     return nil;
 }
@@ -140,7 +141,7 @@
     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
     if(indexPath.section == SV_SECTION_ACCOUNT){
         if(indexPath.row == SV_ROW_ACCOUNT_NAME){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_AccountName", @"ENGPhotoSubmitter", nil);
+            cell.textLabel.text = ENGPhotoSubmitterLocalization(@"Detail_Row_AccountName");
             UILabel *label = [[UILabel alloc] init];
             label.text = self.submitter.username;
             label.font = [UIFont systemFontOfSize:15.0];
@@ -148,13 +149,13 @@
             label.backgroundColor = [UIColor clearColor];
             cell.accessoryView = label;
         }else if(indexPath.row == SV_ROW_ACCOUNT_LOGOUT){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_Logout", @"ENGPhotoSubmitter", nil);
-            MAConfirmButton *button = [MAConfirmButton buttonWithTitle:NSLocalizedStringFromTable(@"Detail_Row_LogoutButtonTitle", @"ENGPhotoSubmitter", nil) confirm:NSLocalizedStringFromTable(@"Detail_Row_LogoutButtonConfirm", @"ENGPhotoSubmitter", nil)];
+            cell.textLabel.text = ENGPhotoSubmitterLocalization(@"Detail_Row_Logout");
+            MAConfirmButton *button = [MAConfirmButton buttonWithTitle:ENGPhotoSubmitterLocalization(@"Detail_Row_LogoutButtonTitle") confirm:ENGPhotoSubmitterLocalization(@"Detail_Row_LogoutButtonConfirm")];
             [button setTintColor:[UIColor colorWithRed:0.694 green:0.184 blue:0.196 alpha:1]];
             [button addTarget:self action:@selector(didLogoutButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
             cell.accessoryView = button;
         }else if(indexPath.row == SV_ROW_ACCOUNT_ADD){
-            cell.textLabel.text = NSLocalizedStringFromTable(@"Detail_Row_AddAccount", @"ENGPhotoSubmitter", nil);
+            cell.textLabel.text = ENGPhotoSubmitterLocalization(@"Detail_Row_AddAccount");
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
     }

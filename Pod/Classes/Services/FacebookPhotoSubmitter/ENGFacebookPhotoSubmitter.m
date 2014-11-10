@@ -1,10 +1,10 @@
 //
-//  FacebookPhotoSubmitter.m
+//  ENGFacebookPhotoSubmitter.m
 //
 //  Created by ISHITOYA Kentaro on 11/12/13.
 //
 
-#import "FacebookPhotoSubmitter.h"
+#import "ENGFacebookPhotoSubmitter.h"
 #import "RegexKitLite.h"
 #import "ENGPhotoSubmitterAlbumEntity.h"
 #import "ENGPhotoSubmitterManager.h"
@@ -15,12 +15,13 @@
 #define PS_FACEBOOK_PHOTO_WIDTH 960
 #define PS_FACEBOOK_PHOTO_HEIGHT 720
 
-static NSString *PhotoSubmitterFacebookAuthRequestAccount;
+static NSString *ENVPhotoSubmitterFacebookAuthRequestAccount;
+static NSString *ENVPhotoSubmitterFacebookAPIID;
 
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
-@interface FacebookPhotoSubmitter(PrivateImplementation)
+@interface ENGFacebookPhotoSubmitter(PrivateImplementation)
 - (void) setupInitialState;
 - (void) getUserInfomation;
 - (NSString *) accessTokenKey;
@@ -28,7 +29,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 @end
 
 #pragma mark - private implementations
-@implementation FacebookPhotoSubmitter(PrivateImplementation)
+@implementation ENGFacebookPhotoSubmitter(PrivateImplementation)
 /*!
  * initializer
  */
@@ -38,7 +39,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
                      usesOperation:YES 
                    requiresNetwork:YES 
                   isAlbumSupported:YES];
-    facebook_ = [[Facebook alloc] initWithAppId:PHOTO_SUBMITTER_FACEBOOK_API_ID urlSchemeSuffix:[PhotoSubmitterManager photoSubmitterCustomSchemaSuffix] andDelegate:self];
+    facebook_ = [[Facebook alloc] initWithAppId:ENVPhotoSubmitterFacebookAPIID urlSchemeSuffix:[ENGPhotoSubmitterManager photoSubmitterCustomSchemaSuffix] andDelegate:self];
     if ([self settingExistsForKey:self.accessTokenKey] 
         && [self settingExistsForKey:self.expirationKey]) {
         facebook_.accessToken = [self settingForKey:self.accessTokenKey];
@@ -161,7 +162,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
 //Public Implementations
 //-----------------------------------------------------------------------------
 #pragma mark - public PhotoSubmitter Protocol implementations
-@implementation FacebookPhotoSubmitter
+@implementation ENGFacebookPhotoSubmitter
 /*!
  * initialize
  */
@@ -181,7 +182,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
     NSArray *permissions = 
     [NSArray arrayWithObjects:@"publish_stream", @"user_location", @"user_photos", @"offline_access", @"user_videos", nil];
     [facebook_ authorize:permissions];
-    PhotoSubmitterFacebookAuthRequestAccount = self.account.accountHash;
+    ENVPhotoSubmitterFacebookAuthRequestAccount = self.account.accountHash;
 }
 
 /*!
@@ -203,7 +204,7 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
  */
 - (BOOL)isProcessableURL:(NSURL *)url{
     if([url.absoluteString isMatchedByRegex:@"^fb[0-9]+"] &&
-       [PhotoSubmitterFacebookAuthRequestAccount isEqualToString:self.account.accountHash]){
+       [ENVPhotoSubmitterFacebookAuthRequestAccount isEqualToString:self.account.accountHash]){
         return YES;
     }
     return NO;
@@ -356,5 +357,12 @@ static NSString *PhotoSubmitterFacebookAuthRequestAccount;
  * facebook session extended
  */
 - (void)fbDidExtendToken:(NSString *)accessToken expiresAt:(NSDate *)expiresAt{
+}
+
+/*!
+ * set facebook API Key
+ */
++ (void)setFacebookAPIKey:(NSString *)APIKey{
+    ENVPhotoSubmitterFacebookAPIID = APIKey;
 }
 @end

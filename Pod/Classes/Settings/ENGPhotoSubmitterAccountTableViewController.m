@@ -7,6 +7,7 @@
 
 #import "SVProgressHUD.h"
 #import "ENGPhotoSubmitterAccountTableViewController.h"
+#import "ENGPhotoSubmitterLocalization.h"
 
 #define ASV_SECTION_USERNAME 0
 #define ASV_SECTION_PASSWORD 1
@@ -27,7 +28,7 @@
 -(void)setupInitialState{
     UIBarButtonItem *doneButton = [[UIBarButtonItem alloc ] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(handleDoneButtonTapped:)];
     
-    [self.navigationItem setTitle:NSLocalizedStringFromTable(@"Account_Navigation_Title", @"ENGPhotoSubmitter", nil)];
+    [self.navigationItem setTitle:ENGPhotoSubmitterLocalization(@"Account_Navigation_Title")];
     [self.navigationItem setRightBarButtonItem:doneButton animated:YES];
 }
 
@@ -116,8 +117,8 @@
  */
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     switch (section) {
-        case ASV_SECTION_USERNAME: return NSLocalizedStringFromTable(@"Account_Section_Username", @"ENGPhotoSubmitter", nil);
-        case ASV_SECTION_PASSWORD: return NSLocalizedStringFromTable(@"Account_Section_Password", @"ENGPhotoSubmitter", nil);
+        case ASV_SECTION_USERNAME: return ENGPhotoSubmitterLocalization(@"Account_Section_Username");
+        case ASV_SECTION_PASSWORD: return ENGPhotoSubmitterLocalization(@"Account_Section_Password");
     }
     return nil;
 }
@@ -148,11 +149,11 @@
     
     switch (indexPath.section) {
         case ASV_SECTION_USERNAME : 
-            textField.placeholder = NSLocalizedStringFromTable(@"Account_Section_Username_Placeholder", @"ENGPhotoSubmitter", nil);
+            textField.placeholder = ENGPhotoSubmitterLocalization(@"Account_Section_Username_Placeholder");
             usernameTextField_ = textField;
             break;
         case ASV_SECTION_PASSWORD : 
-            textField.placeholder = NSLocalizedStringFromTable(@"Account_Section_Password_Placeholder", @"ENGPhotoSubmitter", nil);
+            textField.placeholder = ENGPhotoSubmitterLocalization(@"Account_Section_Password_Placeholder");
             textField.secureTextEntry = YES;
             passwordTextField_ = textField;
             break;
