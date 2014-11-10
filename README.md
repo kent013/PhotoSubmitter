@@ -49,7 +49,7 @@ Functionality
 Sample Projects
 -------------------------------------------
 - [tottepost](https://github.com/kent013/tottepost), fully functional example of PhotoSubmitter.
-- [PhotoSubmitterExample](https://github.com/kent013/PhotoSubmitterExample), minimum implementation using PhotoSubmitter.
+
 
 
 Installation
@@ -137,54 +137,6 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>YES</td>
 </tr>
 <tr>
-<td>Flickr</td>
-<td>OAuth (Safari)</td>
-<td>URLScheme: photosubmitter</td>
-<td>Concurrent</td>
-<td>YES</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Evernote</td>
-<td>OAuth (Safari)</td>
-<td>URLScheme: photosubmitter</td>
-<td>Concurrent</td>
-<td>YES</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Picasa<sup>*2</sup></td>
-<td>OAuth (In App WebView)</td>
-<td>PhotoSubmitterAuthControllerDelegate</td>
-<td>Concurrent</td>
-<td>YES</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Minus</td>
-<td>OAuth (In App PasswordView)</td>
-<td>PhotoSubmitterAuthControllerDelegate</td>
-<td>Concurrent</td>
-<td>YES</td>
-<td>YES</td>
-</tr>
-<tr>
-<td>Mixi<sup>*3</sup></td>
-<td>OAuth (In App WebView)</td>
-<td>PhotoSubmitterAuthControllerDelegate</td>
-<td>Concurrent</td>
-<td>YES</td>
-<td>NO</td>
-</tr>
-<tr>
-<td>Fotolife<sup>*3</sup></td>
-<td>BASIC (In App PasswordView)</td>
-<td>PhotoSubmitterAuthControllerDelegate</td>
-<td>Concurrent</td>
-<td>NO</td>
-<td>NO</td>
-</tr>
-<tr>
 <td>File</td>
 <td>-</td>
 <td>-</td>
@@ -193,100 +145,19 @@ Below is the list of supported Social Network and Cloud Storage services.
 <td>YES</td>
 </tr>
 </table>
-
-*1 Uploading multiple photo at same time will cause 400 error.
-*2 Currently Google+ does not permit write access to images.
-*3 Japanese services.
 
 Custom URL schema setting is needed for Safari or App authentication. See [Implementing Custom URL Schemes](https://developer.apple.com/library/ios/#DOCUMENTATION/iPhone/Conceptual/iPhoneOSProgrammingGuide/AdvancedAppTricks/AdvancedAppTricks.html)
  and [Launching Your Own Application via a Custom URL Scheme](http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html) for more information.
 
 UINavigationController is needed to present built-in WebView and PasswordView. To provide UINavigationController to the PhotoSubmitter, you may implement `PhotoSubmitterAuthControllerDelegate`'s method `(UINavigationController *) requestNavigationControllerToPresentAuthenticationView` in your client code.
 
-Before using OAuth services, you must submit to their developer program to obtain API-Key and API-Secret. After you've got key and secret pair, copy `PhotoSubmitter/Services/[ServiceName]PhotoSubmitter/[ServiceName]APIKey-template.h` as `PhotoSubmitter/Services/[ServiceName]PhotoSubmitter/[ServiceName]APIKey.h` in the same directory and modify appropriate constants with your key and secret. For instance, if you want to use flickr, you may modify
+Before using OAuth services, you must submit to their developer program to obtain API-Key and API-Secret. After you've got key and secret pair, call method
 
 ```
-#define PHOTO_SUBMITTER_FLICKR_API_KEY @""
-#define PHOTO_SUBMITTER_FLICKR_API_SECRET @""
++ (void)setFacebookAPIKey:(NSString *)APIKey;
++ (void)setDropboxAPIKey:(NSString *)APIKey andSecret:(NSString *)APISecret;
 ```
-these constants with your key and secret pair.
-
-Probrem in mixture of ARC and Non-ARC libraries
--------------------------------------------------
-**PhotoSubmitter is ARC project**, and some dependent libraries are **Non-ARC**. **Non-ARC Libraries cause build error**. You must set '-fno-objc-arc' flag to their source codes to disable ARC. Please check out [stackoverflow: How can I disable ARC for a single file in a project?](http://stackoverflow.com/questions/6646052/how-can-i-disable-arc-for-a-single-file-in-a-project). (Tip: You can set flag to multiple source codes at once with selecting multiple source code and pressing ENTER key)
-
-Library Dependencies of PhotoSubmitter library
--------------------------------------------------
-AssetsLibrary, CFNetwork, CoreLocation, Foundation, ImageIO, Security and SystemConfiguration.framework are needed to be added in your project. Also libicucore.dylib is required by <a href="http://regexkit.sourceforge.net/RegexKitLite/">RegexKitLite</a> and libxml2.dylib is required by <a href="https://github.com/ddeville/KissXML">KissXML</a>.
-
-libxml2 needs "Header Search Path" to be configured as `/usr/include/libxml2`(or other path to libxml2's header files are placed.
-
-And other 3rd party libraries that PhotoSubmitter depends on, please see [3RDPARTY.txt](https://github.com/kent013/tottepost/blob/master/3RDPARTY.md) in tottepost repository.
-
-Library Dependencies of Service Implementation
--------------------------------------------------
-PhotoSubmitter's common libraries are stored in `Libraries`. And libraries for service implementation are stored in `Services/[ServiceName]PhotoSubmitter/Libraries`. PhotoSubmitter service implementations are designed to be work properly when they added to project independently. Because of this issue, libraries may be duplicated when you add multiple PhotoSubmitter service implementations to your project. If so, please delete all libraries duplicated, leaving only one library.
-
-<table>
-<tr>
-<th>Service Name</th>
-<th>SDK</th>
-<th>Libraries</th>
-</tr>
-<tr>
-<td>Facebook</td>
-<td><a href="https://github.com/facebook/facebook-ios-sdk">Facebook SDK</a></td>
-<td>-</td>
-</tr>
-<tr>
-<td>Twitter</td>
-<td><a href="https://developer.apple.com/library/ios/#documentation/"Twitter/Reference/TwitterFrameworkReference/_index.html">Twitter.framework</a></td>
-<td>Accounts.framework</td>
-</tr>
-<tr>
-<td>Dropbox</td>
-<td><a href="https://www.dropbox.com/developers/reference/sdk">Dropbox SDK</a></td>
-<td>-</td>
-</tr>
-<tr>
-<td>Flickr</td>
-<td><a href="https://github.com/lukhnos/objectiveflickr">ObjectiveFlickr</a></td>
-<td>-</td>
-</tr>
-<tr>
-<td>Evernote</td>
-<td><a href="https://github.com/kent013/EVNConnect">EVNConnect</a><sup>1</sup></td>
-<td>-</td>
-</tr>
-<tr>
-<td>Picasa</td>
-<td><a href="http://code.google.com/p/gdata-objectivec-client/">gdata-objectivec-client</a></td>
-<td>-</td>
-</tr>
-<tr>
-<td>Minus</td>
-<td><a href="https://github.com/kent013/MinusConnect">MinusConnect</a></td>
-<td><a href="https://github.com/nxtbgthng/OAuth2Client">OAuth2Client</a>, CoreData.framework, MobileCoreServices.framework, libz.dylib<sup>2</sup></td>
-</tr>
-<tr>
-<td>Mixi</td>
-<td><a href="http://developer.mixi.co.jp/connect/mixi_graph_api/ios/">Mixi SDK</a></td>
-<td>-</td>
-</tr>
-<tr>
-<td>Fotolife</td>
-<td><a href="https://github.com/kent013/objc-atompub">objc-atompub</a></td>
-<td>-</td>
-</tr>
-<tr>
-<td>File</td>
-<td>-</td>
-<td>AssetsLibrary.framework, ImageIO.framework</td>
-</tr>
-</table>
-
-*1 EvernoteConnect needs "Header Search Path" to be configured as `[submodule path]/Services/EvernotePhotoSubmitter/Libraries/Evernote/thrift` and `recursive` checked.
-*2 libz.dylib is not provided by MinusPhotoSubmitter please add it manually.
+defined in PhotoSubmitter classes.
 
 
 PhotoSubmitter SettingViewController
