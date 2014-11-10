@@ -14,8 +14,6 @@
 //-----------------------------------------------------------------------------
 @interface ENGViewController(PrivateImplementation)
 - (void) setupInitialState;
-- (void) handleShowSettingButtonTapped:(UIButton *)sender;
-- (void) handleShowCameraButtonTapped:(UIButton *)sender;
 @end
 
 @implementation ENGViewController(PrivateImplementation)
@@ -32,19 +30,6 @@
     [ENGPhotoSubmitterManager sharedInstance].navigationControllerDelegate = self;
     [ENGPhotoSubmitterManager sharedInstance].submitPhotoWithOperations = YES;
     
-    //UI implementation
-    UIButton *showSettingButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [showSettingButton setTitle:@"Setting" forState:UIControlStateNormal];
-    [showSettingButton setFrame:CGRectMake(self.view.frame.size.width / 2 - 40, self.view.frame.size.height / 2 - 70, 80, 30)];
-    [showSettingButton addTarget:self action:@selector(handleShowSettingButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:showSettingButton];
-    
-    UIButton *cameraButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [cameraButton setTitle:@"Camera" forState:UIControlStateNormal];
-    [cameraButton setFrame:CGRectMake(self.view.frame.size.width / 2 - 40, self.view.frame.size.height / 2 + 35, 80, 30)];
-    [cameraButton addTarget:self action:@selector(handleShowCameraButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:cameraButton];
-    
     //initialize setting view controller
     settingViewController_ = [[ENGPhotoSubmitterSettingTableViewController alloc] init];
     settingViewController_.delegate = self;
@@ -52,31 +37,6 @@
     settingNavigationController_.modalPresentationStyle = UIModalPresentationFormSheet;
     settingNavigationController_.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
 }
-
-/*!
- * camera button tapped, present UIImagePickerController
- */
-- (void) handleShowCameraButtonTapped:(UIButton *)sender{
-    if([UIImagePickerController
-        isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
-        UIImagePickerController *ipc = [[UIImagePickerController alloc] init];
-        ipc.delegate = self;
-        ipc.sourceType =
-        UIImagePickerControllerSourceTypeCamera;
-        ipc.allowsEditing = YES;
-        [self presentViewController:ipc animated:YES completion:nil];
-        imagePicker_ = ipc;
-    }
-}
-
-/*!
- * setting button tapped, present SettingView
- */
-- (void) handleShowSettingButtonTapped:(UIButton *)sender{
-    [UIApplication sharedApplication].statusBarHidden = NO;
-    [self presentViewController:settingNavigationController_ animated:YES completion:nil];
-}
-
 @end
 
 @implementation ENGViewController
@@ -151,4 +111,27 @@
     // Dispose of any resources that can be recreated.
 }
 
+/*!
+ * setting button tapped, present SettingView
+ */
+- (void)onSettingButtonTapped:(id)sender{
+    [UIApplication sharedApplication].statusBarHidden = NO;
+    [self presentViewController:settingNavigationController_ animated:YES completion:nil];
+}
+
+/*!
+ * camera button tapped, present UIImagePickerController
+ */
+- (IBAction)onCameraButtonTapped:(id)sender{
+    if([UIImagePickerController
+        isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
+        UIImagePickerController *ipc = [[UIImagePickerController alloc] init];
+        ipc.delegate = self;
+        ipc.sourceType =
+        UIImagePickerControllerSourceTypeCamera;
+        ipc.allowsEditing = YES;
+        [self presentViewController:ipc animated:YES completion:nil];
+        imagePicker_ = ipc;
+    }
+}
 @end

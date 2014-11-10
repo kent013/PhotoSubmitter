@@ -284,12 +284,9 @@
 /*!
  * initialize with frame
  */
-- (id) init{
-    self = [super initWithStyle:UITableViewStyleGrouped];
-    if(self){
-        [self setupInitialState];
-    }
-    return self;
+- (void)viewDidLoad{
+    [super viewDidLoad];
+    [self setupInitialState];
 }
 
 /*!

@@ -15,4 +15,6 @@
     UINavigationController *settingNavigationController_;
     UIImagePickerController *imagePicker_;
 }
+- (IBAction)onSettingButtonTapped:(id)sender;
+- (IBAction)onCameraButtonTapped:(id)sender;
 @end
