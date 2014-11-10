@@ -52,7 +52,9 @@ Installation
 PhotoSubmitter is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
-    pod "PhotoSubmitter"
+ pod "FBNetworkReachability", :git => "https://github.com/dev5tec/FBNetworkReachability.git"
+ pod "PhotoSubmitter"
+ pod "PhotoSubmitter/Facebook"
 
 
 PhotoSubmitter Client Code
