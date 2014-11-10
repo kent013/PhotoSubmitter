@@ -1,24 +1,19 @@
 //
-//  MetaMovicsConnect.m
-//  MetaMovicsConnect
+//  ENGMetaMovicsConnect.m
+//  ENGMetaMovicsConnect
 //
 //  Created by Kentaro ISHITOYA on 12/02/21.
-//  Copyright (c) 2012 Kentaro ISHITOYA. All rights reserved.
 //
 
-#if ! __has_feature(objc_arc)
-#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
-#endif
-
-#import "MetaMovicsConnect.h"
-#import "NSData+Digest.h"
-#import "NSObject+SBJson.h"
-#import "MetaMovicsConstants.h"
+#import "ENGMetaMovicsConnect.h"
+#import "ENGMetaMovicsConstants.h"
+#import "NSData+ENGDigest.h"
+#import "SBJson4.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
-@interface MetaMovicsConnect(PrivateImplementation)
+@interface ENGMetaMovicsConnect(PrivateImplementation)
 - (void)setupInitialState;
 - (void)utfAppendBody:(NSMutableData *)body data:(NSString *)data;
 - (NSString*)serializeURL:(NSString *)baseUrl
@@ -28,23 +23,23 @@
                     params:(NSDictionary *)params;
 - (NSMutableData *)generatePostBody:(NSDictionary *)params 
                     dataContentType:(NSString*)dataContentType;
-- (MetaMovicsRequest *) createRequestWithURLString:(NSString *)url 
+- (ENGMetaMovicsRequest *) createRequestWithURLString:(NSString *)url 
                                         param:(NSDictionary *)params 
                                    httpMethod:(NSString *)httpMethod
                               dataContentType:(NSString *)dataContentType
-                                  andDelegate:(id<MetaMovicsRequestDelegate>)delegate;
-- (MetaMovicsRequest *) createRequestWithURLString:(NSString *)url 
+                                  andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate;
+- (ENGMetaMovicsRequest *) createRequestWithURLString:(NSString *)url 
                                         param:(NSDictionary *)params 
                                    httpMethod:(NSString *)httpMethod
-                                       andDelegate:(id<MetaMovicsRequestDelegate>)delegate;
-- (MetaMovicsRequest *) createRequestWithURLString2:(NSString *)url
+                                       andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate;
+- (ENGMetaMovicsRequest *) createRequestWithURLString2:(NSString *)url
                                              param:(NSDictionary *)params
                                         httpMethod:(NSString *)httpMethod
-                                       andDelegate:(id<MetaMovicsRequestDelegate>)delegate;
+                                       andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate;
 - (NSDictionary *) dictionaryToPostString:(NSDictionary *)dict andKey:(NSString *)key;
 @end
 
-@implementation MetaMovicsConnect(PrivateImplementation)
+@implementation ENGMetaMovicsConnect(PrivateImplementation)
 /*!
  * initialize
  */
@@ -164,7 +159,7 @@
 /*!
  * create request
  */
-- (MetaMovicsRequest *) createRequestWithURLString:(NSString *)url param:(NSDictionary *)params httpMethod:(NSString *)httpMethod andDelegate:(id<MetaMovicsRequestDelegate>)delegate{
+- (ENGMetaMovicsRequest *) createRequestWithURLString:(NSString *)url param:(NSDictionary *)params httpMethod:(NSString *)httpMethod andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate{
     return [self createRequestWithURLString:url param:params httpMethod:httpMethod dataContentType:nil andDelegate:delegate];
 }
 
@@ -172,7 +167,7 @@
 /*!
  * create request
  */
-- (MetaMovicsRequest *) createRequestWithURLString2:(NSString *)url param:(NSDictionary *)params httpMethod:(NSString *)httpMethod andDelegate:(id<MetaMovicsRequestDelegate>)delegate{
+- (ENGMetaMovicsRequest *) createRequestWithURLString2:(NSString *)url param:(NSDictionary *)params httpMethod:(NSString *)httpMethod andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate{
     
     NSMutableArray* pairs = [NSMutableArray array];
     for (NSString* key in [params keyEnumerator]) {
@@ -205,13 +200,13 @@
     
     [request setHTTPMethod:httpMethod];
     [request setHTTPBody:[query dataUsingEncoding:NSUTF8StringEncoding]];
-    return [[MetaMovicsRequest alloc] initWithURLRequest:request andDelegate:delegate];
+    return [[ENGMetaMovicsRequest alloc] initWithURLRequest:request andDelegate:delegate];
 }
 
 /*!
  * create request
  */
-- (MetaMovicsRequest *)createRequestWithURLString:(NSString *)url param:(NSDictionary *)params httpMethod:(NSString *)httpMethod dataContentType:(NSString *)dataContentType andDelegate:(id<MetaMovicsRequestDelegate>)delegate{
+- (ENGMetaMovicsRequest *)createRequestWithURLString:(NSString *)url param:(NSDictionary *)params httpMethod:(NSString *)httpMethod dataContentType:(NSString *)dataContentType andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate{
     
     NSString *serializedUrl = [self serializeURL:url params:params httpMethod:httpMethod];
     NSMutableURLRequest* request =
@@ -229,7 +224,7 @@
         
         [request setHTTPBody:[self generatePostBody:params dataContentType:dataContentType]];
     }
-    return [[MetaMovicsRequest alloc] initWithURLRequest:request andDelegate:delegate];    
+    return [[ENGMetaMovicsRequest alloc] initWithURLRequest:request andDelegate:delegate];    
 }
 
 - (NSDictionary *) dictionaryToPostString:(NSDictionary *)dict andKey:(NSString *)key{
@@ -257,7 +252,7 @@
 //Public Implementations
 //-----------------------------------------------------------------------------
 #pragma mark - public implementation
-@implementation MetaMovicsConnect
+@implementation ENGMetaMovicsConnect
 @synthesize sessionDelegate = sessionDelegate_;
 /*!
  * initialize
@@ -265,10 +260,10 @@
 - (id)initWithUsername:(NSString *)username
               password:(NSString *)password
                  token:(NSString *)token
-           andDelegate:(id<MetaMovicsSessionDelegate>)delegate{
+           andDelegate:(id<ENGMetaMovicsSessionDelegate>)delegate{
     self = [super init];
     if(self){
-        auth_ = [[MetaMovicsAuth alloc] initWithUsername:username password:password token:token andDelegate:self];
+        auth_ = [[ENGMetaMovicsAuth alloc] initWithUsername:username password:password token:token andDelegate:self];
         self.sessionDelegate = delegate;
         [self setupInitialState];
     }
@@ -340,8 +335,8 @@
 /*!
  * get upload session token
  */
-- (MetaMovicsRequest *)getUploadSessionTokenWithDelegate:(id<MetaMovicsRequestDelegate>)delegate{
-    MetaMovicsRequest *request = [self createRequestWithURLString:@"create_upload_session" param:nil httpMethod:kHTTPGET andDelegate:delegate];
+- (ENGMetaMovicsRequest *)getUploadSessionTokenWithDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate{
+    ENGMetaMovicsRequest *request = [self createRequestWithURLString:@"create_upload_session" param:nil httpMethod:kHTTPGET andDelegate:delegate];
     request.tag = kMetaMovicsRequestGetSessionToken;
     [request start];
     return request;
@@ -350,12 +345,12 @@
 /*!
  * upload file
  */
-- (MetaMovicsRequest *)uploadVideoFileWithSessionId:(NSString *)sessionId
+- (ENGMetaMovicsRequest *)uploadVideoFileWithSessionId:(NSString *)sessionId
                                            duration:(int) duration
                                               width:(int) width
                                              height:(int) height
                                                data:(NSData *)data
-                                        andDelegate:(id<MetaMovicsRequestDelegate>)delegate{
+                                        andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate{
     NSDictionary *param = @{
         @"upload_session": @{ @"id" : sessionId },
         @"token": auth_.token,
@@ -379,7 +374,7 @@
         [NSMutableDictionary dictionaryWithDictionary:
                 [self dictionaryToPostString:param andKey:nil]];
     [params setObject:data forKey:@"zipfile"];
-    MetaMovicsRequest *request =
+    ENGMetaMovicsRequest *request =
         [self createRequestWithURLString:@"upload" param:params
                               httpMethod:kHTTPPOST dataContentType:@"application/zip" andDelegate:delegate];
     
@@ -391,10 +386,10 @@
 /*!
  * upload file
  */
-- (MetaMovicsRequest *)createPageWithVideoId:(NSString *)videoId
+- (ENGMetaMovicsRequest *)createPageWithVideoId:(NSString *)videoId
                                   categoryId:(NSString *)categoryId
                                      caption:(NSString *)caption
-                                 andDelegate:(id<MetaMovicsRequestDelegate>)delegate{
+                                 andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate{
     if(caption == nil || [caption isEqualToString:@""]){
         caption = @"tottepost";
     }
@@ -415,7 +410,7 @@
     params =
         [NSMutableDictionary dictionaryWithDictionary:
             [self dictionaryToPostString:params andKey:nil]];
-    MetaMovicsRequest *request =
+    ENGMetaMovicsRequest *request =
     [self createRequestWithURLString2:@"content" param:params
                           httpMethod:kHTTPPOST andDelegate:delegate];
     

@@ -24,25 +24,28 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '7.0'
   s.ios.deployment_target = '6.0'
   s.requires_arc = true
-  s.source_files = 'Pod/Classes/*.{h,m}', 'Pod/Classes/{Libraries,Entities,UtilityCategories,Settings}/**/*.{h,m}'
-  s.resource_bundle = {
-    'ENGPhotoSubmitter' => 
-      ['Pod/Assets/Images/*.png',
-       'Pod/Assets/Localizations/*.lproj']
-  }
-  s.dependency "FBNetworkReachability"
-  s.dependency "KissXML"
-  s.dependency "RestKit"
-  s.dependency "SVProgressHUD"
-  s.dependency "MAConfirmButton"
-  s.dependency "UIImage-Categories"
-  s.dependency "NYXImagesKit"
-  s.dependency "ZipArchive"
-  s.dependency "PDKeychainBindingsController"
-  s.dependency "Reachability"
-  s.dependency "SBJson"
-  s.dependency "RegexKitLite"
-  s.dependency "Base64nl"
+  s.default_subspec = 'Core'
+
+  s.subspec 'Core' do |core|
+    core.source_files = 'Pod/Classes/*.{h,m}', 'Pod/Classes/{Libraries,Entities,UtilityCategories,Settings}/**/*.{h,m}'
+    core.resource_bundle = {
+      'ENGPhotoSubmitter' => 
+        ['Pod/Assets/Images/*.png',
+         'Pod/Assets/Localizations/*.lproj']
+    }
+    core.dependency "FBNetworkReachability"
+    core.dependency "KissXML"
+    core.dependency "RestKit"
+    core.dependency "SVProgressHUD"
+    core.dependency "MAConfirmButton"
+    core.dependency "UIImage-Categories"
+    core.dependency "NYXImagesKit"
+    core.dependency "ZipArchive"
+    core.dependency "PDKeychainBindingsController"
+    core.dependency "Reachability"
+    core.dependency "RegexKitLite"
+    core.dependency "Base64nl"
+  end
   
   s.subspec 'Dropbox' do |dropbox|
     dropbox.source_files = 'Pod/Classes/Services/DropboxPhotoSubmitter/**/*.{h,m}'
@@ -81,5 +84,12 @@ Pod::Spec.new do |s|
     twitter.resource_bundle = {
       'ENGPhotoSubmitter-Twitter' => 'Pod/Classes/Services/TwitterPhotoSubmitter/Resources/Images/*.png'
     }
+  end
+
+  s.subspec 'MetaMovics' do |metamovics|
+    metamovics.source_files = 'Pod/Classes/Services/MetaMovicsPhotoSubmitter/**/*.{h,m}'
+    metamovics.resource_bundle = {
+      'ENGPhotoSubmitter-MetaMovics' => 'Pod/Classes/Services/MetaMovicsPhotoSubmitter/Resources/Images/*.png'
+  }
   end
 end

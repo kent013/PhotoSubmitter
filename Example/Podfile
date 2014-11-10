@@ -2,8 +2,11 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'PhotoSubmitter', :exclusive => true do
   pod "FBNetworkReachability", :git => "https://github.com/dev5tec/FBNetworkReachability.git"
-  pod "PhotoSubmitter", :path => "../"
+  pod "PhotoSubmitter/Core", :path => "../"
   pod "PhotoSubmitter/Facebook", :path => "../"
+  pod "PhotoSubmitter/Twitter", :path => "../"
+  pod "PhotoSubmitter/Dropbox", :path => "../"
+  pod "PhotoSubmitter/File", :path => "../"
 end
 
 target 'Tests', :exclusive => true do

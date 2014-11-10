@@ -1,30 +1,24 @@
 //
-//  MetaMovicsAuth.m
-//  EVNConnect
+//  ENGMetaMovicsAuth.m
+//  ENGMetaMovicsConnect
 //
 //  Created by Kentaro ISHITOYA on 12/02/03.
-//  Copyright (c) 2012 Kentaro ISHITOYA. All rights reserved.
 //
 
-#if ! __has_feature(objc_arc)
-#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
-#endif
-
-#import "MetaMovicsAuth.h"
-#import "MetaMovicsRequest.h"
-#import "MetaMovicsProtocol.h"
-#import "NSString+Join.h"
-
-#import "MetaMovicsConstants.h"
+#import "ENGMetaMovicsAuth.h"
+#import "ENGMetaMovicsRequest.h"
+#import "ENGMetaMovicsProtocol.h"
+#import "ENGMetaMovicsConstants.h"
+#import "NSString+ENGJoin.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
-@interface MetaMovicsAuth(PrivateImplementation)
+@interface ENGMetaMovicsAuth(PrivateImplementation)
 -(void)requestAccessWithUsername:(NSString *)username andPassword:(NSString *)password;
 @end
 
-@implementation MetaMovicsAuth(PrivateImplementation)
+@implementation ENGMetaMovicsAuth(PrivateImplementation)
 /*!
  * request for access
  */
@@ -37,8 +31,8 @@
     [request setValue:kUserAgent forHTTPHeaderField:@"User-Agent"];
     [request setHTTPMethod:kHTTPPOST];
 
-    MetaMovicsRequest *r =
-        [[MetaMovicsRequest alloc] initWithURLRequest:request andDelegate:self];
+    ENGMetaMovicsRequest *r =
+        [[ENGMetaMovicsRequest alloc] initWithURLRequest:request andDelegate:self];
     [r start];
 }
 @end
@@ -47,13 +41,13 @@
 //Public Implementations
 //-----------------------------------------------------------------------------
 #pragma mark - authentication
-@implementation MetaMovicsAuth
+@implementation ENGMetaMovicsAuth
 @synthesize token = token_;
 
 /*!
  * initialize
  */
-- (id)initWithUsername:(NSString *)username password:(NSString *)password token:(NSString *)atoken andDelegate:(id<MetaMovicsAuthDelegate>)delegate{
+- (id)initWithUsername:(NSString *)username password:(NSString *)password token:(NSString *)atoken andDelegate:(id<ENGMetaMovicsAuthDelegate>)delegate{
     self = [super init];
     if (self) {
         delegate_ = delegate;
@@ -145,7 +139,7 @@
 /*!
  * did load
  */
-- (void)request:(MetaMovicsRequest *)request didLoad:(id)result{
+- (void)request:(ENGMetaMovicsRequest *)request didLoad:(id)result{
     if([[result objectForKey:@"result"] intValue] == 1){
         self.token = [result objectForKey:@"token"];
         [self metamovicsDidLogin];
@@ -158,13 +152,13 @@
 /*!
  * request failed
  */
-- (void)request:(MetaMovicsRequest *)request didFailWithError:(NSError *)error{
+- (void)request:(ENGMetaMovicsRequest *)request didFailWithError:(NSError *)error{
     [self metamovicsDidNotLogin];
 }
 
 /*!
  * progress
  */
-- (void)request:(MetaMovicsRequest *)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
+- (void)request:(ENGMetaMovicsRequest *)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
 }
 @end

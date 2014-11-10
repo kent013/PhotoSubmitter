@@ -1,30 +1,29 @@
 //
-//  MetaMovicsConnect.h
-//  MetaMovicsConnect
+//  ENGMetaMovicsConnect.h
+//  ENGMetaMovicsConnect
 //
 //  Created by Kentaro ISHITOYA on 12/02/21.
-//  Copyright (c) 2012 Kentaro ISHITOYA. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "MetaMovicsProtocol.h"
-#import "MetaMovicsAuth.h"
-#import "MetaMovicsRequest.h"
+#import "ENGMetaMovicsProtocol.h"
+#import "ENGMetaMovicsAuth.h"
+#import "ENGMetaMovicsRequest.h"
 
-@interface MetaMovicsConnect : NSObject<MetaMovicsAuthDelegate>{
+@interface ENGMetaMovicsConnect : NSObject<ENGMetaMovicsAuthDelegate>{
     __strong NSMutableSet *requests_;
-    __strong MetaMovicsAuth *auth_;
-    __weak id<MetaMovicsSessionDelegate> sessionDelegate_;
+    __strong ENGMetaMovicsAuth *auth_;
+    __weak id<ENGMetaMovicsSessionDelegate> sessionDelegate_;
 }
 
-@property(nonatomic, weak) id<MetaMovicsSessionDelegate> sessionDelegate;
+@property(nonatomic, weak) id<ENGMetaMovicsSessionDelegate> sessionDelegate;
 @property(readonly) NSString* token;
 
 #pragma mark - authentication
 - (id)initWithUsername:(NSString *)username
               password:(NSString *)password
                  token:(NSString *)token
-           andDelegate:(id<MetaMovicsSessionDelegate>)delegate;
+           andDelegate:(id<ENGMetaMovicsSessionDelegate>)delegate;
 - (void)loginWithUsername:(NSString *)username 
                  password:(NSString *)password 
             andPermission:(NSArray *)permission;
@@ -35,18 +34,18 @@
                         andPermission:(NSArray *)permission;
 
 #pragma mark - get upload session token
-- (MetaMovicsRequest *) getUploadSessionTokenWithDelegate:(id<MetaMovicsRequestDelegate>)delegate;
+- (ENGMetaMovicsRequest *) getUploadSessionTokenWithDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate;
 
 #pragma mark - file
-- (MetaMovicsRequest *)uploadVideoFileWithSessionId:(NSString *)sessionId
+- (ENGMetaMovicsRequest *)uploadVideoFileWithSessionId:(NSString *)sessionId
                                            duration:(int) duration
                                               width:(int) width
                                              height:(int) height
                                                data:(NSData *)data
-                                        andDelegate:(id<MetaMovicsRequestDelegate>)delegate;
+                                        andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate;
 
-- (MetaMovicsRequest *)createPageWithVideoId:(NSString *)videoId
+- (ENGMetaMovicsRequest *)createPageWithVideoId:(NSString *)videoId
                                    categoryId:(NSString *)categoryId
                                       caption:(NSString *)caption
-                                  andDelegate:(id<MetaMovicsRequestDelegate>)delegate;
+                                  andDelegate:(id<ENGMetaMovicsRequestDelegate>)delegate;
 @end

@@ -11,10 +11,9 @@
 #endif
 
 #import <AVFoundation/AVFoundation.h>
-#import "MetaMovicsPhotoSubmitter.h"
-#import "MetaMovicsAPIKey.h"
-#import "PhotoSubmitterAccountTableViewController.h"
-#import "PhotoSubmitterManager.h"
+#import "ENGMetaMovicsPhotoSubmitter.h"
+#import "ENGPhotoSubmitterAccountTableViewController.h"
+#import "ENGPhotoSubmitterManager.h"
 #import "ZipArchive.h"
 
 #define PS_METAMOVICS_AUTH_USERID @"PSMetaMovicsUserId"
@@ -27,19 +26,19 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
-@interface MetaMovicsPhotoSubmitter(PrivateImplementation)
+@interface ENGMetaMovicsPhotoSubmitter(PrivateImplementation)
 - (void) setupInitialState;
 - (void) clearCredentials;
 - (void) loadCredentials;
 - (void) getUserInfomation;
-- (id) submitContent:(PhotoSubmitterContentEntity *)content uploadId:(NSString *)uploadId andDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate;
-- (NSData *) createZipFileFromVideo:(PhotoSubmitterVideoEntity *)video;
+- (id) submitContent:(ENGPhotoSubmitterContentEntity *)content uploadId:(NSString *)uploadId andDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate;
+- (NSData *) createZipFileFromVideo:(ENGPhotoSubmitterVideoEntity *)video;
 - (NSURL *)tempZipURL;
 - (UIImage *)generateImageForUrl:(NSURL *)url time:(int)time;
 @end
 
 #pragma mark - private implementations
-@implementation MetaMovicsPhotoSubmitter(PrivateImplementation)
+@implementation ENGMetaMovicsPhotoSubmitter(PrivateImplementation)
 /*!
  * initializer
  */
@@ -51,7 +50,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
                   isAlbumSupported:NO];
     
     self.username = [self secureSettingForKey:PS_METAMOVICS_AUTH_USERID];
-    metamovics_ =[[MetaMovicsConnect alloc] initWithUsername:[self secureSettingForKey:PS_METAMOVICS_AUTH_USERID]
+    metamovics_ =[[ENGMetaMovicsConnect alloc] initWithUsername:[self secureSettingForKey:PS_METAMOVICS_AUTH_USERID]
                                                     password:[self secureSettingForKey:PS_METAMOVICS_AUTH_USERID]
                                                        token:[self secureSettingForKey:PS_METAMOVICS_AUTH_TOKEN]
                                                  andDelegate:self];
@@ -91,9 +90,9 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * submit content
  */
-- (id)submitContent:(PhotoSubmitterContentEntity *)content uploadId:(NSString *)uploadId andDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+- (id)submitContent:(ENGPhotoSubmitterContentEntity *)content uploadId:(NSString *)uploadId andDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate{
     
-    PhotoSubmitterVideoEntity *video = (PhotoSubmitterVideoEntity *)content;
+    ENGPhotoSubmitterVideoEntity *video = (ENGPhotoSubmitterVideoEntity *)content;
     NSData *zipFile = [self createZipFileFromVideo:video];
     AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:video.path] options:nil];
     AVAssetTrack *videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
@@ -107,7 +106,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
         caption = @"tottepost video";
     }
     
-    MetaMovicsRequest *request = [metamovics_ uploadVideoFileWithSessionId:uploadId duration:video.length width:video.width height:video.height data:zipFile andDelegate:self];
+    ENGMetaMovicsRequest *request = [metamovics_ uploadVideoFileWithSessionId:uploadId duration:video.length width:video.width height:video.height data:zipFile andDelegate:self];
     
     [self setPhotoHash:content.contentHash forRequest:request];
     [self addRequest:request];
@@ -120,7 +119,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * create zip from content
  */
-- (NSData *) createZipFileFromVideo:(PhotoSubmitterVideoEntity *)video{
+- (NSData *) createZipFileFromVideo:(ENGPhotoSubmitterVideoEntity *)video{
     NSURL *url = [self tempZipURL];
     NSURL *videoUrl = [url URLByAppendingPathComponent:@"videos/1.mp4" isDirectory:NO];
     [video.data writeToURL:videoUrl atomically:YES];
@@ -199,14 +198,14 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 //Public Implementations
 //-----------------------------------------------------------------------------
 #pragma mark - public implementations
-@implementation MetaMovicsPhotoSubmitter
+@implementation ENGMetaMovicsPhotoSubmitter
 @synthesize authDelegate;
 @synthesize dataDelegate;
 @synthesize albumDelegate;
 /*!
  * initialize
  */
-- (id)initWithAccount:(PhotoSubmitterAccount *)account{
+- (id)initWithAccount:(ENGPhotoSubmitterAccount *)account{
     self = [super initWithAccount:account];
     if (self) {
         [self setupInitialState];
@@ -219,7 +218,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
  * login to MetaMovics
  */
 -(void)onLogin{
-    authController_ = [[PhotoSubmitterAccountTableViewController alloc] init];
+    authController_ = [[ENGPhotoSubmitterAccountTableViewController alloc] init];
     authController_.delegate = self;
     [self presentAuthenticationView:authController_];
 }
@@ -250,19 +249,19 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * submit photo
  */
-- (void) submitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+- (void) submitPhoto:(ENGPhotoSubmitterImageEntity *)photo andOperationDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate{
     return;
 }
 
 /*!
  * submit video
  */
-- (void) submitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+- (void) submitVideo:(ENGPhotoSubmitterVideoEntity *)video andOperationDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate{
     if(delegate.isCancelled){
         return;
     }
 
-    MetaMovicsRequest *request = [metamovics_ getUploadSessionTokenWithDelegate:self];
+    ENGMetaMovicsRequest *request = [metamovics_ getUploadSessionTokenWithDelegate:self];
 
     [contents_ setObject:video forKey:video.contentHash];
     [self setPhotoHash:video.contentHash forRequest:request];
@@ -272,22 +271,22 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * submit photo with data, comment and delegate
  */
-- (id)onSubmitPhoto:(PhotoSubmitterImageEntity *)photo andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+- (id)onSubmitPhoto:(ENGPhotoSubmitterImageEntity *)photo andOperationDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate{
     return nil;
 }
 
 /*!
  * submit video
  */
-- (id)onSubmitVideo:(PhotoSubmitterVideoEntity *)video andOperationDelegate:(id<PhotoSubmitterPhotoOperationDelegate>)delegate{
+- (id)onSubmitVideo:(ENGPhotoSubmitterVideoEntity *)video andOperationDelegate:(id<ENGPhotoSubmitterPhotoOperationDelegate>)delegate{
     return nil;
 }
 
 /*!
  * cancel content upload
  */
-- (id)onCancelContentSubmit:(PhotoSubmitterContentEntity *)content{
-    MetaMovicsRequest *request = (MetaMovicsRequest *)[self requestForPhoto:content.contentHash];
+- (id)onCancelContentSubmit:(ENGPhotoSubmitterContentEntity *)content{
+    ENGMetaMovicsRequest *request = (ENGMetaMovicsRequest *)[self requestForPhoto:content.contentHash];
     [request cancel];
     return request;
 }
@@ -296,7 +295,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * update username
  */
-- (void)updateUsernameWithDelegate:(id<PhotoSubmitterDataDelegate>)delegate{
+- (void)updateUsernameWithDelegate:(id<ENGPhotoSubmitterDataDelegate>)delegate{
     self.dataDelegate = delegate;
     [delegate photoSubmitter:self didUsernameUpdated:[self secureSettingForKey:PS_METAMOVICS_AUTH_USERID]];
 }
@@ -353,24 +352,24 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * did album updated
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didAlbumUpdated:(NSArray *)albums{
+- (void)photoSubmitter:(id<ENGPhotoSubmitterProtocol>)photoSubmitter didAlbumUpdated:(NSArray *)albums{
 }
 
 /*!
  * did username updated
  */
-- (void)photoSubmitter:(id<PhotoSubmitterProtocol>)photoSubmitter didUsernameUpdated:(NSString *)username{
+- (void)photoSubmitter:(id<ENGPhotoSubmitterProtocol>)photoSubmitter didUsernameUpdated:(NSString *)username{
 }
 
 #pragma mark - PhotoSubmitterMetaMovicsRequestDelegate
 /*!
  * did load
  */
-- (void)request:(MetaMovicsRequest *)request didLoad:(id)result{
-    PhotoSubmitterVideoEntity *content =
+- (void)request:(ENGMetaMovicsRequest *)request didLoad:(id)result{
+    ENGPhotoSubmitterVideoEntity *content =
         [contents_ objectForKey:[self photoForRequest:request]];
     
-    id<PhotoSubmitterPhotoOperationDelegate> delegate =
+    id<ENGPhotoSubmitterPhotoOperationDelegate> delegate =
         [self operationDelegateForRequest:request];
     
     if([request.tag isEqualToString:kMetaMovicsRequestGetSessionToken]){
@@ -379,7 +378,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
     }else if([request.tag isEqualToString:kMetaMovicsRequestUpload]){
         [self clearRequest:request];
         
-        MetaMovicsRequest *r = [metamovics_ createPageWithVideoId: [[result objectForKey:@"id"] stringValue]
+        ENGMetaMovicsRequest *r = [metamovics_ createPageWithVideoId: [[result objectForKey:@"id"] stringValue]
                                 categoryId:@"73"
                                    caption:content.comment
                                andDelegate:self];
@@ -397,7 +396,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * request failed
  */
-- (void)request:(MetaMovicsRequest *)request didFailWithError:(NSError *)error{
+- (void)request:(ENGMetaMovicsRequest *)request didFailWithError:(NSError *)error{
     if([request.tag isEqualToString:kMetaMovicsRequestGetSessionToken] ||
        [request.tag isEqualToString:kMetaMovicsRequestUpload] ||
        [request.tag isEqualToString:kMetaMovicsRequestCreatePage]){
@@ -415,7 +414,7 @@ static NSString *kMetaMovicsTempVideoURL = @"kMetaMovicsTempVideoDirURL";
 /*!
  * progress
  */
-- (void)request:(MetaMovicsRequest *)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
+- (void)request:(ENGMetaMovicsRequest *)request didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite{
     if([request.tag isEqualToString:kMetaMovicsRequestUpload]){
         CGFloat progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         NSString *hash = [self photoForRequest:request];

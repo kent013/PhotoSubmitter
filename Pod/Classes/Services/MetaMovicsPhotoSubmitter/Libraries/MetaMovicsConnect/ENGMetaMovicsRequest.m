@@ -3,30 +3,24 @@
 //  MetaMovicsConnect
 //
 //  Created by Kentaro ISHITOYA on 12/02/21.
-//  Copyright (c) 2012 Kentaro ISHITOYA. All rights reserved.
 //
 
-#if ! __has_feature(objc_arc)
-#error This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
-#endif
-
-#import "MetaMovicsRequest.h"
-#import "SBJsonParser.h"
+#import "ENGMetaMovicsRequest.h"
 
 //-----------------------------------------------------------------------------
 //Private Implementations
 //-----------------------------------------------------------------------------
-@interface MetaMovicsRequest(PrivateImplementation)
+@interface ENGMetaMovicsRequest(PrivateImplementation)
 @end
 
-@implementation MetaMovicsRequest(PrivateImplementation)
+@implementation ENGMetaMovicsRequest(PrivateImplementation)
 @end
 
 //-----------------------------------------------------------------------------
 //Public Implementations
 //-----------------------------------------------------------------------------
 #pragma mark - authentication
-@implementation MetaMovicsRequest
+@implementation ENGMetaMovicsRequest
 @dynamic url;
 @dynamic httpMethod;
 @synthesize tag = tag_;
@@ -37,7 +31,7 @@
  * initialize
  */
 - (id)initWithURLRequest:(NSURLRequest*)request 
-             andDelegate:(id<MetaMovicsRequestDelegate>)aDelegate{
+             andDelegate:(id<ENGMetaMovicsRequestDelegate>)aDelegate{
     self = [super init];
     if(self){
         delegate_ = aDelegate;
@@ -126,9 +120,9 @@
         [self.delegate request:self didLoadRawResponse:data_];
     }
     
-    NSError *parseError = nil; 
-    SBJsonParser *parser = [[SBJsonParser alloc] init];
-    NSDictionary *parsedData = [parser objectWithData:data_];
+    NSError *parseError = nil;
+    NSString *json = [[NSString alloc] initWithData:data_ encoding:NSUTF8StringEncoding];
+    NSDictionary *parsedData = [NSJSONSerialization JSONObjectWithData:[json dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableContainers error:&parseError];
     
     if (parseError) {
         if([self.delegate respondsToSelector:@selector(request:didFailWithError:)]){
