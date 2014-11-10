@@ -34,8 +34,6 @@ Pod::Spec.new do |s|
          'Pod/Assets/Localizations/*.lproj']
     }
     core.dependency "FBNetworkReachability"
-    core.dependency "KissXML"
-    core.dependency "RestKit"
     core.dependency "SVProgressHUD"
     core.dependency "MAConfirmButton"
     core.dependency "UIImage-Categories"
