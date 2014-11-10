@@ -43,13 +43,43 @@ Pod::Spec.new do |s|
   s.dependency "SBJson"
   s.dependency "RegexKitLite"
   s.dependency "Base64nl"
+  
+  s.subspec 'Dropbox' do |dropbox|
+    dropbox.source_files = 'Pod/Classes/Services/DropboxPhotoSubmitter/**/*.{h,m}'
+    dropbox.dependency 'Dropbox-iOS-SDK'
+    dropbox.resource_bundle = {
+      'ENGPhotoSubmitter-Dropbox' => 'Pod/Classes/Services/DropboxPhotoSubmitter/Resources/Images/*.png'
+    }
+  end
 
   s.subspec 'Facebook' do |facebook|
     facebook.source_files = 'Pod/Classes/Services/FacebookPhotoSubmitter/**/*.{h,m}'
-    facebook.exclude_files = "Pod/Classes/Services/FacebookPhotoSubmitter/*APIKey-template.h"
     facebook.dependency 'Facebook-iOS-SDK'
     facebook.resource_bundle = {
       'ENGPhotoSubmitter-Facebook' => 'Pod/Classes/Services/FacebookPhotoSubmitter/Resources/Images/*.png'
+    }
+  end
+
+#s.subspec 'GoogleDrive' do |gdrive|
+#  gdrive.source_files = 'Pod/Classes/Services/GoogleDrivePhotoSubmitter/**/*.{h,m}'
+#  gdrive.dependency 'Google-API-Client'
+#  gdrive.dependency 'Google-API-Client/Drive'
+#  gdrive.resource_bundle = {
+#    'ENGPhotoSubmitter-GoogleDrive' => 'Pod/Classes/Services/GoogleDrivePhotoSubmitter/Resources/Images/*.png'
+#  }
+#end
+
+  s.subspec 'File' do |file|
+    file.source_files = 'Pod/Classes/Services/FilePhotoSubmitter/**/*.{h,m}'
+    file.resource_bundle = {
+      'ENGPhotoSubmitter-File' => 'Pod/Classes/Services/FilePhotoSubmitter/Resources/Images/*.png'
+    }
+  end
+
+  s.subspec 'Twitter' do |twitter|
+    twitter.source_files = 'Pod/Classes/Services/TwitterPhotoSubmitter/**/*.{h,m}'
+    twitter.resource_bundle = {
+      'ENGPhotoSubmitter-Twitter' => 'Pod/Classes/Services/TwitterPhotoSubmitter/Resources/Images/*.png'
     }
   end
 end

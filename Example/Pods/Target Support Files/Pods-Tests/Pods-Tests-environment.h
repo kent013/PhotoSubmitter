@@ -24,6 +24,12 @@
 #define COCOAPODS_VERSION_MINOR_Bolts 1
 #define COCOAPODS_VERSION_PATCH_Bolts 3
 
+// Dropbox-iOS-SDK
+#define COCOAPODS_POD_AVAILABLE_Dropbox_iOS_SDK
+#define COCOAPODS_VERSION_MAJOR_Dropbox_iOS_SDK 1
+#define COCOAPODS_VERSION_MINOR_Dropbox_iOS_SDK 3
+#define COCOAPODS_VERSION_PATCH_Dropbox_iOS_SDK 13
+
 // Expecta
 #define COCOAPODS_POD_AVAILABLE_Expecta
 #define COCOAPODS_VERSION_MAJOR_Expecta 0
@@ -78,11 +84,29 @@
 #define COCOAPODS_VERSION_MINOR_PhotoSubmitter 1
 #define COCOAPODS_VERSION_PATCH_PhotoSubmitter 0
 
+// PhotoSubmitter/Dropbox
+#define COCOAPODS_POD_AVAILABLE_PhotoSubmitter_Dropbox
+#define COCOAPODS_VERSION_MAJOR_PhotoSubmitter_Dropbox 0
+#define COCOAPODS_VERSION_MINOR_PhotoSubmitter_Dropbox 1
+#define COCOAPODS_VERSION_PATCH_PhotoSubmitter_Dropbox 0
+
 // PhotoSubmitter/Facebook
 #define COCOAPODS_POD_AVAILABLE_PhotoSubmitter_Facebook
 #define COCOAPODS_VERSION_MAJOR_PhotoSubmitter_Facebook 0
 #define COCOAPODS_VERSION_MINOR_PhotoSubmitter_Facebook 1
 #define COCOAPODS_VERSION_PATCH_PhotoSubmitter_Facebook 0
+
+// PhotoSubmitter/File
+#define COCOAPODS_POD_AVAILABLE_PhotoSubmitter_File
+#define COCOAPODS_VERSION_MAJOR_PhotoSubmitter_File 0
+#define COCOAPODS_VERSION_MINOR_PhotoSubmitter_File 1
+#define COCOAPODS_VERSION_PATCH_PhotoSubmitter_File 0
+
+// PhotoSubmitter/Twitter
+#define COCOAPODS_POD_AVAILABLE_PhotoSubmitter_Twitter
+#define COCOAPODS_VERSION_MAJOR_PhotoSubmitter_Twitter 0
+#define COCOAPODS_VERSION_MINOR_PhotoSubmitter_Twitter 1
+#define COCOAPODS_VERSION_PATCH_PhotoSubmitter_Twitter 0
 
 // RKValueTransformers
 #define COCOAPODS_POD_AVAILABLE_RKValueTransformers

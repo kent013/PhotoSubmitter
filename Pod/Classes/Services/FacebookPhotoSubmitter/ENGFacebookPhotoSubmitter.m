@@ -360,9 +360,9 @@ static NSString *ENVPhotoSubmitterFacebookAPIID;
 }
 
 /*!
- * set facebook API Key
+ * set facebook API ID
  */
-+ (void)setFacebookAPIKey:(NSString *)APIKey{
-    ENVPhotoSubmitterFacebookAPIID = APIKey;
++ (void)setFacebookAPIID:(NSString *)APIID{
+    ENVPhotoSubmitterFacebookAPIID = APIID;
 }
 @end

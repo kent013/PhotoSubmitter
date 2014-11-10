@@ -43,7 +43,10 @@ install_resource()
 }
           install_resource "SVProgressHUD/SVProgressHUD/SVProgressHUD.bundle"
                     install_resource "${BUILT_PRODUCTS_DIR}/ENGPhotoSubmitter.bundle"
+                    install_resource "${BUILT_PRODUCTS_DIR}/ENGPhotoSubmitter-Dropbox.bundle"
                     install_resource "${BUILT_PRODUCTS_DIR}/ENGPhotoSubmitter-Facebook.bundle"
+                    install_resource "${BUILT_PRODUCTS_DIR}/ENGPhotoSubmitter-File.bundle"
+                    install_resource "${BUILT_PRODUCTS_DIR}/ENGPhotoSubmitter-Twitter.bundle"
           
 rsync -avr --copy-links --no-relative --exclude '*/.svn/*' --files-from="$RESOURCES_TO_COPY" / "${CONFIGURATION_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
 if [[ "${ACTION}" == "install" ]]; then
